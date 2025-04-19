@@ -4,26 +4,21 @@ const SHANGHAI_COORDS = { lat: 31.2304, lon: 121.4737 };
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000; // 2 seconds
+const TIMEOUT = 10000; // 10 seconds
 
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
+async function fetchWithRetry(url, retries = MAX_RETRIES) {
   try {
-    const response = await fetch(url, {
-      ...options,
-      timeout: 5000, // Reduce timeout to 5 seconds
+    const response = await axios.get(url, {
+      timeout: TIMEOUT,
     });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    return await response.json();
+    return response.data;
   } catch (error) {
     if (retries > 0) {
       console.log(`Retrying weather fetch... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
       await wait(RETRY_DELAY);
-      return fetchWithRetry(url, options, retries - 1);
+      return fetchWithRetry(url, retries - 1);
     }
     throw error;
   }
@@ -34,7 +29,7 @@ export async function getWeather() {
     const response = await fetchWithRetry('/api/weather');
     return response;
   } catch (error) {
-    console.error('Weather service error:', error);
+    console.error('Weather service error:', error.message);
     // Return a minimal weather object instead of throwing
     return {
       weather: [{ id: 800, description: 'weather unavailable' }],
