@@ -57,7 +57,14 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin-bottom: 60px;
+  
+  @media (max-width: 768px) {
+    margin-bottom: calc(80px + env(safe-area-inset-bottom, 20px)); /* Space for fixed button + safe area */
+  }
+
+  @media (min-width: 769px) {
+    margin-bottom: 60px;
+  }
 `;
 
 const FormGroup = styled.div`
@@ -143,12 +150,6 @@ const SubmitButton = styled.button`
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: 0;
-  z-index: 2001;
   
   &:hover {
     background-color: #f4511e;
@@ -157,6 +158,16 @@ const SubmitButton = styled.button`
   &:disabled {
     background-color: #ddd;
     cursor: not-allowed;
+  }
+
+  @media (max-width: 768px) {
+    position: fixed;
+    bottom: env(safe-area-inset-bottom, 0px);
+    left: 0;
+    right: 0;
+    margin: 0;
+    z-index: 2001;
+    border-radius: 0;
   }
 
   @media (min-width: 769px) {
