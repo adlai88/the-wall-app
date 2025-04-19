@@ -6,8 +6,7 @@ import LoadingView from '../components/LoadingView'
 
 // Dynamically import MapView to avoid SSR issues with Leaflet
 const MapView = dynamic(() => import('../components/MapView'), {
-  ssr: false,
-  loading: () => <LoadingView />
+  ssr: false
 })
 
 const Loading = styled.div`
