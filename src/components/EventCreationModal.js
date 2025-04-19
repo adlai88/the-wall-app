@@ -10,8 +10,10 @@ const ModalOverlay = styled.div`
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   z-index: 2000;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 `;
 
 const ModalContent = styled.div`
@@ -19,10 +21,15 @@ const ModalContent = styled.div`
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
+  margin: 20px auto;
   padding: 20px;
   position: relative;
+  
+  @media (max-width: 768px) {
+    margin: 10px auto;
+    padding: 15px;
+    width: 95%;
+  }
 `;
 
 const CloseButton = styled.button`
@@ -50,6 +57,7 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 15px;
+  margin-bottom: 60px;
 `;
 
 const FormGroup = styled.div`
@@ -131,11 +139,16 @@ const SubmitButton = styled.button`
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 12px;
+  padding: 16px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  margin-top: 10px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  z-index: 2001;
   
   &:hover {
     background-color: #f4511e;
@@ -144,6 +157,11 @@ const SubmitButton = styled.button`
   &:disabled {
     background-color: #ddd;
     cursor: not-allowed;
+  }
+
+  @media (min-width: 769px) {
+    position: static;
+    margin-top: 10px;
   }
 `;
 

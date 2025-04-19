@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
+import FullImageView from './FullImageView';
 
 const Container = styled.div`
   width: 100%;
@@ -141,6 +142,7 @@ export default function UpcomingEventsView({ events = [] }) {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const categories = ['all', 'music', 'art', 'social', 'food', 'sports', 'tech'];
 
@@ -158,8 +160,8 @@ export default function UpcomingEventsView({ events = [] }) {
       return dateA - dateB;
     });
 
-  const handleEventClick = (eventId) => {
-    router.push(`/events/${eventId}`);
+  const handleEventClick = (event) => {
+    setSelectedImage(event.poster);
   };
 
   const formatDate = (date, time) => {
@@ -192,7 +194,7 @@ export default function UpcomingEventsView({ events = [] }) {
       <EventList>
         {filteredEvents.length > 0 ? (
           filteredEvents.map(event => (
-            <EventCard key={event.id} onClick={() => handleEventClick(event.id)}>
+            <EventCard key={event.id} onClick={() => handleEventClick(event)}>
               <EventImageWrapper>
                 <Image
                   src={event.poster}
@@ -217,6 +219,13 @@ export default function UpcomingEventsView({ events = [] }) {
           </NoEvents>
         )}
       </EventList>
+
+      {selectedImage && (
+        <FullImageView 
+          imageUrl={selectedImage} 
+          onClose={() => setSelectedImage(null)} 
+        />
+      )}
     </Container>
   );
 } 
