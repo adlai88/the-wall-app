@@ -24,6 +24,7 @@ const MapContainerStyled = styled.div`
   width: 100%;
   height: calc(100vh - 60px);
   position: relative;
+  padding-bottom: 60px; /* Add padding to account for fixed nav */
 
   .leaflet-container {
     width: 100%;
