@@ -43,6 +43,9 @@ const MapContainerStyled = styled.div`
   }
 
   .leaflet-control-zoom {
+    right: env(safe-area-inset-right, 16px); /* Match the right margin of MapControlsContainer */
+    bottom: 20px;
+    left: auto;
     a {
       width: 40px !important;
       height: 40px !important;
@@ -106,18 +109,17 @@ const SearchInput = styled.input`
 
 const MapControlsContainer = styled.div`
   position: absolute;
-  right: 10px;
-  bottom: 140px; /* Increased to avoid overlap with zoom controls */
+  right: 10px; /* Fixed margin to match zoom controls */
+  bottom: 160px;
   z-index: 400;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
 
-  /* Add safe area padding on mobile */
+  /* Only adjust bottom padding for safe area */
   @media (max-width: 768px) {
-    bottom: calc(140px + env(safe-area-inset-bottom, 0px));
-    right: env(safe-area-inset-right, 10px);
+    bottom: calc(160px + env(safe-area-inset-bottom, 0px));
   }
 `;
 
@@ -125,8 +127,8 @@ const MapControlButton = styled.button`
   width: 40px;
   height: 40px;
   background-color: white;
-  border: 1px solid #999;
-  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -134,6 +136,7 @@ const MapControlButton = styled.button`
   padding: 0;
   font-size: 16px;
   opacity: ${props => props.isLocating ? 0.6 : 1};
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 
   &:hover {
     background-color: #f8f8f8;
@@ -152,7 +155,7 @@ const AddEventButton = styled.button`
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 140px; /* Increased to match MapControlsContainer */
+  bottom: 70px; /* Closer to bottom nav but not too close */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -169,7 +172,7 @@ const AddEventButton = styled.button`
 
   /* Add safe area padding and adjust position on mobile */
   @media (max-width: 768px) {
-    bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
   }
 `;
 
