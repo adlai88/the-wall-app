@@ -3,6 +3,7 @@ import Image from 'next/image'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import BottomNav from '../components/BottomNav'
+import FullImageView from '../components/FullImageView'
 
 const Container = styled.div`
   width: 100%;
@@ -139,6 +140,7 @@ export default function UpcomingEventsView({ events = [] }) {
   const router = useRouter()
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedImage, setSelectedImage] = useState(null)
 
   const categories = ['all', 'music', 'art', 'social', 'food', 'sports', 'tech']
 
@@ -156,8 +158,8 @@ export default function UpcomingEventsView({ events = [] }) {
       return dateA - dateB
     })
 
-  const handleEventClick = (eventId) => {
-    router.push(`/events/${eventId}`)
+  const handleEventClick = (event) => {
+    setSelectedImage(event.poster)
   }
 
   const formatDate = (date, time) => {
@@ -187,7 +189,7 @@ export default function UpcomingEventsView({ events = [] }) {
         <EventList>
           {filteredEvents.length > 0 ? (
             filteredEvents.map(event => (
-              <EventCard key={event.id} onClick={() => handleEventClick(event.id)}>
+              <EventCard key={event.id} onClick={() => handleEventClick(event)}>
                 <EventImageWrapper>
                   <Image
                     src={event.poster || '/default-event.jpg'}
@@ -206,12 +208,22 @@ export default function UpcomingEventsView({ events = [] }) {
               </EventCard>
             ))
           ) : (
-            <NoEvents>No events found</NoEvents>
+            <NoEvents>
+              No upcoming events found
+              {searchQuery && ' matching your search'}
+              {selectedCategory !== 'all' && ` in ${selectedCategory}`}
+            </NoEvents>
           )}
         </EventList>
+
+        {selectedImage && (
+          <FullImageView 
+            imageUrl={selectedImage} 
+            onClose={() => setSelectedImage(null)} 
+          />
+        )}
       </Container>
-      
-      <BottomNav active="upcoming" />
+      <BottomNav />
     </>
-  );
+  )
 } 
