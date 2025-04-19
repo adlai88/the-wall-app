@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
-const MapContainer = dynamic(
+const DynamicMapContainer = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
   { ssr: false }
 );
@@ -66,7 +66,7 @@ export default function MapView({ events = [], setEvents }) {
         </Link>
       </MapControls>
       
-      <MapContainer
+      <DynamicMapContainer
         center={userLocation || [31.2304, 121.4737]}
         zoom={13}
         style={{ height: '100%', width: '100%' }}
@@ -92,7 +92,7 @@ export default function MapView({ events = [], setEvents }) {
             </Popup>
           </Marker>
         ))}
-      </MapContainer>
+      </DynamicMapContainer>
     </MapWrapper>
   );
 } 
