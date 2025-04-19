@@ -1,52 +1,58 @@
 import axios from 'axios';
 
-const WEATHER_API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-console.log('API Key loaded:', WEATHER_API_KEY ? 'Yes' : 'No');
-console.log('API Key value:', WEATHER_API_KEY === 'your_openweathermap_api_key_here' ? 'Default value not changed' : 'Custom value set');
-
 const SHANGHAI_COORDS = { lat: 31.2304, lon: 121.4737 };
 
-export const getWeather = async (lat = 31.2304, lon = 121.4737) => {
-  try {
-    const response = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
-    if (!response.ok) {
-      console.error('Weather API response not ok:', await response.text());
-      return null;
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching weather:', error);
-    return null;
-  }
-};
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000; // 2 seconds
 
-export const getWeatherStyle = (weatherData) => {
-  if (!weatherData) return null;
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function fetchWithRetry(url, options, retries = MAX_RETRIES) {
+  try {
+    const response = await fetch(url, {
+      ...options,
+      timeout: 5000, // Reduce timeout to 5 seconds
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    if (retries > 0) {
+      console.log(`Retrying weather fetch... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
+      await wait(RETRY_DELAY);
+      return fetchWithRetry(url, options, retries - 1);
+    }
+    throw error;
+  }
+}
+
+export async function getWeather() {
+  try {
+    const response = await fetchWithRetry('/api/weather');
+    return response;
+  } catch (error) {
+    console.error('Weather service error:', error);
+    // Return a minimal weather object instead of throwing
+    return {
+      weather: [{ id: 800, description: 'weather unavailable' }],
+      main: { temp: '--' }
+    };
+  }
+}
+
+export function getWeatherStyle(weatherId) {
+  if (!weatherId) return {};
   
-  const code = weatherData.weather[0].id;
-  const styles = {
-    // Clear
-    800: {
-      filter: 'brightness(1.1)',
-      backgroundColor: 'rgba(255, 255, 255, 0)',
-    },
-    // Clouds
-    801: { filter: 'brightness(0.95)' },
-    802: { filter: 'brightness(0.9)' },
-    803: { filter: 'brightness(0.85)' },
-    804: { filter: 'brightness(0.8)' },
-    // Rain
-    500: { filter: 'saturate(0.8) brightness(0.9)' },
-    501: { filter: 'saturate(0.7) brightness(0.85)' },
-    502: { filter: 'saturate(0.6) brightness(0.8)' },
-    // Snow
-    600: { filter: 'brightness(1.1) contrast(0.9)' },
-    // Mist
-    701: { filter: 'brightness(0.9) contrast(0.9)' },
-    // Thunderstorm
-    200: { filter: 'brightness(0.7) contrast(1.1)' },
-  };
+  // Weather condition codes: https://openweathermap.org/weather-conditions
+  if (weatherId === 800) return { filter: 'brightness(100%)' }; // Clear sky
+  if (weatherId >= 801 && weatherId <= 804) return { filter: 'brightness(95%)' }; // Clouds
+  if (weatherId >= 500 && weatherId <= 531) return { filter: 'brightness(85%)' }; // Rain
+  if (weatherId >= 600 && weatherId <= 622) return { filter: 'brightness(100%)' }; // Snow
+  if (weatherId >= 701 && weatherId <= 781) return { filter: 'brightness(90%)' }; // Atmosphere
+  if (weatherId >= 200 && weatherId <= 232) return { filter: 'brightness(80%)' }; // Thunderstorm
   
-  return styles[code] || null;
-}; 
+  return {};
+} 

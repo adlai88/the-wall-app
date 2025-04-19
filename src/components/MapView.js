@@ -155,7 +155,7 @@ const AddEventButton = styled.button`
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 50px; /* Closer to bottom nav but not too close */
+  bottom: 40px; /* Closer to bottom nav but not too close */
   display: flex;
   align-items: center;
   justify-content: center;

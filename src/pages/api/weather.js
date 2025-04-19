@@ -1,35 +1,54 @@
+const WEATHER_API_KEY = process.env.OPENWEATHERMAP_API_KEY;
+const SHANGHAI_COORDS = { lat: 31.2304, lon: 121.4737 };
+
+async function fetchWithTimeout(url, options = {}) {
+  const { timeout = 5000 } = options;
+  
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(id);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
+}
+
 export default async function handler(req, res) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
+  const { lat = SHANGHAI_COORDS.lat, lon = SHANGHAI_COORDS.lon } = req.query;
 
-  const { lat, lon } = req.query
-
-  if (!lat || !lon) {
-    return res.status(400).json({ error: 'Missing coordinates' })
-  }
-
-  const apiKey = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
-  if (!apiKey) {
-    console.error('OpenWeather API key not found');
-    return res.status(500).json({ error: 'Weather API key not configured' });
+  if (!WEATHER_API_KEY) {
+    console.error('Weather API key not configured. Please ensure OPENWEATHERMAP_API_KEY is set in .env.local');
+    return res.status(500).json({
+      weather: [{ id: 800, description: 'weather service unavailable' }],
+      main: { temp: '--' }
+    });
   }
 
   try {
-    const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
-    )
-
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric`;
+    
+    const response = await fetchWithTimeout(url, { timeout: 5000 });
+    
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenWeather API error:', errorText);
-      return res.status(response.status).json({ error: 'Weather API request failed', details: errorText });
+      throw new Error(`Weather API responded with status: ${response.status}`);
     }
 
-    const data = await response.json()
-    return res.status(200).json(data)
+    const data = await response.json();
+    res.status(200).json(data);
   } catch (error) {
-    console.error('Error fetching weather:', error)
-    return res.status(500).json({ error: 'Error fetching weather data' })
+    console.error('Error fetching weather:', error);
+    
+    // Return a graceful fallback instead of an error
+    res.status(200).json({
+      weather: [{ id: 800, description: 'weather unavailable' }],
+      main: { temp: '--' }
+    });
   }
 } 
