@@ -2,11 +2,12 @@ import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { getEvents } from '../api'
+import LoadingView from '../components/LoadingView'
 
 // Dynamically import MapView to avoid SSR issues with Leaflet
 const MapView = dynamic(() => import('../components/MapView'), {
   ssr: false,
-  loading: () => <Loading>Loading map...</Loading>
+  loading: () => <LoadingView />
 })
 
 const Loading = styled.div`
