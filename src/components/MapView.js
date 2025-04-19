@@ -36,7 +36,7 @@ const MapContainerStyled = styled.div`
   .leaflet-container {
     width: 100%;
     height: 100%;
-    cursor: ${props => props.isPlacingPin ? 'crosshair' : 'grab'};
+    cursor: ${props => props.isPlacingPin ? `crosshair`  : 'grab'};
   }
 
   .leaflet-tile-pane {
@@ -44,7 +44,7 @@ const MapContainerStyled = styled.div`
   }
 
   .leaflet-control-zoom {
-    right: env(safe-area-inset-right, 16px); /* Match the right margin of MapControlsContainer */
+    right: env(safe-area-inset-right, 16px);
     bottom: 20px;
     left: auto;
     a {
@@ -62,6 +62,7 @@ const MapContainerStyled = styled.div`
     font-size: 10px;
   }
 
+  /* Custom cursor styles */
   .leaflet-grab {
     cursor: ${props => props.isPlacingPin ? 'crosshair' : 'grab'};
   }
@@ -69,6 +70,16 @@ const MapContainerStyled = styled.div`
   .leaflet-dragging .leaflet-grab {
     cursor: ${props => props.isPlacingPin ? 'crosshair' : 'grabbing'};
   }
+
+  /* Add custom cursor with color */
+  ${props => props.isPlacingPin && `
+    .leaflet-container,
+    .leaflet-grab,
+    .leaflet-dragging .leaflet-grab {
+      cursor: crosshair !important;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ff5722' stroke-width='2'%3E%3Cline x1='12' y1='2' x2='12' y2='22'/%3E%3Cline x1='2' y1='12' x2='22' y2='12'/%3E%3C/svg%3E") 12 12, crosshair !important;
+    }
+  `}
 `;
 
 const SearchBar = styled.div`
