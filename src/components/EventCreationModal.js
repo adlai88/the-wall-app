@@ -35,6 +35,7 @@ const ModalContent = styled.div`
     height: 100vh;
     max-height: 100vh;
     border-radius: 0;
+    padding-top: env(safe-area-inset-top, 0px); /* Add padding for top safe area */
     padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); /* Account for bottom nav + button */
   }
 `;
@@ -45,6 +46,7 @@ const ModalHeader = styled.div`
 
   @media (max-width: 768px) {
     padding: 15px 15px 10px;
+    padding-top: max(15px, env(safe-area-inset-top, 15px)); /* Ensure minimum padding while respecting safe area */
   }
 `;
 
