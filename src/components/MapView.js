@@ -151,7 +151,7 @@ const MapControlButton = styled.a.attrs({
 })`
   width: 42px !important;
   height: 42px !important;
-  line-height: 44px !important;
+  line-height: 42px !important;
   text-align: center !important;
   text-decoration: none !important;
   color: #333 !important;
