@@ -36,6 +36,7 @@ const MapContainerStyled = styled.div`
   }
 
   .leaflet-control-zoom {
+    margin-bottom: 80px !important; /* Move zoom controls up to avoid bottom nav */
     a {
       width: 40px !important;
       height: 40px !important;
@@ -49,6 +50,11 @@ const MapContainerStyled = styled.div`
     background: transparent !important;
     color: #666;
     font-size: 10px;
+  }
+
+  /* Adjust the add event button position */
+  .add-event-button {
+    bottom: 80px !important; /* Move up to avoid bottom nav */
   }
 `;
 
@@ -138,7 +144,7 @@ const AddEventButton = styled.button`
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 30px;
+  bottom: 80px; /* Increased from 30px to avoid bottom nav */
   display: flex;
   align-items: center;
   justify-content: center;

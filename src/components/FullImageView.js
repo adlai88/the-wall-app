@@ -24,21 +24,35 @@ const CloseButton = styled.button`
   position: absolute;
   top: 20px;
   right: 20px;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.2);
-  border: none;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.5);
   color: white;
-  font-size: 24px;
+  font-size: 28px;
+  line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
   
   &:hover {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(0, 0, 0, 0.7);
   }
+
+  /* Ensure proper touch target size on mobile */
+  @media (max-width: 768px) {
+    top: env(safe-area-inset-top, 20px);
+    right: env(safe-area-inset-right, 20px);
+  }
+`;
+
+const CloseIcon = styled.span`
+  display: block;
+  transform: translateY(-1px); /* Optical alignment */
 `;
 
 function FullImageView({ imageUrl, onClose }) {
@@ -50,7 +64,9 @@ function FullImageView({ imageUrl, onClose }) {
   return (
     <FullImageContainer onClick={handleClick}>
       <Image src={imageUrl} alt="Event" onClick={(e) => e.stopPropagation()} />
-      <CloseButton onClick={handleClick}>×</CloseButton>
+      <CloseButton onClick={handleClick}>
+        <CloseIcon>×</CloseIcon>
+      </CloseButton>
     </FullImageContainer>
   );
 }
