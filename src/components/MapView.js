@@ -36,6 +36,7 @@ const MapContainerStyled = styled.div`
   .leaflet-container {
     width: 100%;
     height: 100%;
+    cursor: ${props => props.isPlacingPin ? 'crosshair' : 'grab'};
   }
 
   .leaflet-tile-pane {
@@ -59,6 +60,14 @@ const MapContainerStyled = styled.div`
     background: transparent !important;
     color: #666;
     font-size: 10px;
+  }
+
+  .leaflet-grab {
+    cursor: ${props => props.isPlacingPin ? 'crosshair' : 'grab'};
+  }
+
+  .leaflet-dragging .leaflet-grab {
+    cursor: ${props => props.isPlacingPin ? 'crosshair' : 'grabbing'};
   }
 `;
 
@@ -568,7 +577,7 @@ export default function MapView({ events = [], setEvents }) {
 
   return (
     <>
-      <MapContainerStyled>
+      <MapContainerStyled isPlacingPin={isPlacingPin}>
         <SearchBar>
           <SearchIcon />
           <SearchInput
