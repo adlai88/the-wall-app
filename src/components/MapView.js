@@ -612,7 +612,7 @@ export default function MapView({ events = [], setEvents }) {
           <SearchIcon />
           <SearchInput
             type="text"
-            placeholder="Search events..."
+            placeholder="Search events and places..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
