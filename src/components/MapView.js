@@ -21,10 +21,17 @@ L.Icon.Default.mergeOptions({
 });
 
 const MapContainerStyled = styled.div`
-  width: 100%;
-  height: calc(100vh - 60px);
-  position: relative;
-  padding-bottom: 60px; /* Add padding to account for fixed nav */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 60px; /* Height of bottom nav */
+  z-index: 1;
+  
+  /* Add safe area padding on mobile */
+  @media (max-width: 768px) {
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
 
   .leaflet-container {
     width: 100%;
@@ -36,7 +43,6 @@ const MapContainerStyled = styled.div`
   }
 
   .leaflet-control-zoom {
-    margin-bottom: 80px !important; /* Move zoom controls up to avoid bottom nav */
     a {
       width: 40px !important;
       height: 40px !important;
@@ -50,11 +56,6 @@ const MapContainerStyled = styled.div`
     background: transparent !important;
     color: #666;
     font-size: 10px;
-  }
-
-  /* Adjust the add event button position */
-  .add-event-button {
-    bottom: 80px !important; /* Move up to avoid bottom nav */
   }
 `;
 
@@ -106,11 +107,18 @@ const SearchInput = styled.input`
 const MapControlsContainer = styled.div`
   position: absolute;
   right: 10px;
-  bottom: 140px;
+  bottom: 140px; /* Increased to avoid overlap with zoom controls */
   z-index: 400;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 10px;
+
+  /* Add safe area padding on mobile */
+  @media (max-width: 768px) {
+    bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+    right: env(safe-area-inset-right, 10px);
+  }
 `;
 
 const MapControlButton = styled.button`
@@ -144,7 +152,7 @@ const AddEventButton = styled.button`
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 80px; /* Increased from 30px to avoid bottom nav */
+  bottom: 140px; /* Increased to match MapControlsContainer */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,6 +165,11 @@ const AddEventButton = styled.button`
   
   &:hover {
     background-color: #e64a19;
+  }
+
+  /* Add safe area padding and adjust position on mobile */
+  @media (max-width: 768px) {
+    bottom: calc(140px + env(safe-area-inset-bottom, 0px));
   }
 `;
 

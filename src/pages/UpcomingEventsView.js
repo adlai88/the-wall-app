@@ -6,11 +6,11 @@ import BottomNav from '../components/BottomNav'
 
 const Container = styled.div`
   width: 100%;
-  min-height: calc(100vh - 60px);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: #f5f5f5;
-  padding-bottom: 20px;
+  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); /* Account for bottom nav + safe area */
 `
 
 const EventList = styled.div`
@@ -23,6 +23,7 @@ const EventList = styled.div`
   max-width: 800px;
   margin: 0 auto;
   width: 100%;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 `
 
 const EventCard = styled.div`
@@ -111,6 +112,7 @@ const CategoryFilter = styled.div`
   position: sticky;
   top: 0;
   z-index: 1;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   
   &::-webkit-scrollbar {
     display: none;
