@@ -181,7 +181,7 @@ const AddEventButton = styled.button`
 
   /* Add safe area padding and adjust position on mobile */
   @media (max-width: 768px) {
-    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(50px + env(safe-area-inset-bottom, 0px));
   }
 `;
 
