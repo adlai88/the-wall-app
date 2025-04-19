@@ -127,16 +127,15 @@ const SearchInput = styled.input`
   }
 `;
 
-const MapControlsContainer = styled.div`
+const MapControlsContainer = styled.div.attrs({
+  className: 'leaflet-control'
+})`
   position: absolute;
-  right: 10px; /* Fixed margin to match zoom controls */
+  right: 10px;
   bottom: 160px;
-  z-index: 400;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1000;
+  background: white;
+  border-radius: 4px;
 
   /* Only adjust bottom padding for safe area */
   @media (max-width: 768px) {
@@ -144,23 +143,26 @@ const MapControlsContainer = styled.div`
   }
 `;
 
-const MapControlButton = styled.button`
-  width: 40px !important;
-  height: 40px !important;
-  line-height: 40px !important;
-  background-color: white !important;
-  border: 2px solid rgba(0, 0, 0, 0.2) !important;
-  border-radius: 4px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  font-size: 18px !important;
+const MapControlButton = styled.a.attrs({
+  className: 'leaflet-control-zoom-in',
+  href: '#',
+  role: 'button',
+  'aria-label': 'Find my location'
+})`
+  width: 42px !important;
+  height: 42px !important;
+  line-height: 44px !important;
+  text-align: center !important;
+  text-decoration: none !important;
   color: #333 !important;
-  box-shadow: none !important;
+  font-size: 18px !important;
+  display: block !important;
+  background-color: #fff !important;
+  border: 2px solid rgba(0, 0, 0, 0.3) !important;
+  border-radius: 4px !important;
   opacity: ${props => props.isLocating ? 0.6 : 1};
+  margin: 0 !important;
+  padding: 0 !important;
 
   &:hover {
     background-color: #f8f8f8 !important;
@@ -322,8 +324,10 @@ function MapControlsComponent({ setUserLocation }) {
   return (
     <MapControlsContainer>
       <MapControlButton 
-        onClick={handleLocationClick} 
-        title="Find my location"
+        onClick={(e) => {
+          e.preventDefault();
+          handleLocationClick();
+        }}
         isLocating={isLocating}
       >
         {isLocating ? '⌛' : '📍'}
