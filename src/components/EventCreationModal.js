@@ -12,8 +12,10 @@ const ModalOverlay = styled.div`
   justify-content: center;
   align-items: flex-start;
   z-index: 2000;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  
+  @media (max-width: 768px) {
+    align-items: stretch;
+  }
 `;
 
 const ModalContent = styled.div`
@@ -24,11 +26,15 @@ const ModalContent = styled.div`
   margin: 20px auto;
   padding: 20px;
   position: relative;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   
   @media (max-width: 768px) {
-    margin: 10px auto;
-    padding: 15px;
-    width: 95%;
+    margin: 0;
+    padding: 15px 15px calc(140px + env(safe-area-inset-bottom, 20px));
+    width: 100%;
+    border-radius: 0;
+    height: 100%;
   }
 `;
 
@@ -57,10 +63,6 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 15px;
-  
-  @media (max-width: 768px) {
-    margin-bottom: calc(80px + env(safe-area-inset-bottom, 20px)); /* Space for fixed button + safe area */
-  }
 
   @media (min-width: 769px) {
     margin-bottom: 60px;
@@ -141,6 +143,19 @@ const UploadText = styled.div`
   display: ${props => props.$preview ? 'none' : 'block'};
 `;
 
+const ButtonContainer = styled.div`
+  @media (max-width: 768px) {
+    position: fixed;
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 10px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 2001;
+  }
+`;
+
 const SubmitButton = styled.button`
   background-color: #ff5722;
   color: white;
@@ -150,6 +165,7 @@ const SubmitButton = styled.button`
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
+  width: 100%;
   
   &:hover {
     background-color: #f4511e;
@@ -161,18 +177,7 @@ const SubmitButton = styled.button`
   }
 
   @media (max-width: 768px) {
-    position: fixed;
-    bottom: env(safe-area-inset-bottom, 0px);
-    left: 0;
-    right: 0;
-    margin: 0;
-    z-index: 2001;
-    border-radius: 0;
-  }
-
-  @media (min-width: 769px) {
-    position: static;
-    margin-top: 10px;
+    border-radius: 8px;
   }
 `;
 
@@ -384,11 +389,13 @@ function EventCreationModal({ onClose, coordinates, onSubmit }) {
               </UploadText>
             </ImageUpload>
           </FormGroup>
-          
-          <SubmitButton type="submit" disabled={isSubmitting}>
+        </Form>
+
+        <ButtonContainer>
+          <SubmitButton type="submit" disabled={isSubmitting} onClick={handleSubmit}>
             {isSubmitting ? 'Creating Event...' : 'Create Event'}
           </SubmitButton>
-        </Form>
+        </ButtonContainer>
       </ModalContent>
     </ModalOverlay>
   );
