@@ -63,7 +63,7 @@ const ModalBody = styled.div`
   
   @media (max-width: 768px) {
     padding: 15px;
-    padding-bottom: 30px; /* Extra padding at bottom for better scroll experience */
+    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); /* Account for button container + bottom nav */
   }
 `;
 
@@ -186,13 +186,14 @@ const ButtonContainer = styled.div`
   
   @media (max-width: 768px) {
     position: fixed;
-    bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px)); /* Account for bottom nav */
     left: 0;
     right: 0;
-    padding: 10px;
+    padding: 15px;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 2001;
+    z-index: 1001;
     border-radius: 0;
+    background: white;
   }
 `;
 
