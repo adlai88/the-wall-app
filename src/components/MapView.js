@@ -136,6 +136,7 @@ const MapControlsContainer = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 
   /* Only adjust bottom padding for safe area */
   @media (max-width: 768px) {
@@ -144,26 +145,29 @@ const MapControlsContainer = styled.div`
 `;
 
 const MapControlButton = styled.button`
-  width: 40px;
-  height: 40px;
-  background-color: white;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  font-size: 16px;
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  background-color: white !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  border-radius: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 18px !important;
+  color: #333 !important;
+  box-shadow: none !important;
   opacity: ${props => props.isLocating ? 0.6 : 1};
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 
   &:hover {
-    background-color: #f8f8f8;
+    background-color: #f8f8f8 !important;
   }
 
   &:active {
-    background-color: #f0f0f0;
+    background-color: #f0f0f0 !important;
   }
 `;
 
@@ -320,7 +324,6 @@ function MapControlsComponent({ setUserLocation }) {
       <MapControlButton 
         onClick={handleLocationClick} 
         title="Find my location"
-        className="map-control-button"
         isLocating={isLocating}
       >
         {isLocating ? '⌛' : '📍'}

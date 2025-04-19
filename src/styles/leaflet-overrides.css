@@ -11,25 +11,25 @@
 
 .leaflet-touch .leaflet-control-zoom {
   border: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: none;
 }
 
 .leaflet-touch .leaflet-control-zoom-in,
 .leaflet-touch .leaflet-control-zoom-out {
-  font-size: 16px;
-  width: 32px;
-  height: 32px;
-  line-height: 32px;
+  font-size: 18px !important;
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 40px !important;
   border-radius: 4px !important;
-  background-color: white;
-  color: #333;
+  background-color: white !important;
+  color: #333 !important;
   margin-bottom: 5px;
-  border: 1px solid rgba(0, 0, 0, 0.4) !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
 }
 
 .leaflet-touch .leaflet-control-zoom-in:hover,
 .leaflet-touch .leaflet-control-zoom-out:hover {
-  background-color: #f8f8f8;
+  background-color: #f8f8f8 !important;
 }
 
 /* Style the zoom control container */
@@ -45,17 +45,20 @@
 /* Style both zoom in and zoom out buttons */
 .leaflet-control-zoom-in,
 .leaflet-control-zoom-out {
-  width: 32px !important;
-  height: 32px !important;
-  font-size: 16px !important;
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 40px !important;
   background-color: white !important;
-  border: 1px solid #999 !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
   border-radius: 4px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   padding: 0 !important;
   margin: 0 !important;
+  font-size: 18px !important;
+  color: #333 !important;
+  box-shadow: none !important;
 }
 
 /* Hover state */
@@ -78,18 +81,20 @@
 
 /* Location button styles */
 .map-control-button {
-  width: 32px !important;
-  height: 32px !important;
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 40px !important;
   background-color: white !important;
-  border: 1px solid #999 !important;
+  border: 1px solid rgba(0, 0, 0, 0.4) !important;
   border-radius: 4px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   cursor: pointer !important;
-  font-size: 16px !important;
+  font-size: 18px !important;
   padding: 0 !important;
   margin: 0 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
 }
 
 .map-control-button:hover {
@@ -106,4 +111,66 @@
 
 .leaflet-control-zoom a:last-child {
   margin-bottom: 0 !important;
+}
+
+/* Shared map control styles */
+.map-control-shared {
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  background-color: white !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  border-radius: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 18px !important;
+  color: #333 !important;
+  box-shadow: none !important;
+}
+
+.map-control-shared:hover {
+  background-color: #f8f8f8 !important;
+}
+
+.map-control-shared:active {
+  background-color: #f0f0f0 !important;
+}
+
+/* Override existing zoom control styles */
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  background-color: white !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  border-radius: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 18px !important;
+  color: #333 !important;
+  box-shadow: none !important;
+}
+
+.leaflet-control-zoom-in:hover,
+.leaflet-control-zoom-out:hover {
+  background-color: #f8f8f8 !important;
+}
+
+.leaflet-control-zoom-in:active,
+.leaflet-control-zoom-out:active {
+  background-color: #f0f0f0 !important;
+}
+
+/* Apply shared styles to location button */
+.map-control-button {
+  composes: map-control-shared;
 } 
