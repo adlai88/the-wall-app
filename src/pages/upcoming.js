@@ -4,8 +4,7 @@ import styled from 'styled-components'
 
 // Dynamically import UpcomingEventsView
 const UpcomingEventsView = dynamic(() => import('./UpcomingEventsView'), {
-  ssr: false,
-  loading: () => <Loading>Loading events...</Loading>
+  ssr: false
 })
 
 const Loading = styled.div`

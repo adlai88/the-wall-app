@@ -10,6 +10,10 @@ const LoadingContainer = styled.div`
   background-color: #f5f5f5;
 `
 
-export default function LoadingView() {
-  return <LoadingContainer>Loading map...</LoadingContainer>
+export default function LoadingView({ error }) {
+  return (
+    <LoadingContainer>
+      {error ? `Error: ${error}` : 'Loading map...'}
+    </LoadingContainer>
+  )
 } 
