@@ -10,11 +10,12 @@ const ModalOverlay = styled.div`
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   z-index: 2000;
+  padding: 20px;
   
   @media (max-width: 768px) {
-    align-items: stretch;
+    padding: 0;
   }
 `;
 
@@ -23,18 +24,39 @@ const ModalContent = styled.div`
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
-  margin: 20px auto;
-  padding: 20px;
   position: relative;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   
   @media (max-width: 768px) {
-    margin: 0;
-    padding: 15px 15px calc(140px + env(safe-area-inset-bottom, 20px));
     width: 100%;
+    height: 100vh;
+    max-height: 100vh;
     border-radius: 0;
-    height: 100%;
+    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); /* Account for bottom nav + button */
+  }
+`;
+
+const ModalHeader = styled.div`
+  padding: 20px 20px 10px;
+  border-bottom: 1px solid #eee;
+
+  @media (max-width: 768px) {
+    padding: 15px 15px 10px;
+  }
+`;
+
+const ModalBody = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px;
+  
+  @media (max-width: 768px) {
+    padding: 15px;
+    padding-bottom: 30px; /* Extra padding at bottom for better scroll experience */
   }
 `;
 
@@ -63,9 +85,9 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 15px;
-
-  @media (min-width: 769px) {
-    margin-bottom: 60px;
+  
+  @media (max-width: 768px) {
+    padding-bottom: 20px; /* Extra space at bottom of form */
   }
 `;
 
@@ -144,15 +166,21 @@ const UploadText = styled.div`
 `;
 
 const ButtonContainer = styled.div`
+  background: white;
+  padding: 20px;
+  border-top: 1px solid #eee;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  
   @media (max-width: 768px) {
     position: fixed;
     bottom: calc(60px + env(safe-area-inset-bottom, 0px));
     left: 0;
     right: 0;
-    background: white;
     padding: 10px;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     z-index: 2001;
+    border-radius: 0;
   }
 `;
 
@@ -277,119 +305,123 @@ function EventCreationModal({ onClose, coordinates, onSubmit }) {
   return (
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={e => e.stopPropagation()}>
-        <CloseButton onClick={onClose}>×</CloseButton>
-        <Title>Create New Event</Title>
-        
-        {error && (
-          <ErrorMessage>
-            {error}
-          </ErrorMessage>
-        )}
-        
-        <LocationPreview>Location: {coordinates[1].toFixed(4)}°N, {coordinates[0].toFixed(4)}°E</LocationPreview>
-        
-        <Form onSubmit={handleSubmit}>
-          <FormGroup>
-            <Label>Event Title</Label>
-            <Input
-              required
-              value={formData.title}
-              onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="Enter event title"
-            />
-          </FormGroup>
+        <ModalHeader>
+          <CloseButton onClick={onClose}>×</CloseButton>
+          <Title>Create New Event</Title>
           
-          <FormGroup>
-            <Label>Venue Name / Location</Label>
-            <Input
-              required
-              value={formData.location}
-              onChange={e => setFormData(prev => ({ ...prev, location: e.target.value }))}
-              placeholder="Enter venue name or address"
-            />
-          </FormGroup>
+          {error && (
+            <ErrorMessage>
+              {error}
+            </ErrorMessage>
+          )}
           
-          <FormGroup>
-            <Label>Start Date</Label>
-            <Input
-              required
-              type="date"
-              value={formData.date}
-              onChange={e => setFormData(prev => ({ ...prev, date: e.target.value }))}
-            />
-          </FormGroup>
-          
-          <FormGroup>
-            <Label>Start Time</Label>
-            <Input
-              required
-              type="time"
-              value={formData.time}
-              onChange={e => setFormData(prev => ({ ...prev, time: e.target.value }))}
-            />
-          </FormGroup>
-          
-          <FormGroup>
-            <Label>End Date</Label>
-            <Input
-              type="date"
-              value={formData.endDate}
-              onChange={e => setFormData(prev => ({ ...prev, endDate: e.target.value }))}
-            />
-          </FormGroup>
-          
-          <FormGroup>
-            <Label>End Time</Label>
-            <Input
-              type="time"
-              value={formData.endTime}
-              onChange={e => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
-            />
-          </FormGroup>
-          
-          <FormGroup>
-            <Label>Category</Label>
-            <Select
-              value={formData.category}
-              onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}
-            >
-              <option value="music">Music</option>
-              <option value="art">Art</option>
-              <option value="social">Social</option>
-              <option value="food">Food</option>
-              <option value="sports">Sports</option>
-              <option value="tech">Tech</option>
-            </Select>
-          </FormGroup>
-          
-          <FormGroup>
-            <Label>Description (Optional)</Label>
-            <TextArea
-              value={formData.description}
-              onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Optional: Describe your event..."
-            />
-          </FormGroup>
-          
-          <FormGroup>
-            <Label>Event Poster</Label>
-            <ImageUpload 
-              onClick={handleImageClick}
-              $preview={previewUrl}
-            >
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleImageUpload}
-                accept="image/*"
-                style={{ display: 'none' }}
+          <LocationPreview>Location: {coordinates[1].toFixed(4)}°N, {coordinates[0].toFixed(4)}°E</LocationPreview>
+        </ModalHeader>
+
+        <ModalBody>
+          <Form onSubmit={handleSubmit}>
+            <FormGroup>
+              <Label>Event Title</Label>
+              <Input
+                required
+                value={formData.title}
+                onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Enter event title"
               />
-              <UploadText $preview={previewUrl}>
-                Click to upload event poster
-              </UploadText>
-            </ImageUpload>
-          </FormGroup>
-        </Form>
+            </FormGroup>
+            
+            <FormGroup>
+              <Label>Venue Name / Location</Label>
+              <Input
+                required
+                value={formData.location}
+                onChange={e => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                placeholder="Enter venue name or address"
+              />
+            </FormGroup>
+            
+            <FormGroup>
+              <Label>Start Date</Label>
+              <Input
+                required
+                type="date"
+                value={formData.date}
+                onChange={e => setFormData(prev => ({ ...prev, date: e.target.value }))}
+              />
+            </FormGroup>
+            
+            <FormGroup>
+              <Label>Start Time</Label>
+              <Input
+                required
+                type="time"
+                value={formData.time}
+                onChange={e => setFormData(prev => ({ ...prev, time: e.target.value }))}
+              />
+            </FormGroup>
+            
+            <FormGroup>
+              <Label>End Date</Label>
+              <Input
+                type="date"
+                value={formData.endDate}
+                onChange={e => setFormData(prev => ({ ...prev, endDate: e.target.value }))}
+              />
+            </FormGroup>
+            
+            <FormGroup>
+              <Label>End Time</Label>
+              <Input
+                type="time"
+                value={formData.endTime}
+                onChange={e => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
+              />
+            </FormGroup>
+            
+            <FormGroup>
+              <Label>Category</Label>
+              <Select
+                value={formData.category}
+                onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}
+              >
+                <option value="music">Music</option>
+                <option value="art">Art</option>
+                <option value="social">Social</option>
+                <option value="food">Food</option>
+                <option value="sports">Sports</option>
+                <option value="tech">Tech</option>
+              </Select>
+            </FormGroup>
+            
+            <FormGroup>
+              <Label>Description (Optional)</Label>
+              <TextArea
+                value={formData.description}
+                onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Optional: Describe your event..."
+              />
+            </FormGroup>
+            
+            <FormGroup>
+              <Label>Event Poster</Label>
+              <ImageUpload 
+                onClick={handleImageClick}
+                $preview={previewUrl}
+              >
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                />
+                <UploadText $preview={previewUrl}>
+                  Click to upload event poster
+                </UploadText>
+              </ImageUpload>
+            </FormGroup>
+          </Form>
+        </ModalBody>
 
         <ButtonContainer>
           <SubmitButton type="submit" disabled={isSubmitting} onClick={handleSubmit}>
