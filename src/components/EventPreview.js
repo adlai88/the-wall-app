@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import FullImageView from './FullImageView';
 
 const PreviewContainer = styled.div`
@@ -72,7 +72,7 @@ const CloseButton = styled.button`
 `;
 
 function EventPreview({ event, onClick, onClose }) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [showFullImage, setShowFullImage] = useState(false);
   
   const handleClick = (e) => {

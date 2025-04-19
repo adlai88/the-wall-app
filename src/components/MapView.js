@@ -1,34 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
-import BottomNav from './BottomNav';
-import FullImageView from './FullImageView';
-import EventCreationModal from './EventCreationModal';
+import { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useRouter } from 'next/router';
-import { getWeather, getWeatherStyle } from '../services/weatherService';
-import { testWeatherAPI } from '../utils/testWeatherAPI';
-import { submitEvent, getEvents } from '../api';
-import { toast } from 'sonner';
 import Link from 'next/link';
+import styled from 'styled-components';
 import dynamic from 'next/dynamic';
 
-// Dynamically import Leaflet components
-const DynamicMapContainer = dynamic(
+const MapContainer = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
-  { ssr: false }
-);
-
-const DynamicTileLayer = dynamic(
-  () => import('react-leaflet').then((mod) => mod.TileLayer),
-  { ssr: false }
-);
-
-const DynamicMarker = dynamic(
-  () => import('react-leaflet').then((mod) => mod.Marker),
-  { ssr: false }
-);
-
-const DynamicPopup = dynamic(
-  () => import('react-leaflet').then((mod) => mod.Popup),
   { ssr: false }
 );
 
@@ -47,27 +25,10 @@ const MapControls = styled.div`
   gap: 10px;
 `;
 
-export default function MapView({ events = [], setEvents }) {
+export default function MapView({ events }) {
   const router = useRouter();
   const [map, setMap] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
-  const [isLeafletInitialized, setIsLeafletInitialized] = useState(false);
-
-  // Initialize Leaflet only on client side
-  useEffect(() => {
-    if (!isLeafletInitialized) {
-      import('leaflet/dist/leaflet.css');
-      import('leaflet').then((L) => {
-        delete L.Icon.Default.prototype._getIconUrl;
-        L.Icon.Default.mergeOptions({
-          iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
-          iconUrl: require('leaflet/dist/images/marker-icon.png').default,
-          shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
-        });
-        setIsLeafletInitialized(true);
-      });
-    }
-  }, [isLeafletInitialized]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -86,10 +47,6 @@ export default function MapView({ events = [], setEvents }) {
     router.push(`/events/${eventId}`);
   };
 
-  if (!isLeafletInitialized) {
-    return <div>Loading map...</div>;
-  }
-
   return (
     <MapWrapper>
       <MapControls>
@@ -101,33 +58,33 @@ export default function MapView({ events = [], setEvents }) {
         </Link>
       </MapControls>
       
-      <DynamicMapContainer
+      <MapContainer
         center={userLocation || [31.2304, 121.4737]}
         zoom={13}
         style={{ height: '100%', width: '100%' }}
         ref={setMap}
       >
-        <DynamicTileLayer
+        <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         
         {events?.map((event) => (
-          <DynamicMarker
+          <Marker
             key={event.id}
             position={event.coordinates}
             eventHandlers={{
               click: () => handleEventClick(event.id),
             }}
           >
-            <DynamicPopup>
+            <Popup>
               <h3>{event.title}</h3>
               <p>{event.date} at {event.time}</p>
               <p>{event.location}</p>
-            </DynamicPopup>
-          </DynamicMarker>
+            </Popup>
+          </Marker>
         ))}
-      </DynamicMapContainer>
+      </MapContainer>
     </MapWrapper>
   );
 } 
