@@ -1,8 +1,16 @@
-import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import FullImageView from './FullImageView';
+import EventCreationModal from './EventCreationModal';
+import { useRouter } from 'next/router';
+import { getWeather } from '../services/weatherService';
+import { testWeatherAPI } from '../utils/testWeatherAPI';
+import { submitEvent, getEvents } from '../api';
+import { toast } from 'sonner';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
 const MapContainer = dynamic(
@@ -25,7 +33,7 @@ const MapControls = styled.div`
   gap: 10px;
 `;
 
-export default function MapView({ events }) {
+export default function MapView({ events = [], setEvents }) {
   const router = useRouter();
   const [map, setMap] = useState(null);
   const [userLocation, setUserLocation] = useState(null);

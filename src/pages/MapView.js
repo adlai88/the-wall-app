@@ -11,6 +11,7 @@ import { getWeather, getWeatherStyle } from '../services/weatherService';
 import { testWeatherAPI } from '../utils/testWeatherAPI';
 import { submitEvent, getEvents } from '../api';
 import { toast } from 'sonner';
+import dynamic from 'next/dynamic';
 
 // Fix Leaflet default marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -648,4 +649,20 @@ function MapView({ events = [], setEvents }) {
   );
 }
 
-export default MapView;
+// Dynamically import the map component with no SSR
+const MapWithNoSSR = dynamic(
+  () => import('../components/MapView'),
+  { 
+    ssr: false,
+    loading: () => <div>Loading map...</div>
+  }
+);
+
+export default function MapViewPage() {
+  return (
+    <>
+      <MapWithNoSSR />
+      <BottomNav active="map" />
+    </>
+  );
+}
