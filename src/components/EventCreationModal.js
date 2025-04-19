@@ -16,6 +16,7 @@ const ModalOverlay = styled.div`
   
   @media (max-width: 768px) {
     padding: 0;
+    align-items: flex-start; /* Align to top on mobile */
   }
 `;
 
@@ -32,11 +33,10 @@ const ModalContent = styled.div`
   
   @media (max-width: 768px) {
     width: 100%;
-    height: 100vh;
-    max-height: 100vh;
+    height: 100%;
+    max-height: 100%;
     border-radius: 0;
-    padding-top: env(safe-area-inset-top, 0px); /* Add padding for top safe area */
-    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); /* Account for bottom nav + button */
+    margin-top: 0; /* Remove any top margin */
   }
 `;
 
@@ -46,10 +46,12 @@ const ModalHeader = styled.div`
   position: sticky;
   top: 0;
   background: white;
-  z-index: 1;
+  z-index: 1001;
+  padding-top: max(20px, env(safe-area-inset-top, 20px));
 
   @media (max-width: 768px) {
-    padding: calc(env(safe-area-inset-top, 20px) + 15px) 15px 10px;
+    padding: 15px 15px 10px;
+    padding-top: max(20px, env(safe-area-inset-top, 20px));
   }
 `;
 
@@ -67,22 +69,17 @@ const ModalBody = styled.div`
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 15px;
+  top: max(15px, env(safe-area-inset-top, 15px));
   right: 15px;
   background: none;
   border: none;
   font-size: 24px;
   cursor: pointer;
   color: #666;
-  z-index: 2;
+  z-index: 1002;
   
   &:hover {
     color: #333;
-  }
-
-  @media (max-width: 768px) {
-    top: calc(env(safe-area-inset-top, 20px) + 15px);
-    right: 15px;
   }
 `;
 
