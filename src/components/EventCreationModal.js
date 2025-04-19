@@ -43,10 +43,13 @@ const ModalContent = styled.div`
 const ModalHeader = styled.div`
   padding: 20px 20px 10px;
   border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
 
   @media (max-width: 768px) {
-    padding: 15px 15px 10px;
-    padding-top: max(15px, env(safe-area-inset-top, 15px)); /* Ensure minimum padding while respecting safe area */
+    padding: calc(env(safe-area-inset-top, 20px) + 15px) 15px 10px;
   }
 `;
 
@@ -71,9 +74,15 @@ const CloseButton = styled.button`
   font-size: 24px;
   cursor: pointer;
   color: #666;
+  z-index: 2;
   
   &:hover {
     color: #333;
+  }
+
+  @media (max-width: 768px) {
+    top: calc(env(safe-area-inset-top, 20px) + 15px);
+    right: 15px;
   }
 `;
 
@@ -81,6 +90,10 @@ const Title = styled.h2`
   margin: 0 0 20px 0;
   font-size: 20px;
   color: #333;
+  
+  @media (max-width: 768px) {
+    margin: 0 0 15px 0;
+  }
 `;
 
 const Form = styled.form`
