@@ -461,22 +461,41 @@ export default function MapView({ events = [], setEvents }) {
       size = SIZE_DIMENSIONS.base;      // More than a week away
     }
     
-    const borderSize = Math.max(3, size * 0.05); // Increased minimum border size from 2 to 3
+    const borderSize = Math.max(3, size * 0.05);
+    const categoryColor = getCategoryColor(event.category);
+    
+    // Create a fallback background style using category color
+    const fallbackStyle = `background-color: ${categoryColor};`;
     
     return L.divIcon({
       className: 'custom-marker',
-      html: `<div style="
-        width: ${size}px;
-        height: ${size}px;
-        background-image: url(${event.poster});
-        background-size: cover;
-        background-position: center;
-        border-radius: ${size * 0.2}px;
-        border: ${borderSize}px solid rgba(255, 255, 255, 0.8);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-        cursor: pointer;
-        transition: all 0.3s ease;
-      "></div>`,
+      html: `
+        <div 
+          style="
+            width: ${size}px;
+            height: ${size}px;
+            ${event.poster ? `background-image: url(${event.poster});` : fallbackStyle}
+            background-size: cover;
+            background-position: center;
+            border-radius: ${size * 0.2}px;
+            border: ${borderSize}px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+          "
+          onerror="this.style.backgroundImage=''; this.style.backgroundColor='${categoryColor}';"
+        >
+          ${!event.poster ? `<div style="
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: ${size * 0.3}px;
+          ">${event.category.charAt(0).toUpperCase()}</div>` : ''}
+        </div>`,
       iconSize: [size, size],
       iconAnchor: [size/2, size/2]
     });
