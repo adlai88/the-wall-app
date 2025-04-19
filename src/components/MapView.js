@@ -1,22 +1,48 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import BottomNav from './BottomNav';
 import FullImageView from './FullImageView';
 import EventCreationModal from './EventCreationModal';
 import { useRouter } from 'next/router';
-import { getWeather } from '../services/weatherService';
+import { getWeather, getWeatherStyle } from '../services/weatherService';
 import { testWeatherAPI } from '../utils/testWeatherAPI';
 import { submitEvent, getEvents } from '../api';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
+// Dynamically import Leaflet components
 const DynamicMapContainer = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
   { ssr: false }
 );
+
+const DynamicTileLayer = dynamic(
+  () => import('react-leaflet').then((mod) => mod.TileLayer),
+  { ssr: false }
+);
+
+const DynamicMarker = dynamic(
+  () => import('react-leaflet').then((mod) => mod.Marker),
+  { ssr: false }
+);
+
+const DynamicPopup = dynamic(
+  () => import('react-leaflet').then((mod) => mod.Popup),
+  { ssr: false }
+);
+
+// Initialize Leaflet on client side only
+if (typeof window !== 'undefined') {
+  require('leaflet/dist/leaflet.css');
+  const L = require('leaflet');
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+    iconUrl: require('leaflet/dist/images/marker-icon.png'),
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+  });
+}
 
 const MapWrapper = styled.div`
   height: 100vh;
@@ -72,25 +98,25 @@ export default function MapView({ events = [], setEvents }) {
         style={{ height: '100%', width: '100%' }}
         ref={setMap}
       >
-        <TileLayer
+        <DynamicTileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         
         {events?.map((event) => (
-          <Marker
+          <DynamicMarker
             key={event.id}
             position={event.coordinates}
             eventHandlers={{
               click: () => handleEventClick(event.id),
             }}
           >
-            <Popup>
+            <DynamicPopup>
               <h3>{event.title}</h3>
               <p>{event.date} at {event.time}</p>
               <p>{event.location}</p>
-            </Popup>
-          </Marker>
+            </DynamicPopup>
+          </DynamicMarker>
         ))}
       </DynamicMapContainer>
     </MapWrapper>
