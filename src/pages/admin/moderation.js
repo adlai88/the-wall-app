@@ -1,13 +1,6 @@
-import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import AdminModeration from '../../components/admin/AdminModeration'
-
-// Dynamically import AdminModeration
-const AdminModerationComponent = dynamic(() => import('../../src/pages/AdminModeration'), {
-  ssr: false,
-  loading: () => <Loading>Loading admin panel...</Loading>
-})
 
 const Loading = styled.div`
   display: flex;
@@ -73,5 +66,5 @@ export default function AdminModerationPage() {
   if (loading) return <Loading>Loading admin panel...</Loading>
   if (error) return <Loading>Error: {error}</Loading>
 
-  return <AdminModerationComponent events={events} onEventAction={handleEventAction} />
+  return <AdminModeration events={events} onEventAction={handleEventAction} />
 } 
