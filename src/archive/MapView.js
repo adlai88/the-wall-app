@@ -3,13 +3,13 @@ import styled from 'styled-components';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import BottomNav from '../components/BottomNav';
-import FullImageView from '../components/FullImageView';
-import EventCreationModal from '../components/EventCreationModal';
+import BottomNav from '../../components/BottomNav';
+import FullImageView from '../../components/FullImageView';
+import EventCreationModal from '../../components/EventCreationModal';
 import { useRouter } from 'next/router';
-import { getWeather, getWeatherStyle } from '../services/weatherService';
-import { testWeatherAPI } from '../utils/testWeatherAPI';
-import { submitEvent, getEvents } from '../api';
+import { getWeather, getWeatherStyle } from '../../services/weatherService';
+import { testWeatherAPI } from '../../utils/testWeatherAPI';
+import { submitEvent, getEvents } from '../../api';
 import { toast } from 'sonner';
 
 // Fix Leaflet default marker icon issue

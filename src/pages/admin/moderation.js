@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 // Dynamically import AdminModeration
-const AdminModeration = dynamic(() => import('../../src/pages/AdminModeration'), {
+const AdminModeration = dynamic(() => import('../../components/admin/AdminModeration.js'), {
   ssr: false,
   loading: () => <Loading>Loading admin panel...</Loading>
 })

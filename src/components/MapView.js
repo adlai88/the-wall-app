@@ -3,15 +3,14 @@ import styled from 'styled-components';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import BottomNav from '../components/BottomNav';
-import FullImageView from '../components/FullImageView';
-import EventCreationModal from '../components/EventCreationModal';
+import BottomNav from './BottomNav';
+import FullImageView from './FullImageView';
+import EventCreationModal from './EventCreationModal';
 import { useRouter } from 'next/router';
 import { getWeather, getWeatherStyle } from '../services/weatherService';
 import { testWeatherAPI } from '../utils/testWeatherAPI';
 import { submitEvent, getEvents } from '../api';
 import { toast } from 'sonner';
-import dynamic from 'next/dynamic';
 
 // Fix Leaflet default marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -321,7 +320,7 @@ const parseCoordinates = (coordString) => {
   return [parseFloat(match[2]), parseFloat(match[1])]; // Return [lng, lat] for Leaflet
 };
 
-function MapView({ events = [], setEvents }) {
+export default function MapView({ events = [], setEvents }) {
   const router = useRouter();
   const [position, setPosition] = useState([31.2304, 121.4737]);
   const [weatherData, setWeatherData] = useState(null);
@@ -333,8 +332,19 @@ function MapView({ events = [], setEvents }) {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   
+  // Debug events data
+  useEffect(() => {
+    console.log('Events received:', events);
+    console.log('Filtered events:', filteredEvents);
+  }, [events, filteredEvents]);
+  
   // Update filteredEvents when events prop changes
   useEffect(() => {
+    console.log('Event data structure:', events.map(event => ({
+      id: event.id,
+      coordinates: event.coordinates,
+      parsed: parseCoordinates(event.coordinates)
+    })));
     setFilteredEvents(events);
   }, [events]);
   
@@ -648,25 +658,3 @@ function MapView({ events = [], setEvents }) {
     </>
   );
 }
-
-// Dynamically import Leaflet components
-const MapWithNoSSR = dynamic(
-  () => import('../components/MapView'),
-  {
-    ssr: false,
-    loading: () => (
-      <div style={{ 
-        width: '100%', 
-        height: 'calc(100vh - 60px)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f5f5f5'
-      }}>
-        Loading map...
-      </div>
-    )
-  }
-);
-
-export default MapWithNoSSR;
