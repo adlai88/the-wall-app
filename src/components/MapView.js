@@ -158,7 +158,7 @@ const MapControlButton = styled.a.attrs({
   font-size: 18px !important;
   display: block !important;
   background-color: #fff !important;
-  border: 2px solid rgba(0, 0, 0, 0.3) !important;
+  border: 2px solid rgba(0, 0, 0, 0.25) !important;
   border-radius: 4px !important;
   opacity: ${props => props.isLocating ? 0.6 : 1};
   margin: 0 !important;
