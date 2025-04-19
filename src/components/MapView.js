@@ -32,18 +32,6 @@ const DynamicPopup = dynamic(
   { ssr: false }
 );
 
-// Initialize Leaflet on client side only
-if (typeof window !== 'undefined') {
-  require('leaflet/dist/leaflet.css');
-  const L = require('leaflet');
-  delete L.Icon.Default.prototype._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-  });
-}
-
 const MapWrapper = styled.div`
   height: 100vh;
   width: 100%;
@@ -63,6 +51,23 @@ export default function MapView({ events = [], setEvents }) {
   const router = useRouter();
   const [map, setMap] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [isLeafletInitialized, setIsLeafletInitialized] = useState(false);
+
+  // Initialize Leaflet only on client side
+  useEffect(() => {
+    if (!isLeafletInitialized) {
+      import('leaflet/dist/leaflet.css');
+      import('leaflet').then((L) => {
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
+          iconUrl: require('leaflet/dist/images/marker-icon.png').default,
+          shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
+        });
+        setIsLeafletInitialized(true);
+      });
+    }
+  }, [isLeafletInitialized]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -80,6 +85,10 @@ export default function MapView({ events = [], setEvents }) {
   const handleEventClick = (eventId) => {
     router.push(`/events/${eventId}`);
   };
+
+  if (!isLeafletInitialized) {
+    return <div>Loading map...</div>;
+  }
 
   return (
     <MapWrapper>
