@@ -31,7 +31,7 @@ const Image = styled.img`
 `;
 
 const CloseButton = styled.button`
-  position: absolute;
+  position: fixed;
   top: 20px;
   right: 20px;
   width: 44px;
@@ -48,15 +48,16 @@ const CloseButton = styled.button`
   justify-content: center;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+  z-index: 2001; /* Ensure it's above the container */
   
   &:hover {
     background-color: rgba(0, 0, 0, 0.7);
   }
 
-  /* Ensure proper touch target size on mobile */
+  /* Ensure proper touch target size and safe area on mobile */
   @media (max-width: 768px) {
-    top: env(safe-area-inset-top, 20px);
-    right: env(safe-area-inset-right, 20px);
+    top: max(20px, env(safe-area-inset-top));
+    right: max(20px, env(safe-area-inset-right));
   }
 `;
 
@@ -81,4 +82,4 @@ function FullImageView({ imageUrl, onClose }) {
   );
 }
 
-export default FullImageView; 
+export default FullImageView;
