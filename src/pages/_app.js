@@ -28,6 +28,7 @@ function MyApp({ Component, pageProps }) {
       <Head>
         <title>The Wall App</title>
         <meta name="description" content="Discover and share events in your city" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Toaster position="top-right" richColors />
