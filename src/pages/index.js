@@ -3,48 +3,93 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { getEvents } from '../api'
 import LoadingView from '../components/LoadingView'
+import BottomNav from '../components/BottomNav'
 
 // Dynamically import MapView to avoid SSR issues with Leaflet
 const MapView = dynamic(() => import('../components/MapView'), {
   ssr: false
 })
 
-const Loading = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-size: 1.2rem;
-  color: #666;
-  background-color: #f5f5f5;
-`
+const OverlayBg = styled.div`
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.97);
+  z-index: 2000;
+  overflow-y: auto;
+  border: 2px solid black;
+  font-family: 'Courier New', monospace;
+`;
+
+const FloatingOverlay = styled.div`
+  position: absolute;
+  top: 120px;
+  right: 30px;
+  width: 400px;
+  max-height: 70vh;
+  background: white;
+  border: 1px solid #222;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  z-index: 2100;
+  overflow-y: auto;
+  box-shadow: 4px 4px 0 #222;
+  padding: 24px 24px 24px 24px;
+  border-radius: 0;
+`;
+
+// --- Upcoming Overlay ---
+import UpcomingPostersView from './UpcomingPostersView';
+function UpcomingOverlay({ events, onClose }) {
+  return (
+    <FloatingOverlay>
+      <button onClick={onClose} style={{position:'absolute',top:10,right:10}}>Close</button>
+      <div style={{marginTop: 40}}>
+        <UpcomingPostersView posters={events} />
+      </div>
+    </FloatingOverlay>
+  );
+}
+
+// --- About Overlay ---
+import AboutInfoPage from './AboutInfoPage';
+function AboutOverlay({ onClose }) {
+  return (
+    <FloatingOverlay>
+      <button onClick={onClose} style={{position:'absolute',top:10,right:10}}>Close</button>
+      <div style={{marginTop: 40}}>
+        <AboutInfoPage />
+      </div>
+    </FloatingOverlay>
+  );
+}
 
 export default function Home() {
   const [events, setEvents] = useState([])
   const [error, setError] = useState(null)
+  const [overlay, setOverlay] = useState(null) // 'upcoming', 'about', or null
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        console.log('Fetching events in Home component...');
         const data = await getEvents()
-        console.log('Events received in Home:', data);
-        setEvents(data || []); // Ensure we set an array even if data is null
+        setEvents(data || []);
       } catch (err) {
-        console.error('Error fetching events in Home:', err);
         setError(err.message)
       }
     }
-
     fetchEvents()
   }, [])
 
-  // Debug when events state changes
-  useEffect(() => {
-    console.log('Events state updated in Home:', events);
-  }, [events]);
+  if (error) return <LoadingView message={`Error: ${error}`} />
 
-  if (error) return <Loading>Error: {error}</Loading>
-
-  return <MapView events={events} setEvents={setEvents} />
+  return (
+    <>
+      <MapView events={events} setEvents={setEvents} />
+      {overlay === 'upcoming' && (
+        <UpcomingOverlay events={events} onClose={() => setOverlay(null)} />
+      )}
+      {overlay === 'about' && (
+        <AboutOverlay onClose={() => setOverlay(null)} />
+      )}
+    </>
+  )
 } 

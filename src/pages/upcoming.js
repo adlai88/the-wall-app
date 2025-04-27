@@ -2,8 +2,8 @@ import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
-// Dynamically import UpcomingEventsView
-const UpcomingEventsView = dynamic(() => import('./UpcomingEventsView'), {
+// Dynamically import UpcomingPostersView
+const UpcomingPostersView = dynamic(() => import('./UpcomingPostersView'), {
   ssr: false
 })
 
@@ -16,18 +16,18 @@ const Loading = styled.div`
   color: #666;
 `
 
-export default function UpcomingEvents() {
-  const [events, setEvents] = useState([])
+export default function UpcomingPosters() {
+  const [posters, setPosters] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchPosters = async () => {
       try {
-        const response = await fetch('/api/events')
-        if (!response.ok) throw new Error('Failed to fetch events')
+        const response = await fetch('/api/posters')
+        if (!response.ok) throw new Error('Failed to fetch posters')
         const data = await response.json()
-        setEvents(data)
+        setPosters(data)
       } catch (err) {
         setError(err.message)
       } finally {
@@ -35,11 +35,11 @@ export default function UpcomingEvents() {
       }
     }
 
-    fetchEvents()
+    fetchPosters()
   }, [])
 
-  if (loading) return <Loading>Loading events...</Loading>
+  if (loading) return <Loading>Loading posters...</Loading>
   if (error) return <Loading>Error: {error}</Loading>
 
-  return <UpcomingEventsView events={events} />
+  return <UpcomingPostersView posters={posters} />
 } 

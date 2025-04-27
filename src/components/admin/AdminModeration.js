@@ -280,76 +280,75 @@ const NoEvents = styled.div`
   color: #666;
 `;
 
-export default function AdminModeration({ events = [], onEventAction }) {
+export default function AdminModeration() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('pending');
-  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [filteredPosters, setFilteredPosters] = useState([]);
   const [pendingCount, setPendingCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const handleLogout = () => {
-    // Clear any admin session data if needed
     router.push('/');
   };
 
   const handleTabChange = (newTab) => {
     setActiveTab(newTab);
     setLoading(true);
-    setFilteredEvents([]); // Clear current events immediately
+    setFilteredPosters([]);
     setError(null);
   };
 
-  const fetchEvents = async (status) => {
+  const fetchPosters = async (status) => {
     try {
       const { data, error } = await supabase
-        .from('events')
+        .from('posters')
         .select('*')
         .eq('moderation_status', status);
       
       if (error) throw error;
       return data;
     } catch (err) {
-      console.error('Error fetching events:', err);
+      console.error('Error fetching posters:', err);
       throw err;
     }
   };
 
-  const handleAction = async (eventId, action) => {
+  const handleAction = async (posterId, action) => {
     try {
       const { error } = await supabase
-        .from('events')
+        .from('posters')
         .update({ moderation_status: action })
-        .eq('id', eventId);
+        .eq('id', posterId);
 
       if (error) throw error;
       
-      // Refresh the events list and pending count
-      const updatedEvents = await fetchEvents(activeTab);
-      setFilteredEvents(updatedEvents);
+      // Refresh the posters list and pending count
+      const updatedPosters = await fetchPosters(activeTab);
+      setFilteredPosters(updatedPosters);
       
       // Update pending count after action
-      const pendingEvents = await fetchEvents('pending');
-      setPendingCount(pendingEvents.length);
+      const pendingPosters = await fetchPosters('pending');
+      setPendingCount(pendingPosters.length);
     } catch (err) {
-      console.error('Error updating event:', err);
+      console.error('Error updating poster:', err);
       setError(err.message);
     }
   };
 
   useEffect(() => {
-    const loadEvents = async () => {
+    const loadPosters = async () => {
       try {
-        // Fetch events for current tab
-        const events = await fetchEvents(activeTab);
-        setFilteredEvents(events);
+        // Fetch posters for current tab
+        const posters = await fetchPosters(activeTab);
+        setFilteredPosters(posters);
         
         // Always fetch pending count regardless of active tab
         if (activeTab !== 'pending') {
-          const pendingEvents = await fetchEvents('pending');
-          setPendingCount(pendingEvents.length);
+          const pendingPosters = await fetchPosters('pending');
+          setPendingCount(pendingPosters.length);
         } else {
-          setPendingCount(events.length);
+          setPendingCount(posters.length);
         }
         
         setLoading(false);
@@ -359,14 +358,14 @@ export default function AdminModeration({ events = [], onEventAction }) {
       }
     };
 
-    loadEvents();
+    loadPosters();
   }, [activeTab]);
 
-  const renderEvents = () => {
+  const renderPosters = () => {
     if (loading) {
       return (
         <LoadingState>
-          <div>Loading events...</div>
+          <div>Loading posters...</div>
         </LoadingState>
       );
     }
@@ -375,42 +374,32 @@ export default function AdminModeration({ events = [], onEventAction }) {
       return (
         <EmptyState>
           <div style={{ color: 'red' }}>{error}</div>
-          <button 
-            onClick={() => setActiveTab(activeTab)} 
-            style={{ 
-              marginTop: '15px', 
-              padding: '8px 16px', 
-              backgroundColor: '#f8f8f8', 
-              border: 'none', 
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
+          <button onClick={() => setActiveTab(activeTab)} style={{ marginTop: '15px', padding: '8px 16px', backgroundColor: '#f8f8f8', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
             Try Again
           </button>
         </EmptyState>
       );
     }
     
-    if (filteredEvents.length === 0) {
+    if (filteredPosters.length === 0) {
       return (
         <EmptyState>
           <EmptyIcon>📭</EmptyIcon>
-          <div>No {activeTab} events found</div>
+          <div>No {activeTab} posters found</div>
           <div style={{ fontSize: '14px', color: '#999', marginTop: '5px' }}>
-            {activeTab === 'pending' ? 'New submissions will appear here' : `No events in ${activeTab} state`}
+            {activeTab === 'pending' ? 'New submissions will appear here' : `No posters in ${activeTab} state`}
           </div>
         </EmptyState>
       );
     }
     
-    return filteredEvents.map(event => (
-      <EventCard key={event.id}>
+    return filteredPosters.map(poster => (
+      <EventCard key={poster.id}>
         <EventImageContainer>
-          {event.poster ? (
+          {poster.poster_image ? (
             <Image
-              src={event.poster}
-              alt={event.title}
+              src={poster.poster_image}
+              alt={poster.title}
               width={80}
               height={80}
               style={{ objectFit: 'cover' }}
@@ -422,19 +411,20 @@ export default function AdminModeration({ events = [], onEventAction }) {
         </EventImageContainer>
         <EventContent>
           <div>
-            <EventTitle>{event.title}</EventTitle>
-            <EventDetails>{new Date(event.date).toLocaleDateString()} • {event.time}</EventDetails>
-            <EventLocation>{event.location}</EventLocation>
+            <EventTitle>{poster.title}</EventTitle>
+            <EventDetails>Display until: {new Date(poster.display_until).toLocaleDateString()}</EventDetails>
+            <EventLocation>{poster.location}</EventLocation>
+            <EventDescription>{poster.description}</EventDescription>
           </div>
           {activeTab === 'pending' && (
             <ActionButtons>
-              <RejectButton onClick={() => handleAction(event.id, 'rejected')}>
+              <RejectButton onClick={() => handleAction(poster.id, 'rejected')}>
                 Reject
               </RejectButton>
-              <EditButton onClick={() => router.push(`/admin/events/${event.id}/edit`)}>
+              <EditButton onClick={() => router.push(`/admin/posters/${poster.id}/edit`)}>
                 Edit
               </EditButton>
-              <ApproveButton onClick={() => handleAction(event.id, 'approved')}>
+              <ApproveButton onClick={() => handleAction(poster.id, 'approved')}>
                 Approve
               </ApproveButton>
             </ActionButtons>
@@ -447,7 +437,7 @@ export default function AdminModeration({ events = [], onEventAction }) {
   return (
     <Container>
       <Header>
-        <Title>Event Moderation</Title>
+        <Title>Poster Moderation</Title>
         <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
       </Header>
 
@@ -473,7 +463,7 @@ export default function AdminModeration({ events = [], onEventAction }) {
       </Tabs>
 
       <ContentContainer>
-        {renderEvents()}
+        {renderPosters()}
       </ContentContainer>
     </Container>
   );

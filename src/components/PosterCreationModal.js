@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { toast } from 'sonner';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -16,13 +17,13 @@ const ModalOverlay = styled.div`
   
   @media (max-width: 768px) {
     padding: 0;
-    align-items: flex-start; /* Align to top on mobile */
+    align-items: flex-start;
   }
 `;
 
 const ModalContent = styled.div`
-  background: white;
-  border-radius: 12px;
+  background: #fff;
+  border-radius: 8px;
   width: 90%;
   max-width: 500px;
   position: relative;
@@ -30,25 +31,27 @@ const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  
+  border: 1px solid #e5e5e5;
+  font-family: inherit;
+  box-shadow: none;
   @media (max-width: 768px) {
     width: 100%;
     height: 100%;
     max-height: 100%;
     border-radius: 0;
-    margin-top: 0; /* Remove any top margin */
+    margin-top: 0;
   }
 `;
 
 const ModalHeader = styled.div`
   padding: 20px 20px 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #e5e5e5;
   position: sticky;
   top: 0;
-  background: white;
+  background: #fff;
   z-index: 1001;
   padding-top: max(20px, env(safe-area-inset-top, 20px));
-
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   @media (max-width: 768px) {
     padding: 15px 15px 10px;
     padding-top: max(20px, env(safe-area-inset-top, 20px));
@@ -60,10 +63,10 @@ const ModalBody = styled.div`
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 20px;
-  
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   @media (max-width: 768px) {
     padding: 15px;
-    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)); /* Account for button container + bottom nav */
+    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
   }
 `;
 
@@ -75,19 +78,21 @@ const CloseButton = styled.button`
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #666;
+  color: #888;
   z-index: 1002;
-  
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   &:hover {
-    color: #333;
+    color: #222;
+    background: #f5f5f5;
+    border-radius: 50%;
   }
 `;
 
 const Title = styled.h2`
   margin: 0 0 20px 0;
   font-size: 20px;
-  color: #333;
-  
+  color: #222;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   @media (max-width: 768px) {
     margin: 0 0 15px 0;
   }
@@ -97,10 +102,7 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 15px;
-  
-  @media (max-width: 768px) {
-    padding-bottom: 20px; /* Extra space at bottom of form */
-  }
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const FormGroup = styled.div`
@@ -112,48 +114,43 @@ const FormGroup = styled.div`
 const Label = styled.label`
   font-size: 14px;
   color: #666;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const Input = styled.input`
-  padding: 8px 12px;
-  border: 1px solid #ddd;
+  padding: 10px 12px;
+  border: 1px solid #e5e5e5;
   border-radius: 6px;
-  font-size: 14px;
-  
+  font-size: 16px;
+  background: #fafbfc;
+  color: #222;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   &:focus {
     outline: none;
-    border-color: #ff5722;
+    border-color: #007aff;
+    background: #fff;
   }
 `;
 
 const TextArea = styled.textarea`
-  padding: 8px 12px;
-  border: 1px solid #ddd;
+  padding: 10px 12px;
+  border: 1px solid #e5e5e5;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 16px;
   min-height: 100px;
   resize: vertical;
-  
+  background: #fafbfc;
+  color: #222;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   &:focus {
     outline: none;
-    border-color: #ff5722;
-  }
-`;
-
-const Select = styled.select`
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  
-  &:focus {
-    outline: none;
-    border-color: #ff5722;
+    border-color: #007aff;
+    background: #fff;
   }
 `;
 
 const ImageUpload = styled.div`
-  border: 2px dashed #ddd;
+  border: 1px dashed #e5e5e5;
   border-radius: 6px;
   padding: 20px;
   text-align: center;
@@ -167,58 +164,59 @@ const ImageUpload = styled.div`
   background-size: cover;
   background-position: center;
   position: relative;
-  
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   &:hover {
-    border-color: #ff5722;
+    border-color: #007aff;
+    background: #f5f5f5;
   }
 `;
 
 const UploadText = styled.div`
   display: ${props => props.$preview ? 'none' : 'block'};
+  color: #888;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const ButtonContainer = styled.div`
-  background: white;
+  background: #fff;
   padding: 20px;
-  border-top: 1px solid #eee;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-  
+  border-top: 1px solid #e5e5e5;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   @media (max-width: 768px) {
     position: fixed;
-    bottom: calc(60px + env(safe-area-inset-bottom, 0px)); /* Account for bottom nav */
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px));
     left: 0;
     right: 0;
     padding: 15px;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
     z-index: 1001;
     border-radius: 0;
-    background: white;
+    background: #fff;
   }
 `;
 
 const SubmitButton = styled.button`
-  background-color: #ff5722;
-  color: white;
-  border: none;
+  background: #fff;
+  color: #222;
+  border: 1px solid #e5e5e5;
   border-radius: 6px;
-  padding: 16px;
+  padding: 14px;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 500;
   cursor: pointer;
   width: 100%;
-  
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  transition: background 0.15s;
   &:hover {
-    background-color: #f4511e;
+    background: #f5f5f5;
+    color: #007aff;
+    border-color: #007aff;
   }
-  
   &:disabled {
-    background-color: #ddd;
+    background: #f5f5f5;
+    color: #bbb;
+    border-color: #e5e5e5;
     cursor: not-allowed;
-  }
-
-  @media (max-width: 768px) {
-    border-radius: 8px;
   }
 `;
 
@@ -226,15 +224,7 @@ const LocationPreview = styled.div`
   font-size: 14px;
   color: #666;
   margin-bottom: 5px;
-`;
-
-const SuccessMessage = styled.div`
-  background-color: #4caf50;
-  color: white;
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  text-align: center;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const ErrorMessage = styled.div`
@@ -244,47 +234,85 @@ const ErrorMessage = styled.div`
   border-radius: 6px;
   margin-bottom: 10px;
   text-align: center;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
-function EventCreationModal({ onClose, coordinates, onSubmit }) {
+const Select = styled.select`
+  padding: 10px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 16px;
+  background: #fafbfc;
+  color: #222;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  &:focus {
+    outline: none;
+    border-color: #007aff;
+    background: #fff;
+  }
+`;
+
+function PosterCreationModal({ onClose, coordinates, onSubmit }) {
   const [formData, setFormData] = useState({
     title: '',
-    date: '',
-    time: '',
-    endDate: '',
-    endTime: '',
     location: '',
-    category: 'music',
     description: '',
-    poster: null
+    poster_image: null,
+    date: new Date().toISOString().split('T')[0],
+    time: '00:00',
+    display_until: (() => {
+      const date = new Date();
+      date.setDate(date.getDate() + 30); // Default to 30 days from now
+      return date.toISOString().split('T')[0];
+    })(),
+    category: 'general'
   });
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(null);
   const fileInputRef = React.useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError(null);
     
+    if (!formData.poster_image) {
+      toast.error('Please upload a poster image');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
-      // Format coordinates as (lat,lng) string
       const lat = coordinates[1].toFixed(6);
       const lng = coordinates[0].toFixed(6);
       const formattedCoords = `(${lat},${lng})`;
 
-      await onSubmit({
-        ...formData,
-        coordinates: formattedCoords
+      const response = await fetch('/api/posters', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          location: formData.location,
+          coordinates: formattedCoords,
+          category: formData.category,
+          display_until: formData.display_until,
+          poster_image: formData.poster_image
+        }),
       });
-      
-      // Close modal immediately
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit poster');
+      }
+
+      const data = await response.json();
+      await onSubmit(data);
       onClose();
     } catch (error) {
-      console.error('Error submitting event:', error);
-      setError(error.message || 'Failed to create event. Please try again.');
+      console.error('Error submitting poster:', error);
+      toast.error(error.message || 'Failed to create poster. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -293,10 +321,18 @@ function EventCreationModal({ onClose, coordinates, onSubmit }) {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData(prev => ({ ...prev, poster: file }));
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewUrl(reader.result);
+        const base64String = reader.result;
+        setFormData(prev => ({ 
+          ...prev, 
+          poster_image: {
+            data: base64String,
+            type: file.type,
+            name: file.name
+          }
+        }));
+        setPreviewUrl(base64String);
       };
       reader.readAsDataURL(file);
     }
@@ -306,7 +342,6 @@ function EventCreationModal({ onClose, coordinates, onSubmit }) {
     fileInputRef.current?.click();
   };
 
-  // Cleanup preview URL when component unmounts
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -320,103 +355,65 @@ function EventCreationModal({ onClose, coordinates, onSubmit }) {
       <ModalContent onClick={e => e.stopPropagation()}>
         <ModalHeader>
           <CloseButton onClick={onClose}>×</CloseButton>
-          <Title>Create New Event</Title>
-          
-          {error && (
-            <ErrorMessage>
-              {error}
-            </ErrorMessage>
-          )}
-          
+          <Title>Pin New Poster</Title>
           <LocationPreview>Location: {coordinates[1].toFixed(4)}°N, {coordinates[0].toFixed(4)}°E</LocationPreview>
         </ModalHeader>
 
         <ModalBody>
           <Form onSubmit={handleSubmit}>
             <FormGroup>
-              <Label>Event Title</Label>
+              <Label>Title</Label>
               <Input
-                required
                 value={formData.title}
                 onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Enter event title"
+                placeholder="Enter poster title"
               />
             </FormGroup>
-            
+
             <FormGroup>
-              <Label>Venue Name / Location</Label>
+              <Label>Location Name</Label>
               <Input
-                required
                 value={formData.location}
                 onChange={e => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                placeholder="Enter venue name or address"
+                placeholder="Enter location name or address"
               />
             </FormGroup>
             
             <FormGroup>
-              <Label>Start Date</Label>
-              <Input
-                required
-                type="date"
-                value={formData.date}
-                onChange={e => setFormData(prev => ({ ...prev, date: e.target.value }))}
+              <Label>Description</Label>
+              <TextArea
+                value={formData.description}
+                onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Describe your poster..."
               />
             </FormGroup>
-            
-            <FormGroup>
-              <Label>Start Time</Label>
-              <Input
-                required
-                type="time"
-                value={formData.time}
-                onChange={e => setFormData(prev => ({ ...prev, time: e.target.value }))}
-              />
-            </FormGroup>
-            
-            <FormGroup>
-              <Label>End Date</Label>
-              <Input
-                type="date"
-                value={formData.endDate}
-                onChange={e => setFormData(prev => ({ ...prev, endDate: e.target.value }))}
-              />
-            </FormGroup>
-            
-            <FormGroup>
-              <Label>End Time</Label>
-              <Input
-                type="time"
-                value={formData.endTime}
-                onChange={e => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
-              />
-            </FormGroup>
-            
+
             <FormGroup>
               <Label>Category</Label>
               <Select
                 value={formData.category}
                 onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}
               >
-                <option value="music">Music</option>
-                <option value="art">Art</option>
-                <option value="social">Social</option>
-                <option value="food">Food</option>
-                <option value="sports">Sports</option>
-                <option value="tech">Tech</option>
+                <option value="general">General</option>
+                <option value="event">Event</option>
+                <option value="announcement">Announcement</option>
+                <option value="community">Community</option>
+                <option value="other">Other</option>
               </Select>
             </FormGroup>
-            
+
             <FormGroup>
-              <Label>Description (Optional)</Label>
-              <TextArea
-                value={formData.description}
-                onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Optional: Describe your event..."
+              <Label>Display Until</Label>
+              <Input
+                type="date"
+                value={formData.display_until}
+                onChange={e => setFormData(prev => ({ ...prev, display_until: e.target.value }))}
+                min={new Date().toISOString().split('T')[0]}
               />
             </FormGroup>
             
             <FormGroup>
-              <Label>Event Poster</Label>
+              <Label>Upload Image (Required)</Label>
               <ImageUpload 
                 onClick={handleImageClick}
                 $preview={previewUrl}
@@ -427,9 +424,10 @@ function EventCreationModal({ onClose, coordinates, onSubmit }) {
                   onChange={handleImageUpload}
                   accept="image/*"
                   style={{ display: 'none' }}
+                  required
                 />
                 <UploadText $preview={previewUrl}>
-                  Click to upload event poster
+                  Click to upload poster image
                 </UploadText>
               </ImageUpload>
             </FormGroup>
@@ -438,7 +436,7 @@ function EventCreationModal({ onClose, coordinates, onSubmit }) {
 
         <ButtonContainer>
           <SubmitButton type="submit" disabled={isSubmitting} onClick={handleSubmit}>
-            {isSubmitting ? 'Creating Event...' : 'Create Event'}
+            {isSubmitting ? 'Pinning Poster...' : 'Pin Poster'}
           </SubmitButton>
         </ButtonContainer>
       </ModalContent>
@@ -446,4 +444,4 @@ function EventCreationModal({ onClose, coordinates, onSubmit }) {
   );
 }
 
-export default EventCreationModal; 
+export default PosterCreationModal; 

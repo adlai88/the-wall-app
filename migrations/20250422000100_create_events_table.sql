@@ -1,3 +1,7 @@
+-- Migration: Create events table
+-- Created at: 2025-04-22 00:01:00
+-- Description: Creates the initial events table with indexes and triggers
+
 -- Drop existing table and related objects
 DROP TRIGGER IF EXISTS update_events_updated_at ON events;
 DROP FUNCTION IF EXISTS update_updated_at_column();

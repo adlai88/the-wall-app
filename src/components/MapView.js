@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import BottomNav from './BottomNav';
 import FullImageView from './FullImageView';
-import EventCreationModal from './EventCreationModal';
+import PosterCreationModal from './PosterCreationModal';
 import { useRouter } from 'next/router';
 import { getWeather, getWeatherStyle } from '../services/weatherService';
 import { testWeatherAPI } from '../utils/testWeatherAPI';
@@ -86,14 +86,13 @@ const SearchBar = styled.div`
   position: absolute;
   top: 10px;
   left: 10px;
-  right: 10px;
+  width: 300px;
   height: 40px;
   background-color: white;
-  border-radius: 20px;
+  border: 1px solid #222;
   display: flex;
   align-items: center;
   padding: 0 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   z-index: 1000;
 `;
 
@@ -104,7 +103,8 @@ const SearchIcon = styled.div`
   align-items: center;
   justify-content: center;
   margin-right: 10px;
-  color: #999;
+  color: black;
+  font-weight: bold;
   
   &::before {
     content: "🔍";
@@ -115,8 +115,11 @@ const SearchIcon = styled.div`
 const SearchInput = styled.input`
   border: none;
   width: 100%;
+  font-family: 'Courier New', monospace;
   font-size: 14px;
-  color: #333;
+  font-weight: bold;
+  color: black;
+  background: transparent;
   
   &:focus {
     outline: none;
@@ -124,7 +127,35 @@ const SearchInput = styled.input`
   
   &::placeholder {
     color: #999;
+    font-weight: normal;
   }
+`;
+
+const AppTips = styled.div`
+  position: absolute;
+  top: 60px;
+  left: 10px;
+  background-color: white;
+  border: 1px solid #222;
+  padding: 8px 12px;
+  z-index: 1000;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0;
+  width: 300px;
+`;
+
+const TipItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  color: black;
+`;
+
+const TipIcon = styled.span`
+  font-size: 14px;
 `;
 
 const MapControlsContainer = styled.div.attrs({
@@ -158,7 +189,7 @@ const MapControlButton = styled.a.attrs({
   font-size: 18px !important;
   display: block !important;
   background-color: #fff !important;
-  border: 2px solid rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid #222 !important;
   border-radius: 4px !important;
   opacity: ${props => props.isLocating ? 0.6 : 1};
   margin: 0 !important;
@@ -173,27 +204,27 @@ const MapControlButton = styled.a.attrs({
   }
 `;
 
-const AddEventButton = styled.button`
+const PinPosterButton = styled.button`
   width: 60px;
   height: 60px;
-  background-color: #ff5722;
-  border-radius: 50%;
+  background-color: black;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 40px; /* Closer to bottom nav but not too close */
+  bottom: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-size: 30px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  border: none;
+  font-weight: bold;
+  border: 1px solid #222;
   cursor: pointer;
   z-index: 400;
   
   &:hover {
-    background-color: #e64a19;
+    background-color: white;
+    color: black;
   }
 
   /* Add safe area padding and adjust position on mobile */
@@ -207,14 +238,15 @@ const WeatherOverlay = styled.div`
   position: absolute;
   top: 70px;
   left: 10px;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: white;
   padding: 8px 12px;
-  border-radius: 20px;
+  border: 1px solid #222;
   display: flex;
   align-items: center;
   gap: 8px;
+  font-family: 'Courier New', monospace;
   font-size: 14px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  font-weight: bold;
   z-index: 1000;
   min-width: 150px;
   pointer-events: none;
@@ -225,13 +257,17 @@ const AddEventInstructions = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
+  background-color: white;
+  color: black;
   padding: 15px 25px;
-  border-radius: 25px;
+  border: 1px solid #222;
+  font-family: 'Courier New', monospace;
   font-size: 16px;
+  font-weight: bold;
   pointer-events: none;
   z-index: 1000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 `;
 
 // Add this new styled component near the other styled components
@@ -240,7 +276,7 @@ const UserLocationMarker = styled.div`
   height: 20px;
   background-color: #4285f4;
   border-radius: 50%;
-  border: 3px solid white;
+  border: 1px solid white;
   box-shadow: 0 0 0 2px #4285f4;
   position: relative;
   
@@ -279,7 +315,7 @@ const createUserLocationIcon = () => {
         height: 20px;
         background-color: #4285f4;
         border-radius: 50%;
-        border: 3px solid white;
+        border: 1px solid white;
         box-shadow: 0 0 0 2px #4285f4, 0 0 10px rgba(0,0,0,0.5);
       "></div>
     `,
@@ -287,54 +323,6 @@ const createUserLocationIcon = () => {
     iconAnchor: [10, 10],
   });
 };
-
-// Map controls component that handles location and zoom
-function MapControlsComponent({ setUserLocation }) {
-  const map = useMap();
-  const [isLocating, setIsLocating] = useState(false);
-
-  const handleLocationClick = useCallback(async () => {
-    if (!navigator.geolocation) {
-      alert('Location services are not supported by your browser');
-      return;
-    }
-
-    setIsLocating(true);
-
-    try {
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0
-        });
-      });
-
-      const { latitude, longitude } = position.coords;
-      setUserLocation([latitude, longitude]);
-      map.flyTo([latitude, longitude], 16, { duration: 2 });
-    } catch (error) {
-      console.error('Error getting location:', error);
-      alert('Unable to get your location. Please check your location permissions.');
-    } finally {
-      setIsLocating(false);
-    }
-  }, [map, setUserLocation]);
-
-  return (
-    <MapControlsContainer>
-      <MapControlButton 
-        onClick={(e) => {
-          e.preventDefault();
-          handleLocationClick();
-        }}
-        isLocating={isLocating}
-      >
-        {isLocating ? '⌛' : '📍'}
-      </MapControlButton>
-    </MapControlsContainer>
-  );
-}
 
 // Map click handler component
 function MapClickHandler({ onLocationSelect, isPlacingPin }) {
@@ -367,8 +355,44 @@ const PIN_SIZES = {
 const parseCoordinates = (coordString) => {
   const match = coordString.match(/^\((-?\d+\.?\d*),(-?\d+\.?\d*)\)$/);
   if (!match) return null;
-  return [parseFloat(match[2]), parseFloat(match[1])]; // Return [lng, lat] for Leaflet
+  return [parseFloat(match[1]), parseFloat(match[2])]; // Return [lat, lng] for Leaflet
 };
+
+const MAX_MARKER_WIDTH = 60;
+const MAX_MARKER_HEIGHT = 60;
+
+// --- LocationFlyToHandler ---
+function LocationFlyToHandler({ flyToRequest, setFlyToRequest, setUserLocation, setIsLocating }) {
+  const map = useMap();
+  useEffect(() => {
+    if (flyToRequest) {
+      console.log('LocationFlyToHandler triggered');
+      if (!navigator.geolocation) {
+        alert('Location services are not supported by your browser');
+        setIsLocating(false);
+        setFlyToRequest(false);
+        return;
+      }
+      setIsLocating(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation([latitude, longitude]);
+          map.flyTo([latitude, longitude], 16, { duration: 2 });
+          setIsLocating(false);
+          setFlyToRequest(false);
+        },
+        (error) => {
+          alert('Unable to get your location. Please check your location permissions.');
+          setIsLocating(false);
+          setFlyToRequest(false);
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
+    }
+  }, [flyToRequest, map, setUserLocation, setIsLocating, setFlyToRequest]);
+  return null;
+}
 
 export default function MapView({ events = [], setEvents }) {
   const router = useRouter();
@@ -377,44 +401,62 @@ export default function MapView({ events = [], setEvents }) {
   const [weatherError, setWeatherError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredEvents, setFilteredEvents] = useState(events);
+  const [filteredPosters, setFilteredPosters] = useState(events);
   const [isPlacingPin, setIsPlacingPin] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCoordinates, setSelectedCoordinates] = useState(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [imageSizes, setImageSizes] = useState({}); // { [posterId]: { width, height } }
+  const [locationFlyToRequest, setLocationFlyToRequest] = useState(false);
+  const mapRef = useRef(null);
   
-  // Debug events data
+  // Update filtered posters when events prop changes
   useEffect(() => {
-    console.log('Events received:', events);
-    console.log('Filtered events:', filteredEvents);
-  }, [events, filteredEvents]);
-  
-  // Update filteredEvents when events prop changes
-  useEffect(() => {
-    console.log('Event data structure:', events.map(event => ({
-      id: event.id,
-      coordinates: event.coordinates,
-      parsed: parseCoordinates(event.coordinates)
-    })));
-    setFilteredEvents(events);
+    setFilteredPosters(events);
   }, [events]);
   
-  // Update filtered events when search query changes
+  // Update filtered posters when search query changes
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setFilteredEvents(events);
+      setFilteredPosters(events);
       return;
     }
 
     const query = searchQuery.toLowerCase().trim();
-    const filtered = events.filter(event => 
-      event.title.toLowerCase().includes(query) ||
-      event.location.toLowerCase().includes(query) ||
-      event.description.toLowerCase().includes(query) ||
-      event.category.toLowerCase().includes(query)
+    const filtered = events.filter(poster => 
+      (poster.title || '').toLowerCase().includes(query) ||
+      (poster.location || '').toLowerCase().includes(query) ||
+      (poster.description || '').toLowerCase().includes(query) ||
+      poster.category.toLowerCase().includes(query)
     );
     
-    setFilteredEvents(filtered);
+    setFilteredPosters(filtered);
   }, [searchQuery, events]);
+  
+  // Fetch posters periodically
+  useEffect(() => {
+    const fetchPosters = async () => {
+      try {
+        const response = await fetch('/api/posters');
+        const posters = await response.json();
+        if (Array.isArray(posters)) {
+          setEvents(posters); // Update parent state
+        }
+      } catch (error) {
+        console.error('Error fetching posters:', error);
+      }
+    };
+
+    // Fetch immediately
+    fetchPosters();
+
+    // Then fetch every 30 seconds
+    const interval = setInterval(fetchPosters, 30000);
+    
+    return () => clearInterval(interval);
+  }, [setEvents]);
   
   // Test weather API on mount
   useEffect(() => {
@@ -450,83 +492,129 @@ export default function MapView({ events = [], setEvents }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Helper function to get color based on event category
+  // Load image sizes for posters with images
+  useEffect(() => {
+    const newSizes = {};
+    let changed = false;
+    events.forEach((poster) => {
+      if (poster.poster_image && !imageSizes[poster.id]) {
+        const img = new window.Image();
+        img.onload = function () {
+          let width = img.naturalWidth;
+          let height = img.naturalHeight;
+          // Fit within max dimensions, preserving aspect ratio
+          const ratio = Math.min(
+            MAX_MARKER_WIDTH / width,
+            MAX_MARKER_HEIGHT / height,
+            1
+          );
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+          setImageSizes((prev) => ({ ...prev, [poster.id]: { width, height } }));
+        };
+        img.src = poster.poster_image;
+      }
+    });
+    // eslint-disable-next-line
+  }, [events]);
+
+  // Helper function to get color based on category
   const getCategoryColor = (category) => {
     const colors = {
-      music: '#2196F3',
-      art: '#9C27B0',
-      social: '#FF9800',
-      film: '#F44336',
-      food: '#4CAF50'
+      general: '#ff5722',
+      event: '#2196F3',
+      announcement: '#9C27B0',
+      community: '#4CAF50',
+      other: '#FF9800'
     };
     
     return colors[category] || '#ff5722';
   };
 
-  // Create custom marker icon for each event
-  const createMarkerIcon = (event) => {
+  // Create custom marker icon for each poster
+  const createMarkerIcon = (poster) => {
     const now = new Date();
-    const eventStart = new Date(`${event.date} ${event.time}`);
-    const daysUntil = Math.ceil((eventStart - now) / (1000 * 60 * 60 * 24));
-    
-    // Calculate pin size based on time proximity
-    let size;
-    if (daysUntil <= 1) {
-      size = SIZE_DIMENSIONS.large;     // Today or tomorrow
+    const displayUntil = new Date(poster.display_until);
+    const daysUntil = Math.ceil((displayUntil - now) / (1000 * 60 * 60 * 24));
+    let baseSize;
+    if (daysUntil <= 3) {
+      baseSize = SIZE_DIMENSIONS.large;
     } else if (daysUntil <= 7) {
-      size = SIZE_DIMENSIONS.medium;    // Within a week
+      baseSize = SIZE_DIMENSIONS.medium;
     } else {
-      size = SIZE_DIMENSIONS.base;      // More than a week away
+      baseSize = SIZE_DIMENSIONS.base;
     }
-    
-    const borderSize = Math.max(3, size * 0.05);
-    const categoryColor = getCategoryColor(event.category);
-    
-    // Create a fallback background style using category color
-    const fallbackStyle = `background-color: ${categoryColor};`;
-    
-    return L.divIcon({
-      className: 'custom-marker',
-      html: `
-        <div 
-          style="
-            width: ${size}px;
-            height: ${size}px;
-            ${event.poster ? `background-image: url(${event.poster});` : fallbackStyle}
-            background-size: cover;
-            background-position: center;
-            border-radius: ${size * 0.2}px;
-            border: ${borderSize}px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            cursor: pointer;
-            transition: all 0.3s ease;
-          "
-          onerror="this.style.backgroundImage=''; this.style.backgroundColor='${categoryColor}';"
-        >
-          ${!event.poster ? `<div style="
-            width: 100%;
-            height: 100%;
+    const borderSize = 1;
+    const categoryColor = getCategoryColor(poster.category);
+
+    // If we have image size, use it for the icon size
+    const imgSize = imageSizes[poster.id];
+    if (poster.poster_image && imgSize) {
+      const imgStyle = 'width: 100%; height: 100%; display: block; box-sizing: border-box; vertical-align: bottom; margin: 0; padding: 0; object-fit: fill;';
+      return L.divIcon({
+        className: 'custom-marker',
+        html: `
+          <div style="
+            position: relative;
+            border: ${borderSize}px solid black;
+            background-color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: ${size * 0.3}px;
-          ">${event.category.charAt(0).toUpperCase()}</div>` : ''}
-        </div>`,
-      iconSize: [size, size],
-      iconAnchor: [size/2, size/2]
+            overflow: hidden;
+            width: ${imgSize.width}px;
+            height: ${imgSize.height}px;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+          ">
+            <img 
+              src="${poster.poster_image}" 
+              style="${imgStyle}"
+              onerror="this.style.display='none'; this.parentElement.style.backgroundColor='${categoryColor}';"
+            />
+          </div>
+        `,
+        iconSize: [imgSize.width, imgSize.height],
+        iconAnchor: [imgSize.width / 2, imgSize.height / 2],
+      });
+    }
+    // Fallback: brutalist square
+    return L.divIcon({
+      className: 'custom-marker',
+      html: `
+        <div style="
+          position: relative;
+          width: ${baseSize}px;
+          height: ${baseSize}px;
+          border: ${borderSize}px solid black;
+          background-color: ${categoryColor};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-weight: bold;
+          font-family: 'Courier New', monospace;
+          font-size: ${baseSize * 0.3}px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        ">
+          ${poster.category.charAt(0).toUpperCase()}
+        </div>
+      `,
+      iconSize: [baseSize, baseSize],
+      iconAnchor: [baseSize / 2, baseSize / 2],
     });
   };
   
   // Handle marker click
-  const handleMarkerClick = (event) => {
-    console.log('Marker clicked for event:', event);
-    setSelectedImage(event.poster);
+  const handleMarkerClick = (poster) => {
+    console.log('Marker clicked for poster:', poster);
+    setSelectedImage(poster.poster_image);
   };
   
-  // Handle add event button click
-  const handleAddEventClick = () => {
+  // Handle pin poster button click
+  const handlePinPosterClick = () => {
     setIsPlacingPin(true);
   };
 
@@ -535,51 +623,29 @@ export default function MapView({ events = [], setEvents }) {
     setIsPlacingPin(false);
   };
 
-  const handleEventSubmit = async (eventData) => {
+  const handleEventSubmit = async (posterData) => {
     try {
-      // Debug logs
-      console.log('Event data received:', eventData);
-      console.log('Coordinates:', eventData.coordinates);
-
-      // Parse the coordinates back to array format
-      const coordsMatch = eventData.coordinates.match(/^\((-?\d+\.?\d*),(-?\d+\.?\d*)\)$/);
-      if (!coordsMatch) {
-        throw new Error('Invalid coordinates format');
-      }
-
-      // Convert back to array format for the API
-      const [_, lat, lng] = coordsMatch;
-      const data = await submitEvent({
-        ...eventData,
-        coordinates: [lng, lat] // API expects [lng, lat] format
-      });
-
-      // Show success toast
-      toast.success('Event submitted for approval');
-
-      // Refresh events list using getEvents
+      // No need to parse coordinates or show toast here
+      // PosterCreationModal handles all of that
+      const data = await posterData;
+      
+      // Refresh posters list
       try {
-        const updatedEvents = await getEvents();
-        console.log('Updated events:', updatedEvents);
+        const response = await fetch('/api/posters');
+        const updatedPosters = await response.json();
         
-        // Only update if we get valid data
-        if (Array.isArray(updatedEvents) && updatedEvents.length > 0) {
-          setEvents(updatedEvents);
-          setFilteredEvents(updatedEvents);
-        } else {
-          console.log('Keeping existing events as updatedEvents was empty or invalid');
+        if (Array.isArray(updatedPosters)) {
+          setEvents(updatedPosters);
+          setFilteredPosters(updatedPosters);
         }
       } catch (error) {
-        console.error('Error fetching updated events:', error);
-        // Don't show error toast as the event was submitted successfully
-        console.log('Keeping existing events due to refresh error');
+        console.error('Error fetching updated posters:', error);
       }
 
       return data;
     } catch (error) {
-      console.error('Error submitting event:', error);
-      toast.error(error.message || 'Failed to create event. Please try again.');
-      throw error;
+      console.error('Error handling poster submission:', error);
+      // Don't show toast here, let PosterCreationModal handle errors
     }
   };
 
@@ -612,6 +678,24 @@ export default function MapView({ events = [], setEvents }) {
     }
   }, []);
 
+  const handleMapClick = (e) => {
+    if (isPlacingPin) {
+      setSelectedCoordinates([e.latlng.lat, e.latlng.lng]);
+      setIsModalOpen(true);
+      setIsPlacingPin(false);
+    }
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedCoordinates(null);
+  };
+
+  const handleLocationClick = useCallback(() => {
+    console.log('Location button clicked');
+    setLocationFlyToRequest(true);
+  }, []);
+
   return (
     <>
       <MapContainerStyled isPlacingPin={isPlacingPin}>
@@ -619,7 +703,7 @@ export default function MapView({ events = [], setEvents }) {
           <SearchIcon />
           <SearchInput
             type="text"
-            placeholder="Search events and places..."
+            placeholder="Search posters and places..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -641,34 +725,38 @@ export default function MapView({ events = [], setEvents }) {
 
         {isPlacingPin && (
           <AddEventInstructions>
-            Click on the map to place your event
+            Click on the map to place your poster
           </AddEventInstructions>
         )}
 
-        {weatherError ? (
-          <WeatherOverlay style={{ backgroundColor: 'rgba(255, 200, 200, 0.95)' }}>
-            ⚠️ {weatherError}
-          </WeatherOverlay>
-        ) : weatherData && (
-          <WeatherOverlay>
-            {getWeatherEmoji()}
-            {Math.round(weatherData.main.temp)}°C
-            {' '}{weatherData.weather[0].description}
-          </WeatherOverlay>
+        {weatherData && (
+          <AppTips>
+            <TipItem>
+              <TipIcon>{getWeatherEmoji()}</TipIcon>
+              <span>{Math.round(weatherData.main.temp)}°C</span>
+            </TipItem>
+            <TipItem>
+              <TipIcon>-</TipIcon>
+              <span>Click [+] to add event</span>
+            </TipItem>
+            <TipItem>
+              <TipIcon>-</TipIcon>
+              <span>Drag to move map</span>
+            </TipItem>
+          </AppTips>
         )}
         
         <MapContainer 
           center={position} 
           zoom={12} 
           zoomControl={false}
+          ref={mapRef}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
             maxZoom={20}
           />
-          <ZoomControl position="bottomright" />
-          <MapControlsComponent setUserLocation={setUserLocation} />
           <MapClickHandler 
             onLocationSelect={handleLocationSelect}
             isPlacingPin={isPlacingPin}
@@ -683,21 +771,27 @@ export default function MapView({ events = [], setEvents }) {
             </Marker>
           )}
           
-          {filteredEvents.map((event) => {
-            const position = parseCoordinates(event.coordinates);
+          {filteredPosters.map((poster) => {
+            const position = parseCoordinates(poster.coordinates);
             if (!position) return null;
             
             return (
               <Marker
-                key={event.id}
+                key={poster.id}
                 position={position}
-                icon={createMarkerIcon(event)}
+                icon={createMarkerIcon(poster)}
                 eventHandlers={{
-                  click: () => handleMarkerClick(event),
+                  click: () => handleMarkerClick(poster),
                 }}
               />
             );
           })}
+          <LocationFlyToHandler
+            flyToRequest={locationFlyToRequest}
+            setFlyToRequest={setLocationFlyToRequest}
+            setUserLocation={setUserLocation}
+            setIsLocating={setIsLocating}
+          />
         </MapContainer>
         
         {selectedImage && (
@@ -708,22 +802,33 @@ export default function MapView({ events = [], setEvents }) {
         )}
         
         {selectedLocation && (
-          <EventCreationModal
+          <PosterCreationModal
+            onClose={() => {
+              setIsModalOpen(false);
+              setSelectedLocation(null);
+            }}
             coordinates={selectedLocation}
-            onClose={() => setSelectedLocation(null)}
             onSubmit={handleEventSubmit}
           />
         )}
         
-        <AddEventButton 
-          onClick={handleAddEventClick}
-          style={{ opacity: isPlacingPin ? 0.5 : 1 }}
-        >
-          {isPlacingPin ? '×' : '+'}
-        </AddEventButton>
+        {isPlacingPin && (
+          <PinPosterButton onClick={() => setIsPlacingPin(false)}>
+            ×
+          </PinPosterButton>
+        )}
+        {!isPlacingPin && (
+          <PinPosterButton onClick={handlePinPosterClick}>
+            +
+          </PinPosterButton>
+        )}
       </MapContainerStyled>
       
-      <BottomNav active="map" />
+      <BottomNav 
+        active="map" 
+        onLocationClick={handleLocationClick}
+        isLocating={isLocating}
+      />
     </>
   );
 }

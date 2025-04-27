@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-import BottomNav from '../components/BottomNav';
 
 const Container = styled.div`
   width: 100%;
@@ -11,12 +10,14 @@ const Container = styled.div`
   background: white;
   padding-top: 20px;
   padding-bottom: 20px;
+  font-family: inherit;
 `;
 
 const ContentContainer = styled.div`
   flex: 1;
   padding: 0 20px;
   overflow-y: auto;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const AppLogo = styled.div`
@@ -31,6 +32,7 @@ const AppLogo = styled.div`
   color: white;
   font-size: 24px;
   font-weight: bold;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const AppDescription = styled.div`
@@ -42,6 +44,11 @@ const AppDescription = styled.div`
 
 const Section = styled.div`
   margin-bottom: 25px;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fafafa;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const SectionTitle = styled.div`
@@ -49,12 +56,14 @@ const SectionTitle = styled.div`
   margin-bottom: 10px;
   color: #333;
   font-size: 16px;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const SectionContent = styled.div`
   color: #666;
   line-height: 1.5;
   font-size: 14px;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const ContactButton = styled.button`
@@ -67,8 +76,9 @@ const ContactButton = styled.button`
   font-weight: bold;
   margin-bottom: 15px;
   width: 100%;
-  border: none;
+  border: 1px solid #222;
   cursor: pointer;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   
   &:hover {
     background-color: #eee;
@@ -80,6 +90,7 @@ const SocialLinks = styled.div`
   justify-content: center;
   gap: 20px;
   margin-top: 20px;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const SocialIcon = styled.div`
@@ -91,6 +102,7 @@ const SocialIcon = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 20px;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
 const VersionInfo = styled.div`
@@ -98,6 +110,7 @@ const VersionInfo = styled.div`
   font-size: 12px;
   color: #999;
   margin-top: 30px;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `;
 
 function AboutInfoPage() {
@@ -144,8 +157,6 @@ function AboutInfoPage() {
           </VersionInfo>
         </ContentContainer>
       </Container>
-      
-      <BottomNav active="about" />
     </>
   );
 }
