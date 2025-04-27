@@ -737,7 +737,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
             </TipItem>
             <TipItem>
               <TipIcon>-</TipIcon>
-              <span>Click [+] to add event</span>
+              <span>Click [+] to add poster</span>
             </TipItem>
             <TipItem>
               <TipIcon>-</TipIcon>

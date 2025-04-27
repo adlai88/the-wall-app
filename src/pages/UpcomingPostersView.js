@@ -110,48 +110,13 @@ const NoPosters = styled.div`
   font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
 `
 
-const CategoryFilter = styled.div`
-  display: flex;
-  gap: 10px;
-  padding: 15px 20px;
-  overflow-x: auto;
-  background: white;
-  border-bottom: 1px solid #eee;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`
-
-const CategoryButton = styled.button`
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1px solid #222;
-  background: ${props => props.active ? '#ff5722' : '#f0f0f0'};
-  color: ${props => props.active ? 'white' : '#222'};
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  
-  &:hover {
-    background: ${props => props.active ? '#f4511e' : '#e0e0e0'};
-  }
-`
-
 const TableWrapper = styled.div`
   width: 100%;
   overflow-x: auto;
   background: #fff;
   border-radius: 12px;
-  border: 1px solid #222;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  border: ${props => props.hideTableBorder ? 'none' : '1px solid #222'};
+  box-shadow: ${props => props.hideTableBorder ? 'none' : '0 2px 4px rgba(0,0,0,0.04)'};
   margin: 0 auto;
   max-width: 700px;
 `;
@@ -247,9 +212,8 @@ const MoreButton = styled.button`
   }
 `;
 
-export default function UpcomingPostersView({ posters = [] }) {
+export default function UpcomingPostersView({ posters = [], selectedCategory, setSelectedCategory, hideHeaders = false, hideTableBorder = false }) {
   const router = useRouter()
-  const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedImage, setSelectedImage] = useState(null)
 
@@ -284,28 +248,18 @@ export default function UpcomingPostersView({ posters = [] }) {
 
   return (
     <>
-      <Container>
-        <CategoryFilter>
-          {categories.map(category => (
-            <CategoryButton
-              key={category}
-              active={selectedCategory === category}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category.charAt(0).toUpperCase() + category.slice(1)}
-            </CategoryButton>
-          ))}
-        </CategoryFilter>
-
-        <TableWrapper>
+      <Container style={{ background: '#fff' }}>
+        <TableWrapper hideTableBorder={hideTableBorder}>
           <StyledTable>
-            <TableHead>
-              <TableRow>
-                <TableHeader>Content</TableHeader>
-                <TableHeader>Title</TableHeader>
-                <TableHeader></TableHeader>
-              </TableRow>
-            </TableHead>
+            {!hideHeaders && (
+              <TableHead>
+                <TableRow>
+                  <TableHeader>Content</TableHeader>
+                  <TableHeader>Title</TableHeader>
+                  <TableHeader></TableHeader>
+                </TableRow>
+              </TableHead>
+            )}
             <tbody>
               {filteredPosters.length > 0 ? (
                 filteredPosters.map(poster => (
@@ -321,7 +275,6 @@ export default function UpcomingPostersView({ posters = [] }) {
                           style={{ borderRadius: 6 }}
                         />
                       </Thumb>
-                      <Domain>{poster.location || ''}</Domain>
                     </TableCell>
                     <TableCell>
                       <TitleCell>{poster.title || 'Untitled Poster'}</TitleCell>
