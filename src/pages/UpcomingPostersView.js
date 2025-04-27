@@ -145,6 +145,108 @@ const CategoryButton = styled.button`
   }
 `
 
+const TableWrapper = styled.div`
+  width: 100%;
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #222;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  margin: 0 auto;
+  max-width: 700px;
+`;
+
+const StyledTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+`;
+
+const TableHead = styled.thead`
+  background: #fafafa;
+`;
+
+const TableHeader = styled.th`
+  text-align: left;
+  font-weight: 600;
+  font-size: 15px;
+  color: #222;
+  padding: 12px 8px;
+  border-bottom: 1px solid #eee;
+`;
+
+const TableRow = styled.tr`
+  border-bottom: 1px solid #eee;
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const TableCell = styled.td`
+  padding: 12px 8px;
+  vertical-align: middle;
+  font-size: 15px;
+  color: #222;
+  background: #fff;
+`;
+
+const Thumb = styled.div`
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Domain = styled.div`
+  font-size: 13px;
+  color: #666;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+`;
+
+const TitleCell = styled.div`
+  font-size: 15px;
+  font-weight: 500;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+`;
+
+const ActionCell = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+const ExternalLink = styled.a`
+  color: #222;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  &:hover {
+    color: #ff5722;
+  }
+`;
+
+const MoreButton = styled.button`
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  &:hover {
+    color: #222;
+  }
+`;
+
 export default function UpcomingPostersView({ posters = [] }) {
   const router = useRouter()
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -195,33 +297,58 @@ export default function UpcomingPostersView({ posters = [] }) {
           ))}
         </CategoryFilter>
 
-        <PosterList>
-          {filteredPosters.length > 0 ? (
-            filteredPosters.map(poster => (
-              <PosterCard key={poster.id} onClick={() => handlePosterClick(poster)}>
-                <PosterImageWrapper>
-                  <Image
-                    src={poster.poster_image || '/default-poster.jpg'}
-                    alt={poster.title || 'Untitled Poster'}
-                    layout="fill"
-                    objectFit="cover"
-                  />
-                </PosterImageWrapper>
-                <PosterInfo>
-                  <div>
-                    <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
-                    <DisplayUntil>Display until {formatDate(poster.display_until)}</DisplayUntil>
-                    {poster.location && (
-                      <PosterLocation>{poster.location}</PosterLocation>
-                    )}
-                  </div>
-                </PosterInfo>
-              </PosterCard>
-            ))
-          ) : (
-            <NoPosters>No posters found</NoPosters>
-          )}
-        </PosterList>
+        <TableWrapper>
+          <StyledTable>
+            <TableHead>
+              <TableRow>
+                <TableHeader>Content</TableHeader>
+                <TableHeader>Title</TableHeader>
+                <TableHeader></TableHeader>
+              </TableRow>
+            </TableHead>
+            <tbody>
+              {filteredPosters.length > 0 ? (
+                filteredPosters.map(poster => (
+                  <TableRow key={poster.id}>
+                    <TableCell>
+                      <Thumb>
+                        <Image
+                          src={poster.poster_image || '/default-poster.jpg'}
+                          alt={poster.title || 'Untitled Poster'}
+                          width={48}
+                          height={48}
+                          objectFit="cover"
+                          style={{ borderRadius: 6 }}
+                        />
+                      </Thumb>
+                      <Domain>{poster.location || ''}</Domain>
+                    </TableCell>
+                    <TableCell>
+                      <TitleCell>{poster.title || 'Untitled Poster'}</TitleCell>
+                      <div style={{ color: '#888', fontSize: 13 }}>{formatDate(poster.display_until)}</div>
+                    </TableCell>
+                    <TableCell>
+                      <ActionCell>
+                        {poster.poster_url && (
+                          <ExternalLink href={poster.poster_url} target="_blank" rel="noopener noreferrer" title="Open external link">
+                            ↗
+                          </ExternalLink>
+                        )}
+                        <MoreButton onClick={() => handlePosterClick(poster)} title="More options">…</MoreButton>
+                      </ActionCell>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={3} style={{ textAlign: 'center', color: '#888', padding: 40 }}>
+                    No posters found
+                  </TableCell>
+                </TableRow>
+              )}
+            </tbody>
+          </StyledTable>
+        </TableWrapper>
       </Container>
 
       {selectedImage && (

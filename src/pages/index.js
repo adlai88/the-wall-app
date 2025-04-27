@@ -31,9 +31,23 @@ const FloatingOverlay = styled.div`
   font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   z-index: 2100;
   overflow-y: auto;
-  box-shadow: 4px 4px 0 #222;
   padding: 24px 24px 24px 24px;
   border-radius: 0;
+
+  @media (max-width: 600px) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+    padding: 12px 0 0 0;
+    border: none;
+  }
 `;
 
 // --- Upcoming Overlay ---
@@ -83,7 +97,11 @@ export default function Home() {
 
   return (
     <>
-      <MapView events={events} setEvents={setEvents} />
+      <MapView 
+        events={events} 
+        setEvents={setEvents} 
+        onNav={nav => setOverlay(nav === 'map' ? null : nav)}
+      />
       {overlay === 'upcoming' && (
         <UpcomingOverlay events={events} onClose={() => setOverlay(null)} />
       )}

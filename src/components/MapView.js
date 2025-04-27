@@ -394,7 +394,7 @@ function LocationFlyToHandler({ flyToRequest, setFlyToRequest, setUserLocation, 
   return null;
 }
 
-export default function MapView({ events = [], setEvents }) {
+export default function MapView({ events = [], setEvents, onNav }) {
   const router = useRouter();
   const [position, setPosition] = useState([31.2304, 121.4737]);
   const [weatherData, setWeatherData] = useState(null);
@@ -828,6 +828,7 @@ export default function MapView({ events = [], setEvents }) {
         active="map" 
         onLocationClick={handleLocationClick}
         isLocating={isLocating}
+        onNav={onNav}
       />
     </>
   );
