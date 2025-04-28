@@ -80,6 +80,7 @@ const DetailsSection = styled.div`
     border-top-right-radius: 16px;
     height: auto;
     max-height: 100vh;
+    overflow-y: auto;
   }
 `;
 
