@@ -81,6 +81,7 @@ const DetailsSection = styled.div`
     height: auto;
     max-height: 100vh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 `;
 
