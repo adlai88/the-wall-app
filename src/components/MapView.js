@@ -11,6 +11,7 @@ import { getWeather, getWeatherStyle } from '../services/weatherService';
 import { testWeatherAPI } from '../utils/testWeatherAPI';
 import { submitEvent, getEvents } from '../api';
 import { toast } from 'sonner';
+import { geocodePlace } from '../utils/geocode';
 
 // Fix Leaflet default marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -715,6 +716,46 @@ export default function MapView({ events = [], setEvents, onNav }) {
     };
   }, []);
 
+  // Helper: fly to coordinates
+  const flyToLocation = (lat, lon, zoom = 12) => {
+    if (mapRef.current && mapRef.current._leaflet_id) {
+      mapRef.current.flyTo([lat, lon], zoom, { duration: 2 });
+    } else if (mapRef.current && mapRef.current.setView) {
+      mapRef.current.setView([lat, lon], zoom, { animate: true, duration: 2 });
+    }
+  };
+
+  // Handle Enter key in search input
+  const handleSearchKeyDown = async (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const query = searchQuery.toLowerCase().trim();
+      // Synchronously check for poster matches in all events
+      const posterMatch = events.some(poster =>
+        (poster.title || '').toLowerCase().includes(query) ||
+        (poster.location || '').toLowerCase().includes(query) ||
+        (poster.description || '').toLowerCase().includes(query) ||
+        (poster.category || '').toLowerCase().includes(query)
+      );
+      if (posterMatch) return; // Posters take priority
+      if (searchQuery.trim().length === 0) return;
+      toast.loading('Searching for place...');
+      try {
+        const result = await geocodePlace(searchQuery.trim());
+        toast.dismiss();
+        if (result) {
+          flyToLocation(result.lat, result.lon, 12);
+          toast.success(`Moved to ${result.display_name}`);
+        } else {
+          toast.error(`No location found for "${searchQuery.trim()}"`);
+        }
+      } catch (err) {
+        toast.dismiss();
+        toast.error('Error searching for place');
+      }
+    }
+  };
+
   return (
     <>
       <MapContainerStyled isPlacingPin={isPlacingPin}>
@@ -725,6 +766,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
             placeholder="Search posters and places..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
           />
           {searchQuery && (
             <button
