@@ -16,6 +16,7 @@ const SheetContent = styled.div`
   top: 0;
   right: 0;
   height: 100vh;
+  min-height: 0;
   width: 400px;
   max-width: 100vw;
   background: #fff;

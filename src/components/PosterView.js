@@ -73,13 +73,11 @@ const DetailsSection = styled.div`
   padding: 32px;
   flex: 1 1 auto;
   overflow-y: auto;
-  height: 100%;
   
   @media (max-width: 768px) {
     padding: 24px;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
-    height: auto;
     max-height: 100vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
