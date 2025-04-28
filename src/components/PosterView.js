@@ -31,10 +31,21 @@ const ImageSection = styled.div`
   padding: 20px;
   
   @media (max-width: 768px) {
-    height: auto;
-    min-height: 50vh;
-    padding: 0;
-    flex: 1;
+    display: none;
+  }
+`;
+
+const MobileImage = styled.div`
+  display: none;
+  @media (max-width: 768px) {
+    display: block;
+    width: 100%;
+    position: relative;
+    aspect-ratio: 1/1.3;
+    background: #eee;
+    margin-bottom: 16px;
+    max-height: 50vh;
+    overflow: hidden;
   }
 `;
 
@@ -70,7 +81,7 @@ const DetailsSection = styled.div`
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
     height: auto;
-    max-height: 50vh;
+    max-height: 100vh;
   }
 `;
 
@@ -133,6 +144,7 @@ export default function PosterView({ poster, onClose }) {
 
   return (
     <>
+      {/* Desktop: overlay with image on left, details in sheet */}
       <Overlay onClick={onClose}>
         <ImageSection onClick={e => e.stopPropagation()}>
           <ImageWrapper>
@@ -146,21 +158,27 @@ export default function PosterView({ poster, onClose }) {
           </ImageWrapper>
         </ImageSection>
       </Overlay>
-      
+      {/* Mobile: details sheet with image at top */}
       <Sheet open={true} onClose={onClose} baseIndex={9100}>
         <DetailsSection>
+          <MobileImage>
+            <Image
+              src={poster.poster_image}
+              alt={poster.title || 'Event Poster'}
+              fill
+              style={{ objectFit: 'contain' }}
+              priority
+            />
+          </MobileImage>
           <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
-          
           <PosterDate>
             <span>📅</span>
             Displayed until {formatDate(poster.display_until)}
           </PosterDate>
-          
           <PosterLocation>
             <span>📍</span>
             {poster.location || 'Location not specified'}
           </PosterLocation>
-
           {poster.description && (
             <PosterDescription>{poster.description}</PosterDescription>
           )}
