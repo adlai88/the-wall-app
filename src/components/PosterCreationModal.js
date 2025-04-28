@@ -252,14 +252,12 @@ const Select = styled.select`
   }
 `;
 
-function PosterCreationModal({ onClose, coordinates, onSubmit }) {
+export default function PosterCreationModal({ onClose, coordinates, onSubmit }) {
   const [formData, setFormData] = useState({
     title: '',
     location: '',
     description: '',
     poster_image: null,
-    date: new Date().toISOString().split('T')[0],
-    time: '00:00',
     display_until: (() => {
       const date = new Date();
       date.setDate(date.getDate() + 30); // Default to 30 days from now
@@ -362,61 +360,11 @@ function PosterCreationModal({ onClose, coordinates, onSubmit }) {
         <ModalBody>
           <Form onSubmit={handleSubmit}>
             <FormGroup>
-              <Label>Title</Label>
-              <Input
-                value={formData.title}
-                onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Enter poster title"
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label>Location Name</Label>
-              <Input
-                value={formData.location}
-                onChange={e => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                placeholder="Enter location name or address"
-              />
-            </FormGroup>
-            
-            <FormGroup>
-              <Label>Description</Label>
-              <TextArea
-                value={formData.description}
-                onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Describe your poster..."
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Label>Category</Label>
-              <Select
-                value={formData.category}
-                onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}
-              >
-                <option value="general">General</option>
-                <option value="event">Event</option>
-                <option value="announcement">Announcement</option>
-                <option value="community">Community</option>
-                <option value="other">Other</option>
-              </Select>
-            </FormGroup>
-
-            <FormGroup>
-              <Label>Display Until</Label>
-              <Input
-                type="date"
-                value={formData.display_until}
-                onChange={e => setFormData(prev => ({ ...prev, display_until: e.target.value }))}
-                min={new Date().toISOString().split('T')[0]}
-              />
-            </FormGroup>
-            
-            <FormGroup>
-              <Label>Upload Image (Required)</Label>
+              <Label>Upload Image <span style={{ color: '#ff3b30' }}>*</span></Label>
               <ImageUpload 
                 onClick={handleImageClick}
                 $preview={previewUrl}
+                style={{ borderColor: !formData.poster_image ? '#ff3b30' : '#e5e5e5' }}
               >
                 <input
                   type="file"
@@ -431,6 +379,63 @@ function PosterCreationModal({ onClose, coordinates, onSubmit }) {
                 </UploadText>
               </ImageUpload>
             </FormGroup>
+
+            <FormGroup>
+              <Label>Category <span style={{ color: '#ff3b30' }}>*</span></Label>
+              <Select
+                value={formData.category}
+                onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                required
+              >
+                <option value="general">General</option>
+                <option value="event">Event</option>
+                <option value="announcement">Announcement</option>
+                <option value="community">Community</option>
+                <option value="other">Other</option>
+              </Select>
+            </FormGroup>
+
+            <FormGroup>
+              <Label>Display Until <span style={{ color: '#ff3b30' }}>*</span></Label>
+              <Input
+                type="date"
+                value={formData.display_until}
+                onChange={e => setFormData(prev => ({ ...prev, display_until: e.target.value }))}
+                min={new Date().toISOString().split('T')[0]}
+                required
+              />
+            </FormGroup>
+
+            <div style={{ borderTop: '1px solid #e5e5e5', margin: '20px 0', paddingTop: '20px' }}>
+              <div style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>Optional Details</div>
+
+              <FormGroup>
+                <Label>Title</Label>
+                <Input
+                  value={formData.title}
+                  onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Enter poster title"
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Location Name</Label>
+                <Input
+                  value={formData.location}
+                  onChange={e => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="Enter location name or address"
+                />
+              </FormGroup>
+              
+              <FormGroup>
+                <Label>Description</Label>
+                <TextArea
+                  value={formData.description}
+                  onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe your poster..."
+                />
+              </FormGroup>
+            </div>
           </Form>
         </ModalBody>
 
@@ -442,6 +447,4 @@ function PosterCreationModal({ onClose, coordinates, onSubmit }) {
       </ModalContent>
     </ModalOverlay>
   );
-}
-
-export default PosterCreationModal; 
+} 
