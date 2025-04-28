@@ -98,6 +98,28 @@ const PosterDescription = styled.p`
 export default function PosterView({ poster, onClose }) {
   if (!poster) return null;
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    // If the display date is today
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today';
+    }
+    // If the display date is tomorrow
+    if (date.toDateString() === tomorrow.toDateString()) {
+      return 'Tomorrow';
+    }
+    
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   return (
     <>
       <Overlay onClick={onClose}>
@@ -120,11 +142,7 @@ export default function PosterView({ poster, onClose }) {
           
           <PosterDate>
             <span>📅</span>
-            {new Date(poster.display_until).toLocaleDateString('en-US', {
-              weekday: 'long',
-              month: 'long',
-              day: 'numeric'
-            })}
+            Displayed until {formatDate(poster.display_until)}
           </PosterDate>
           
           <PosterLocation>
