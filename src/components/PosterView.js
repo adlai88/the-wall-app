@@ -16,6 +16,8 @@ const Overlay = styled.div`
   
   @media (max-width: 768px) {
     padding-right: 0;
+    flex-direction: column;
+    align-items: stretch;
   }
 `;
 
@@ -29,7 +31,10 @@ const ImageSection = styled.div`
   padding: 20px;
   
   @media (max-width: 768px) {
-    display: none; // Hide on mobile, sheet will take full width
+    height: auto;
+    min-height: 50vh;
+    padding: 0;
+    flex: 1;
   }
 `;
 
@@ -47,6 +52,10 @@ const ImageWrapper = styled.div`
     object-fit: contain;
     border-radius: 4px;
   }
+
+  @media (max-width: 768px) {
+    height: 100%;
+  }
 `;
 
 const DetailsSection = styled.div`
@@ -60,6 +69,8 @@ const DetailsSection = styled.div`
     padding: 24px;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
+    height: auto;
+    max-height: 50vh;
   }
 `;
 
