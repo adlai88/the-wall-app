@@ -35,13 +35,12 @@ const NavItem = styled.div`
 const NavIcon = styled.div`
   width: 24px;
   height: 24px;
-  background-color: ${props => props.$active ? 'black' : '#ddd'};
-  border: 1px solid #222;
+  /* background-color: ${props => props.$active ? 'black' : '#ddd'}; */
   margin-bottom: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => props.$active ? 'white' : '#222'};
+  color: ${props => props.$active ? 'black' : '#222'};
   font-size: 18px;
   font-weight: bold;
 `;
