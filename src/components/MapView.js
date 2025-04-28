@@ -12,6 +12,7 @@ import { testWeatherAPI } from '../utils/testWeatherAPI';
 import { submitEvent, getEvents } from '../api';
 import { toast } from 'sonner';
 import { geocodePlace } from '../utils/geocode';
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 // Fix Leaflet default marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -153,6 +154,14 @@ const AppTips = styled.div`
   font-weight: 500;
   letter-spacing: 0;
   width: 300px;
+
+  @media (max-width: 768px) {
+    left: 8px;
+    right: 8px;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+  }
 `;
 
 const TipItem = styled.div`
@@ -419,6 +428,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [isLocating, setIsLocating] = useState(false);
   const [imageSizes, setImageSizes] = useState({}); // { [posterId]: { width, height } }
   const [locationFlyToRequest, setLocationFlyToRequest] = useState(false);
+  const [tipsCollapsed, setTipsCollapsed] = useState(true);
   const mapRef = useRef(null);
   
   // Update filtered posters when events prop changes
@@ -795,18 +805,47 @@ export default function MapView({ events = [], setEvents, onNav }) {
         {weatherData && (
           <>
             <AppTips>
-              <TipItem>
-                <TipIcon>{getWeatherEmoji()}</TipIcon>
-                <span>{Math.round(weatherData.main.temp)}°C</span>
-              </TipItem>
-              <TipItem>
-                <TipIcon>-</TipIcon>
-                <span>Click [+] to add poster</span>
-              </TipItem>
-              <TipItem>
-                <TipIcon>-</TipIcon>
-                <span>Drag to move map</span>
-              </TipItem>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <TipItem style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <TipIcon>{getWeatherEmoji()}</TipIcon>
+                  <span>{Math.round(weatherData.main.temp)}°C</span>
+                  <span style={{ color: '#666', fontSize: 14 }}>
+                    {weatherData.weather[0].description.charAt(0).toUpperCase() + weatherData.weather[0].description.slice(1)}
+                  </span>
+                </TipItem>
+                <button
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: 16,
+                    cursor: 'pointer',
+                    color: '#888',
+                    marginLeft: 0,
+                    lineHeight: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    height: '100%',
+                    padding: 0,
+                    transform: 'translateY(2px)'
+                  }}
+                  aria-label={tipsCollapsed ? 'Show tips' : 'Hide tips'}
+                  onClick={() => setTipsCollapsed(c => !c)}
+                >
+                  {tipsCollapsed ? <FiChevronDown size={16} /> : <FiChevronUp size={16} />}
+                </button>
+              </div>
+              {!tipsCollapsed && (
+                <>
+                  <TipItem>
+                    <TipIcon>-</TipIcon>
+                    <span>Click [+] to add poster</span>
+                  </TipItem>
+                  <TipItem>
+                    <TipIcon>-</TipIcon>
+                    <span>Drag to move map</span>
+                  </TipItem>
+                </>
+              )}
             </AppTips>
           </>
         )}
