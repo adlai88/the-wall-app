@@ -274,10 +274,10 @@ const AddEventInstructions = styled.div`
 const UserLocationMarker = styled.div`
   width: 20px;
   height: 20px;
-  background-color: #4285f4;
+  background-color: #ff5722;
   border-radius: 50%;
   border: 1px solid white;
-  box-shadow: 0 0 0 2px #4285f4;
+  box-shadow: 0 0 0 2px #ff5722;
   position: relative;
   
   &::after {
@@ -285,7 +285,7 @@ const UserLocationMarker = styled.div`
     position: absolute;
     width: 40px;
     height: 40px;
-    background-color: rgba(66, 133, 244, 0.2);
+    background-color: rgba(255, 87, 34, 0.2);
     border-radius: 50%;
     top: 50%;
     left: 50%;
@@ -313,10 +313,10 @@ const createUserLocationIcon = () => {
       <div style="
         width: 20px;
         height: 20px;
-        background-color: #4285f4;
+        background-color: #ff5722;
         border-radius: 50%;
         border: 1px solid white;
-        box-shadow: 0 0 0 2px #4285f4, 0 0 10px rgba(0,0,0,0.5);
+        box-shadow: 0 0 0 2px #ff5722, 0 0 10px rgba(0,0,0,0.5);
       "></div>
     `,
     iconSize: [20, 20],
