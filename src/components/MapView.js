@@ -95,6 +95,14 @@ const SearchBar = styled.div`
   align-items: center;
   padding: 0 15px;
   z-index: 1000;
+
+  @media (max-width: 768px) {
+    left: 8px;
+    right: 8px;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+  }
 `;
 
 const SearchIcon = styled.div`
