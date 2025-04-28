@@ -36,8 +36,8 @@ const ModalContent = styled.div`
   box-shadow: none;
   @media (max-width: 768px) {
     width: 100%;
-    height: 100%;
-    max-height: 100%;
+    height: 100vh;
+    max-height: 100vh;
     border-radius: 0;
     margin-top: 0;
     overflow: visible;
@@ -185,9 +185,10 @@ const ButtonContainer = styled.div`
   font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   @media (max-width: 768px) {
     position: fixed;
-    bottom: calc(60px + env(safe-area-inset-bottom, 0px));
     left: 0;
     right: 0;
+    bottom: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     padding: 15px;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
     z-index: 1001;
