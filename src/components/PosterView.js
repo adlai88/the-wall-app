@@ -41,10 +41,8 @@ const MobileImage = styled.div`
     display: block;
     width: 100%;
     position: relative;
-    aspect-ratio: 1/1.3;
     background: #eee;
     margin-bottom: 16px;
-    max-height: 50vh;
     overflow: hidden;
   }
 `;
@@ -165,8 +163,9 @@ export default function PosterView({ poster, onClose }) {
             <Image
               src={poster.poster_image}
               alt={poster.title || 'Event Poster'}
-              fill
-              style={{ objectFit: 'contain' }}
+              width={800}
+              height={1200}
+              style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
               priority
             />
           </MobileImage>
