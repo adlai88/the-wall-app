@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-import { FiMap, FiNavigation, FiCalendar, FiInfo } from 'react-icons/fi';
+import { FiMap, FiNavigation, FiList, FiInfo } from 'react-icons/fi';
 
 const NavContainer = styled.div`
   height: 60px;
@@ -15,7 +15,7 @@ const NavContainer = styled.div`
   bottom: 0;
   left: 0;
   z-index: 1000;
-  /* Remove shadow for more brutalist look */
+  /* Remove isolation property */
   /* Add padding for iOS safe area */
   padding-bottom: env(safe-area-inset-bottom, 0px);
 `;
@@ -80,14 +80,14 @@ function BottomNav({ active, onLocationClick, isLocating, onNav }) {
         <NavIcon $active={false}>
           <FiNavigation />
         </NavIcon>
-        <span style={{ fontSize: 12 }}>Location</span>
+        <span>Location</span>
       </LocationButton>
       <NavItem 
         $active={active === 'upcoming'} 
         onClick={() => onNav ? onNav('upcoming') : router.push('/upcoming')}
       >
-        <NavIcon $active={active === 'upcoming'}><FiCalendar size={18} /></NavIcon>
-        <span>Upcoming</span>
+        <NavIcon $active={active === 'upcoming'}><FiList size={18} /></NavIcon>
+        <span>List</span>
       </NavItem>
       <NavItem 
         $active={active === 'about'} 

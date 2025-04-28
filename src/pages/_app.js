@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { Toaster } from 'sonner';
 import 'leaflet/dist/leaflet.css';
 import '../styles/globals.css';
+import { ThemeProvider } from 'styled-components';
 
 function MyApp({ Component, pageProps }) {
   const [events, setEvents] = useState([]);
@@ -32,7 +33,11 @@ function MyApp({ Component, pageProps }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Toaster position="top-right" richColors />
-      <Component {...pageProps} events={events} setEvents={setEvents} />
+      <ThemeProvider theme={{}}>
+        <Component {...pageProps} events={events} setEvents={setEvents} />
+      </ThemeProvider>
+      {/* Portal container for overlays */}
+      <div id="portal-root" style={{ position: 'fixed', zIndex: 99999, pointerEvents: 'none' }} />
     </>
   );
 }

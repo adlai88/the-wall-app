@@ -259,13 +259,6 @@ export default function Home() {
                 </div>
 
                 <ScrollableContent>
-                  <Drawer.Title style={{ 
-                    fontSize: '20px', 
-                    fontWeight: 'bold',
-                    marginBottom: '16px'
-                  }}>
-                    Upcoming Events
-                  </Drawer.Title>
                   <UpcomingOverlayContent events={events} onClose={() => setOverlay(null)} />
                 </ScrollableContent>
               </Drawer.Content>

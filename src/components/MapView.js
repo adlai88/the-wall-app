@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMap, useMapEven
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import BottomNav from './BottomNav';
-import FullImageView from './FullImageView';
+import PosterView from './PosterView';
 import PosterCreationModal from './PosterCreationModal';
 import { useRouter } from 'next/router';
 import { getWeather, getWeatherStyle } from '../services/weatherService';
@@ -27,7 +27,6 @@ const MapContainerStyled = styled.div`
   right: 0;
   bottom: 60px; /* Height of bottom nav */
   z-index: 1;
-  isolation: isolate; /* Create a new stacking context */
   
   /* Add safe area padding on mobile */
   @media (max-width: 768px) {
@@ -400,7 +399,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [position, setPosition] = useState([31.2304, 121.4737]);
   const [weatherData, setWeatherData] = useState(null);
   const [weatherError, setWeatherError] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedPoster, setSelectedPoster] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredPosters, setFilteredPosters] = useState(events);
   const [isPlacingPin, setIsPlacingPin] = useState(false);
@@ -611,7 +610,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   // Handle marker click
   const handleMarkerClick = (poster) => {
     console.log('Marker clicked for poster:', poster);
-    setSelectedImage(poster.poster_image);
+    setSelectedPoster(poster);
   };
   
   // Handle pin poster button click
@@ -810,24 +809,6 @@ export default function MapView({ events = [], setEvents, onNav }) {
           />
         </MapContainer>
         
-        {selectedImage && (
-          <FullImageView 
-            imageUrl={selectedImage} 
-            onClose={() => setSelectedImage(null)} 
-          />
-        )}
-        
-        {selectedLocation && (
-          <PosterCreationModal
-            onClose={() => {
-              setIsModalOpen(false);
-              setSelectedLocation(null);
-            }}
-            coordinates={selectedLocation}
-            onSubmit={handleEventSubmit}
-          />
-        )}
-        
         {isPlacingPin && (
           <PinPosterButton onClick={exitPinMode}>
             ×
@@ -839,6 +820,24 @@ export default function MapView({ events = [], setEvents, onNav }) {
           </PinPosterButton>
         )}
       </MapContainerStyled>
+      
+      {selectedPoster && (
+        <PosterView 
+          poster={selectedPoster} 
+          onClose={() => setSelectedPoster(null)} 
+        />
+      )}
+      
+      {selectedLocation && (
+        <PosterCreationModal
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedLocation(null);
+          }}
+          coordinates={selectedLocation}
+          onSubmit={handleEventSubmit}
+        />
+      )}
       
       <BottomNav 
         active="map" 
