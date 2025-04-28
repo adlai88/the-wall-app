@@ -1,164 +1,115 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useRouter } from 'next/router';
 
 const Container = styled.div`
-  width: 100%;
-  min-height: calc(100vh - 60px);
-  display: flex;
-  flex-direction: column;
-  background: white;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  font-family: inherit;
+  padding: 0 16px;
+  color: #333;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 `;
 
-const ContentContainer = styled.div`
-  flex: 1;
-  padding: 0 20px;
-  overflow-y: auto;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-`;
-
-const AppLogo = styled.div`
-  width: 100px;
-  height: 100px;
-  background-color: #ff5722;
-  border-radius: 20px;
-  margin: 0 auto 20px;
+const Logo = styled.div`
+  width: 80px;
+  height: 80px;
+  background: #ff5722;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   font-size: 24px;
   font-weight: bold;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  margin: 0 auto 32px;
 `;
 
-const AppDescription = styled.div`
+const Description = styled.p`
   text-align: center;
-  margin-bottom: 30px;
+  line-height: 1.6;
+  margin-bottom: 48px;
   color: #666;
-  line-height: 1.5;
 `;
 
 const Section = styled.div`
-  margin-bottom: 25px;
-  border: 1px solid #222;
-  border-radius: 8px;
-  padding: 16px;
-  background: #fafafa;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  margin-bottom: 32px;
 `;
 
-const SectionTitle = styled.div`
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: #333;
+const SectionTitle = styled.h2`
   font-size: 16px;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
 `;
 
-const SectionContent = styled.div`
+const SectionContent = styled.p`
   color: #666;
-  line-height: 1.5;
-  font-size: 14px;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
 `;
 
-const ContactButton = styled.button`
-  height: 44px;
-  border-radius: 22px;
-  background-color: #f8f8f8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  margin-bottom: 15px;
+const ContactSection = styled.div`
+  margin-top: 48px;
+`;
+
+const Button = styled.button`
   width: 100%;
-  border: 1px solid #222;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: transparent;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  color: #333;
   cursor: pointer;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  
+  transition: background 0.2s;
+
   &:hover {
-    background-color: #eee;
+    background: #f5f5f5;
   }
 `;
 
-const SocialLinks = styled.div`
+const IconContainer = styled.div`
   display: flex;
   justify-content: center;
-  gap: 20px;
-  margin-top: 20px;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  gap: 24px;
+  margin-top: 24px;
+  color: #666;
 `;
 
-const SocialIcon = styled.div`
-  width: 40px;
-  height: 40px;
-  background-color: #eee;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-`;
-
-const VersionInfo = styled.div`
-  text-align: center;
-  font-size: 12px;
-  color: #999;
-  margin-top: 30px;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-`;
-
-function AboutInfoPage() {
-  const router = useRouter();
-  
+export default function AboutInfoPage() {
   return (
-    <>
-      <Container>
-        <ContentContainer>
-          <AppLogo>TW</AppLogo>
-          
-          <AppDescription>
-            The Wall is a map-based event discovery application for Shanghai that allows users to find events happening around the city without registration or social interactions.
-          </AppDescription>
-          
-          <Section>
-            <SectionTitle>How It Works</SectionTitle>
-            <SectionContent>
-              Browse the map to discover event posters pinned to locations around Shanghai. Tap on pins to view event details. Add your own events by uploading a poster and pinning it to a location.
-            </SectionContent>
-          </Section>
-          
-          <Section>
-            <SectionTitle>For Event Organizers</SectionTitle>
-            <SectionContent>
-              Promote your events by adding them to The Wall. Simply upload your event poster, set the location and time, and submit for approval. Your event will be visible to all users after moderation.
-            </SectionContent>
-          </Section>
-          
-          <Section>
-            <SectionTitle>Contact Us</SectionTitle>
-            <ContactButton>Send Feedback</ContactButton>
-            <ContactButton>Report an Issue</ContactButton>
-            
-            <SocialLinks>
-              <SocialIcon>📱</SocialIcon>
-              <SocialIcon>💬</SocialIcon>
-              <SocialIcon>📧</SocialIcon>
-            </SocialLinks>
-          </Section>
-          
-          <VersionInfo>
-            Version 1.0.0 • © 2025 The Wall
-          </VersionInfo>
-        </ContentContainer>
-      </Container>
-    </>
+    <Container>
+      <Logo>TW</Logo>
+      <Description>
+        The Wall is a map-based event discovery application for Shanghai that allows users to find events happening around the city without registration or social interactions.
+      </Description>
+
+      <Section>
+        <SectionTitle>How It Works</SectionTitle>
+        <SectionContent>
+          Browse the map to discover event posters pinned to locations around Shanghai. Tap on pins to view event details. Add your own events by uploading a poster and pinning it to a location.
+        </SectionContent>
+      </Section>
+
+      <Section>
+        <SectionTitle>For Event Organizers</SectionTitle>
+        <SectionContent>
+          Promote your events by adding them to The Wall. Simply upload your event poster, set the location and time, and submit for approval. Your event will be visible to all users after moderation.
+        </SectionContent>
+      </Section>
+
+      <ContactSection>
+        <Button onClick={() => window.open('mailto:feedback@example.com')}>
+          Send Feedback
+        </Button>
+        <Button onClick={() => window.open('mailto:report@example.com')}>
+          Report an Issue
+        </Button>
+        <IconContainer>
+          <span>📱</span>
+          <span>💬</span>
+          <span>📍</span>
+        </IconContainer>
+      </ContactSection>
+    </Container>
   );
 }
-
-export default AboutInfoPage;

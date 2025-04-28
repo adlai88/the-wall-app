@@ -27,6 +27,7 @@ const MapContainerStyled = styled.div`
   right: 0;
   bottom: 60px; /* Height of bottom nav */
   z-index: 1;
+  isolation: isolate; /* Create a new stacking context */
   
   /* Add safe area padding on mobile */
   @media (max-width: 768px) {
@@ -616,11 +617,22 @@ export default function MapView({ events = [], setEvents, onNav }) {
   // Handle pin poster button click
   const handlePinPosterClick = () => {
     setIsPlacingPin(true);
+    toast('Click on the map to place your poster', {
+      position: 'top-center',
+      duration: Infinity,
+      id: 'pin-instruction',
+    });
+  };
+
+  // Function to handle exiting pin mode
+  const exitPinMode = () => {
+    setIsPlacingPin(false);
+    toast.dismiss('pin-instruction');
   };
 
   const handleLocationSelect = (coordinates) => {
     setSelectedLocation(coordinates);
-    setIsPlacingPin(false);
+    exitPinMode();
   };
 
   const handleEventSubmit = async (posterData) => {
@@ -682,7 +694,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
     if (isPlacingPin) {
       setSelectedCoordinates([e.latlng.lat, e.latlng.lng]);
       setIsModalOpen(true);
-      setIsPlacingPin(false);
+      exitPinMode();
     }
   };
 
@@ -696,22 +708,13 @@ export default function MapView({ events = [], setEvents, onNav }) {
     setLocationFlyToRequest(true);
   }, []);
 
-  // Remove the info box under weather and use a toast instead
+  // Remove the old useEffect for toast
   useEffect(() => {
-    let toastId;
-    if (isPlacingPin) {
-      toastId = toast('Click on the map to place your poster', {
-        position: 'top-center',
-        duration: Infinity,
-        id: 'pin-instruction',
-      });
-    } else {
-      toast.dismiss('pin-instruction');
-    }
     return () => {
+      // Cleanup any lingering toasts when component unmounts
       toast.dismiss('pin-instruction');
     };
-  }, [isPlacingPin]);
+  }, []);
 
   return (
     <>
@@ -826,7 +829,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
         )}
         
         {isPlacingPin && (
-          <PinPosterButton onClick={() => setIsPlacingPin(false)}>
+          <PinPosterButton onClick={exitPinMode}>
             ×
           </PinPosterButton>
         )}

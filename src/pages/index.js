@@ -5,6 +5,7 @@ import { getEvents } from '../api'
 import LoadingView from '../components/LoadingView'
 import BottomNav from '../components/BottomNav'
 import Sheet from '../components/Sheet'
+import { Drawer } from 'vaul'
 
 // Dynamically import MapView to avoid SSR issues with Leaflet
 const MapView = dynamic(() => import('../components/MapView'), {
@@ -166,6 +167,21 @@ function AboutOverlayContent({ onClose }) {
   );
 }
 
+const ScrollableContent = styled.div`
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+  flex: 1;
+  overflow: auto;
+  -ms-overflow-style: none;  /* Hide scrollbar in IE/Edge */
+  scrollbar-width: none;  /* Hide scrollbar in Firefox */
+  
+  &::-webkit-scrollbar {
+    display: none;  /* Hide scrollbar in Chrome/Safari */
+  }
+`;
+
 export default function Home() {
   const [events, setEvents] = useState([])
   const [error, setError] = useState(null)
@@ -175,6 +191,10 @@ export default function Home() {
   useEffect(() => {
     setHasMounted(true);
   }, []);
+
+  useEffect(() => {
+    console.log('Overlay state changed:', overlay);
+  }, [overlay]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -192,6 +212,7 @@ export default function Home() {
 
   return (
     <>
+      {/* Existing Implementation */}
       <MapView 
         events={events} 
         setEvents={setEvents} 
@@ -199,12 +220,102 @@ export default function Home() {
       />
       {hasMounted && (
         <>
-          <Sheet open={overlay === 'upcoming'} onClose={() => setOverlay(null)}>
-            <UpcomingOverlayContent events={events} onClose={() => setOverlay(null)} />
-          </Sheet>
-          <Sheet open={overlay === 'about'} onClose={() => setOverlay(null)}>
-            <AboutOverlayContent onClose={() => setOverlay(null)} />
-          </Sheet>
+          {/* Upcoming overlay as Drawer */}
+          <Drawer.Root key="upcoming-drawer" open={overlay === 'upcoming'} onOpenChange={open => setOverlay(open ? 'upcoming' : null)} forceMount>
+            <Drawer.Portal>
+              <Drawer.Overlay />
+              <Drawer.Content 
+                description="Browse upcoming posters and events"
+                style={{ 
+                  background: '#fff',
+                  zIndex: 9999,
+                  position: 'fixed',
+                  width: '100%',
+                  height: '90vh',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  borderTopLeftRadius: 16,
+                  borderTopRightRadius: 16,
+                  boxShadow: '0 -2px 16px rgba(0,0,0,0.08)',
+                  padding: '16px 0',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
+                {/* Drawer Handle */}
+                <div style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  paddingBottom: '16px'
+                }}>
+                  <div style={{
+                    width: '100px',
+                    height: '6px',
+                    backgroundColor: '#eee',
+                    borderRadius: '99999px'
+                  }} />
+                </div>
+
+                <ScrollableContent>
+                  <Drawer.Title style={{ 
+                    fontSize: '20px', 
+                    fontWeight: 'bold',
+                    marginBottom: '16px'
+                  }}>
+                    Upcoming Events
+                  </Drawer.Title>
+                  <UpcomingOverlayContent events={events} onClose={() => setOverlay(null)} />
+                </ScrollableContent>
+              </Drawer.Content>
+            </Drawer.Portal>
+          </Drawer.Root>
+
+          {/* About overlay as Drawer */}
+          <Drawer.Root key="about-drawer" open={overlay === 'about'} onOpenChange={open => setOverlay(open ? 'about' : null)} forceMount>
+            <Drawer.Portal>
+              <Drawer.Overlay />
+              <Drawer.Content 
+                description="About The Wall App"
+                style={{ 
+                  background: '#fff',
+                  zIndex: 9999,
+                  position: 'fixed',
+                  width: '100%',
+                  height: '90vh',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  borderTopLeftRadius: 16,
+                  borderTopRightRadius: 16,
+                  boxShadow: '0 -2px 16px rgba(0,0,0,0.08)',
+                  padding: '16px 0',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
+                {/* Drawer Handle */}
+                <div style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  paddingBottom: '16px'
+                }}>
+                  <div style={{
+                    width: '100px',
+                    height: '6px',
+                    backgroundColor: '#eee',
+                    borderRadius: '99999px'
+                  }} />
+                </div>
+
+                <ScrollableContent>
+                  <AboutOverlayContent onClose={() => setOverlay(null)} />
+                </ScrollableContent>
+              </Drawer.Content>
+            </Drawer.Portal>
+          </Drawer.Root>
         </>
       )}
     </>
