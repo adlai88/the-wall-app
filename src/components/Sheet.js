@@ -25,7 +25,7 @@ const SheetContent = styled.div`
   transition: transform 0.28s cubic-bezier(.4,0,.2,1);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow: hidden;
   @media (max-width: 600px) {
     width: 100vw;
     min-width: 0;

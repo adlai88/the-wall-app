@@ -71,6 +71,7 @@ const DetailsSection = styled.div`
   width: 100%;
   background: white;
   padding: 32px;
+  flex: 1 1 auto;
   overflow-y: auto;
   height: 100%;
   
@@ -82,6 +83,7 @@ const DetailsSection = styled.div`
     max-height: 100vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    flex: 1 1 auto;
   }
 `;
 
