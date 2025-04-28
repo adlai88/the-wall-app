@@ -696,6 +696,23 @@ export default function MapView({ events = [], setEvents, onNav }) {
     setLocationFlyToRequest(true);
   }, []);
 
+  // Remove the info box under weather and use a toast instead
+  useEffect(() => {
+    let toastId;
+    if (isPlacingPin) {
+      toastId = toast('Click on the map to place your poster', {
+        position: 'top-center',
+        duration: Infinity,
+        id: 'pin-instruction',
+      });
+    } else {
+      toast.dismiss('pin-instruction');
+    }
+    return () => {
+      toast.dismiss('pin-instruction');
+    };
+  }, [isPlacingPin]);
+
   return (
     <>
       <MapContainerStyled isPlacingPin={isPlacingPin}>
@@ -723,27 +740,23 @@ export default function MapView({ events = [], setEvents, onNav }) {
           )}
         </SearchBar>
 
-        {isPlacingPin && (
-          <AddEventInstructions>
-            Click on the map to place your poster
-          </AddEventInstructions>
-        )}
-
         {weatherData && (
-          <AppTips>
-            <TipItem>
-              <TipIcon>{getWeatherEmoji()}</TipIcon>
-              <span>{Math.round(weatherData.main.temp)}°C</span>
-            </TipItem>
-            <TipItem>
-              <TipIcon>-</TipIcon>
-              <span>Click [+] to add poster</span>
-            </TipItem>
-            <TipItem>
-              <TipIcon>-</TipIcon>
-              <span>Drag to move map</span>
-            </TipItem>
-          </AppTips>
+          <>
+            <AppTips>
+              <TipItem>
+                <TipIcon>{getWeatherEmoji()}</TipIcon>
+                <span>{Math.round(weatherData.main.temp)}°C</span>
+              </TipItem>
+              <TipItem>
+                <TipIcon>-</TipIcon>
+                <span>Click [+] to add poster</span>
+              </TipItem>
+              <TipItem>
+                <TipIcon>-</TipIcon>
+                <span>Drag to move map</span>
+              </TipItem>
+            </AppTips>
+          </>
         )}
         
         <MapContainer 
