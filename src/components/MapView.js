@@ -810,7 +810,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
 
         {weatherData && (
           <>
-            <AppTips>
+            <AppTips onClick={() => setTipsCollapsed(c => !c)} style={{ cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <TipItem style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <TipIcon>{getWeatherEmoji()}</TipIcon>
@@ -824,7 +824,6 @@ export default function MapView({ events = [], setEvents, onNav }) {
                     background: 'none',
                     border: 'none',
                     fontSize: 16,
-                    cursor: 'pointer',
                     color: '#888',
                     marginLeft: 0,
                     lineHeight: 1,
@@ -832,10 +831,11 @@ export default function MapView({ events = [], setEvents, onNav }) {
                     alignItems: 'center',
                     height: '100%',
                     padding: 0,
-                    transform: 'translateY(2px)'
+                    transform: 'translateY(2px)',
+                    pointerEvents: 'none'
                   }}
+                  tabIndex={-1}
                   aria-label={tipsCollapsed ? 'Show tips' : 'Hide tips'}
-                  onClick={() => setTipsCollapsed(c => !c)}
                 >
                   {tipsCollapsed ? <FiChevronDown size={16} /> : <FiChevronUp size={16} />}
                 </button>
