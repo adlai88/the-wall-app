@@ -40,6 +40,7 @@ const ModalContent = styled.div`
     max-height: 100%;
     border-radius: 0;
     margin-top: 0;
+    overflow: visible;
   }
 `;
 

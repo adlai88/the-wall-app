@@ -44,6 +44,7 @@ const MobileImage = styled.div`
     background: #eee;
     margin-bottom: 16px;
     overflow: hidden;
+    flex-shrink: 0;
   }
 `;
 
@@ -167,7 +168,7 @@ export default function PosterView({ poster, onClose }) {
               alt={poster.title || 'Event Poster'}
               width={800}
               height={1200}
-              style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+              style={{ width: '100%', height: 'auto', maxHeight: '60vh', objectFit: 'contain', display: 'block' }}
               priority
             />
           </MobileImage>
