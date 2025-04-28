@@ -170,6 +170,11 @@ export default function Home() {
   const [events, setEvents] = useState([])
   const [error, setError] = useState(null)
   const [overlay, setOverlay] = useState(null) // 'upcoming', 'about', or null
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -192,12 +197,16 @@ export default function Home() {
         setEvents={setEvents} 
         onNav={nav => setOverlay(nav === 'map' ? null : nav)}
       />
-      <Sheet open={overlay === 'upcoming'} onClose={() => setOverlay(null)}>
-        <UpcomingOverlayContent events={events} onClose={() => setOverlay(null)} />
-      </Sheet>
-      <Sheet open={overlay === 'about'} onClose={() => setOverlay(null)}>
-        <AboutOverlayContent onClose={() => setOverlay(null)} />
-      </Sheet>
+      {hasMounted && (
+        <>
+          <Sheet open={overlay === 'upcoming'} onClose={() => setOverlay(null)}>
+            <UpcomingOverlayContent events={events} onClose={() => setOverlay(null)} />
+          </Sheet>
+          <Sheet open={overlay === 'about'} onClose={() => setOverlay(null)}>
+            <AboutOverlayContent onClose={() => setOverlay(null)} />
+          </Sheet>
+        </>
+      )}
     </>
   )
 } 
