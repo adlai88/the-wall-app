@@ -791,11 +791,17 @@ export default function MapView({ events = [], setEvents, onNav }) {
               style={{
                 border: 'none',
                 background: 'none',
-                padding: '0 10px',
+                padding: '0 0 0 10px',
                 cursor: 'pointer',
-                color: '#999'
+                color: '#999',
+                fontSize: 16,
+                lineHeight: 1,
+                display: 'flex',
+                alignItems: 'center',
+                transform: 'translateY(2px)'
               }}
               onClick={() => setSearchQuery('')}
+              aria-label="Clear search"
             >
               ×
             </button>
