@@ -445,6 +445,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [filteredPosters, setFilteredPosters] = useState(events);
   const [isPlacingPin, setIsPlacingPin] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [searchedLocation, setSearchedLocation] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCoordinates, setSelectedCoordinates] = useState(null);
@@ -728,6 +729,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
 
   const handleLocationSelect = (coordinates) => {
     setSelectedLocation(coordinates);
+    setSearchedLocation(null);
     exitPinMode();
   };
 
@@ -866,9 +868,9 @@ export default function MapView({ events = [], setEvents, onNav }) {
   // Handle place selection from suggestions
   const handlePlaceSelect = (place) => {
     setSearchQuery(place.display_name);
-    setPlaceSuggestions(null); // Set to null instead of empty array to exit search mode
+    setPlaceSuggestions(null);
     flyToLocation(place.lat, place.lon, 12);
-    setSelectedLocation([place.lat, place.lon]); // Note: Changed to [lat, lon] for Leaflet
+    setSearchedLocation([place.lat, place.lon]);
     toast.success(`Moved to ${place.display_name.split(',')[0]}`);
   };
 
@@ -987,9 +989,9 @@ export default function MapView({ events = [], setEvents, onNav }) {
             </Marker>
           )}
           
-          {selectedLocation && !isPlacingPin && (
+          {searchedLocation && !isPlacingPin && (
             <Marker
-              position={selectedLocation}
+              position={searchedLocation}
               icon={createSearchMarkerIcon()}
             >
               <Popup closeButton={false}>
