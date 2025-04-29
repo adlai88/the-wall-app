@@ -80,7 +80,7 @@ export default function AboutInfoPage() {
     <Container>
       <Logo>TW</Logo>
       <Description>
-        Wallllll is a map-based event discovery application that allows users to find happenings around their city without registration or social interactions.
+        Wallllll is a map app that allows users to find happenings around their city without registration or social interactions.
       </Description>
 
       <Section>
