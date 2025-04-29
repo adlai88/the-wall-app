@@ -431,6 +431,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [locationFlyToRequest, setLocationFlyToRequest] = useState(false);
   const [tipsCollapsed, setTipsCollapsed] = useState(true);
   const [placeSuggestions, setPlaceSuggestions] = useState([]);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const mapRef = useRef(null);
   
   // Update filtered posters when events prop changes
@@ -438,45 +439,76 @@ export default function MapView({ events = [], setEvents, onNav }) {
     setFilteredPosters(events);
   }, [events]);
   
-  // Update filtered posters when search query changes
+  // Debounce search query
   useEffect(() => {
-    if (!searchQuery.trim()) {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300); // 300ms delay
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Use debounced query for filtering and geocoding
+  useEffect(() => {
+    if (!debouncedSearchQuery.trim()) {
       setFilteredPosters(events);
       setPlaceSuggestions([]);
       return;
     }
 
-    const query = searchQuery.toLowerCase().trim();
+    const query = debouncedSearchQuery.toLowerCase().trim();
     
-    // First check for poster matches
-    const filtered = events.filter(poster => 
-      (poster.title || '').toLowerCase().includes(query) ||
-      (poster.location || '').toLowerCase().includes(query) ||
-      (poster.description || '').toLowerCase().includes(query) ||
-      poster.category.toLowerCase().includes(query)
-    );
+    // Optimize filtering by creating a single toLowerCase() version of the query
+    const filtered = events.filter(poster => {
+      const title = (poster.title || '').toLowerCase();
+      const location = (poster.location || '').toLowerCase();
+      const description = (poster.description || '').toLowerCase();
+      const category = poster.category.toLowerCase();
+      
+      // Check exact matches first
+      if (title === query || location === query || category === query) {
+        return true;
+      }
+      
+      // Then check includes
+      return title.includes(query) ||
+             location.includes(query) ||
+             description.includes(query) ||
+             category.includes(query);
+    });
     
     setFilteredPosters(filtered);
     
-    // Always search for places if the query looks like a location search
+    // Improved geocoding logic
     if (query.length >= 2) {
-      geocodePlace(query.trim()).then(results => {
-        if (results && results.length > 0) {
-          setPlaceSuggestions(results.map(place => ({
-            ...place,
-            address: place.display_name.split(', ').slice(1).join(', ')
-          })));
-        } else {
+      // Common location indicators
+      const likelyLocation = 
+        query.length > 3 || // Most city names are at least 4 chars
+        query.includes(' ') || // Multi-word locations
+        query.includes(',') || // Addresses often have commas
+        /^[A-Z]/.test(query); // Proper nouns often start with capital letters
+
+      if (likelyLocation) {
+        geocodePlace(query.trim()).then(results => {
+          if (results && results.length > 0) {
+            setPlaceSuggestions(results.map(place => ({
+              ...place,
+              address: place.display_name.split(', ').slice(1).join(', ')
+            })));
+          } else {
+            setPlaceSuggestions([]);
+          }
+        }).catch(err => {
+          console.error('Error searching for places:', err);
           setPlaceSuggestions([]);
-        }
-      }).catch(err => {
-        console.error('Error searching for places:', err);
+        });
+      } else {
         setPlaceSuggestions([]);
-      });
+      }
     } else {
       setPlaceSuggestions([]);
     }
-  }, [searchQuery, events]);
+  }, [debouncedSearchQuery, events]);
   
   // Fetch posters periodically
   useEffect(() => {
