@@ -94,12 +94,29 @@ const NoResults = styled.div`
   font-size: 14px;
 `;
 
-export default function PlaceSuggestions({ suggestions, onSelect, searchQuery }) {
+const LoadingText = styled(NoResults)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+`;
+
+export default function PlaceSuggestions({ suggestions, onSelect, searchQuery, isSearching }) {
   // Don't show anything if:
   // 1. No search query
   // 2. Suggestions is null (not in search mode)
   // 3. No suggestions array
   if (!searchQuery || !suggestions || !Array.isArray(suggestions)) return null;
+  
+  if (isSearching) {
+    return (
+      <SuggestionsContainer>
+        <LoadingText>
+          Searching...
+        </LoadingText>
+      </SuggestionsContainer>
+    );
+  }
   
   // Only show "No results found" when actively searching
   if (searchQuery.trim() && suggestions.length === 0) {

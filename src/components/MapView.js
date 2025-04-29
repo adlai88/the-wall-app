@@ -12,7 +12,7 @@ import { testWeatherAPI } from '../utils/testWeatherAPI';
 import { submitEvent, getEvents } from '../api';
 import { toast } from 'sonner';
 import { geocodePlace } from '../utils/geocode';
-import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp, FiSearch } from 'react-icons/fi';
 import PlaceSuggestions from './PlaceSuggestions';
 
 // Fix Leaflet default marker icon issue
@@ -114,13 +114,7 @@ const SearchIcon = styled.div`
   align-items: center;
   justify-content: center;
   margin-right: 10px;
-  color: black;
-  font-weight: bold;
-  
-  &::before {
-    content: "🔍";
-    font-size: 14px;
-  }
+  color: #666;
 `;
 
 const SearchInput = styled.input`
@@ -454,6 +448,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [locationFlyToRequest, setLocationFlyToRequest] = useState(false);
   const [tipsCollapsed, setTipsCollapsed] = useState(true);
   const [placeSuggestions, setPlaceSuggestions] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const mapRef = useRef(null);
   
@@ -476,6 +471,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
     if (!debouncedSearchQuery.trim()) {
       setFilteredPosters(events);
       setPlaceSuggestions([]);
+      setIsSearching(false);
       return;
     }
 
@@ -512,6 +508,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
         /^[A-Z]/.test(query); // Proper nouns often start with capital letters
 
       if (likelyLocation) {
+        setIsSearching(true);
         geocodePlace(query.trim()).then(results => {
           if (results && results.length > 0) {
             setPlaceSuggestions(results.map(place => ({
@@ -521,15 +518,19 @@ export default function MapView({ events = [], setEvents, onNav }) {
           } else {
             setPlaceSuggestions([]);
           }
+          setIsSearching(false);
         }).catch(err => {
           console.error('Error searching for places:', err);
           setPlaceSuggestions([]);
+          setIsSearching(false);
         });
       } else {
         setPlaceSuggestions([]);
+        setIsSearching(false);
       }
     } else {
       setPlaceSuggestions([]);
+      setIsSearching(false);
     }
   }, [debouncedSearchQuery, events]);
   
@@ -878,7 +879,9 @@ export default function MapView({ events = [], setEvents, onNav }) {
     <>
       <MapContainerStyled isPlacingPin={isPlacingPin}>
         <SearchBar>
-          <SearchIcon />
+          <SearchIcon>
+            <FiSearch size={16} />
+          </SearchIcon>
           <SearchInput
             type="text"
             placeholder="Search posters and places..."
@@ -903,6 +906,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
               onClick={() => {
                 setSearchQuery('');
                 setPlaceSuggestions(null);
+                setIsSearching(false);
               }}
               aria-label="Clear search"
             >
@@ -914,6 +918,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
           suggestions={placeSuggestions} 
           onSelect={handlePlaceSelect}
           searchQuery={searchQuery}
+          isSearching={isSearching}
         />
 
         {weatherData && !weatherError && (
