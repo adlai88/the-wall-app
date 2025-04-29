@@ -442,11 +442,13 @@ export default function MapView({ events = [], setEvents, onNav }) {
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredPosters(events);
-      setPlaceSuggestions([]); // Clear place suggestions when search is empty
+      setPlaceSuggestions([]);
       return;
     }
 
     const query = searchQuery.toLowerCase().trim();
+    
+    // First check for poster matches
     const filtered = events.filter(poster => 
       (poster.title || '').toLowerCase().includes(query) ||
       (poster.location || '').toLowerCase().includes(query) ||
@@ -456,9 +458,8 @@ export default function MapView({ events = [], setEvents, onNav }) {
     
     setFilteredPosters(filtered);
     
-    // Only show place suggestions if we have no poster matches
-    if (filtered.length === 0) {
-      // Keep existing place suggestions logic
+    // Always search for places if the query looks like a location search
+    if (query.length >= 2) {
       geocodePlace(query.trim()).then(results => {
         if (results && results.length > 0) {
           setPlaceSuggestions(results.map(place => ({
@@ -473,7 +474,6 @@ export default function MapView({ events = [], setEvents, onNav }) {
         setPlaceSuggestions([]);
       });
     } else {
-      // Clear place suggestions if we have poster matches
       setPlaceSuggestions([]);
     }
   }, [searchQuery, events]);
@@ -767,87 +767,45 @@ export default function MapView({ events = [], setEvents, onNav }) {
     }
   };
 
+  // Handle search input changes
+  const handleSearchChange = async (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+  };
+
   // Handle Enter key in search input
   const handleSearchKeyDown = async (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       const query = searchQuery.toLowerCase().trim();
       
-      // Check for poster matches first
-      const posterMatch = events.some(poster =>
-        (poster.title || '').toLowerCase().includes(query) ||
-        (poster.location || '').toLowerCase().includes(query) ||
-        (poster.description || '').toLowerCase().includes(query) ||
-        (poster.category || '').toLowerCase().includes(query)
-      );
-      
-      if (posterMatch) return; // Posters take priority
-      if (searchQuery.trim().length === 0) return;
-      
-      // If we have suggestions, select the first one
+      // If we have place suggestions, use the first one
       if (placeSuggestions && placeSuggestions.length > 0) {
         handlePlaceSelect(placeSuggestions[0]);
         return;
       }
       
-      // If no suggestions, try to search for places
-      toast.loading('Searching for place...');
-      try {
-        const results = await geocodePlace(searchQuery.trim());
-        toast.dismiss();
-        if (results && results.length > 0) {
-          setPlaceSuggestions(results.map(place => ({
-            ...place,
-            address: place.display_name.split(', ').slice(1).join(', ')
-          })));
-        } else {
-          toast.error(`No location found for "${searchQuery.trim()}"`);
+      // If no suggestions but query exists, try to search
+      if (query.length >= 2) {
+        toast.loading('Searching for place...');
+        try {
+          const results = await geocodePlace(query.trim());
+          toast.dismiss();
+          if (results && results.length > 0) {
+            setPlaceSuggestions(results.map(place => ({
+              ...place,
+              address: place.display_name.split(', ').slice(1).join(', ')
+            })));
+            // Automatically select the first result
+            handlePlaceSelect(results[0]);
+          } else {
+            toast.error(`No location found for "${query}"`);
+          }
+        } catch (err) {
+          toast.dismiss();
+          toast.error('Error searching for place');
         }
-      } catch (err) {
-        toast.dismiss();
-        toast.error('Error searching for place');
       }
-    }
-  };
-
-  // Handle search input changes
-  const handleSearchChange = async (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    
-    // Clear suggestions if query is empty
-    if (!query.trim()) {
-      setPlaceSuggestions([]);
-      return;
-    }
-
-    // Check for poster matches first
-    const posterMatch = events.some(poster =>
-      (poster.title || '').toLowerCase().includes(query.toLowerCase()) ||
-      (poster.location || '').toLowerCase().includes(query.toLowerCase()) ||
-      (poster.description || '').toLowerCase().includes(query.toLowerCase()) ||
-      (poster.category || '').toLowerCase().includes(query.toLowerCase())
-    );
-
-    if (posterMatch) {
-      setPlaceSuggestions([]);
-      return;
-    }
-
-    // Search for places
-    try {
-      const results = await geocodePlace(query.trim());
-      if (results && results.length > 0) {
-        setPlaceSuggestions(results.map(place => ({
-          ...place,
-          address: place.display_name.split(', ').slice(1).join(', ')
-        })));
-      } else {
-        setPlaceSuggestions([]);
-      }
-    } catch (err) {
-      console.error('Error searching for places:', err);
-      setPlaceSuggestions([]);
     }
   };
 
