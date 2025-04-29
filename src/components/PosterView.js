@@ -84,6 +84,7 @@ const DetailsSection = styled.div`
   
   @media (max-width: 768px) {
     padding: 24px;
+    padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 80px); /* Add extra padding at bottom */
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
     -webkit-overflow-scrolling: touch;
