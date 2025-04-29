@@ -86,7 +86,7 @@ export default function AboutInfoPage() {
       <Section>
         <SectionTitle>How It Works</SectionTitle>
         <SectionContent>
-          Browse the map to discover event posters pinned to locations. Tap on pins to view event details. Add your own events by uploading a poster and pinning it to a location.
+          Browse the map to discover posters pinned to locations. Tap on pins to view details. Add your own poster by uploading an image and pinning it to a location.
         </SectionContent>
       </Section>
 
