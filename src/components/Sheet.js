@@ -26,7 +26,10 @@ const SheetContent = styled.div`
   transition: transform 0.28s cubic-bezier(.4,0,.2,1);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  
   @media (max-width: 600px) {
     width: 100vw;
     min-width: 0;
@@ -34,6 +37,8 @@ const SheetContent = styled.div`
 `;
 
 const SheetClose = styled.button`
+  position: sticky;
+  top: 0;
   align-self: flex-end;
   margin: 12px 12px 0 0;
   background: none;
@@ -44,6 +49,7 @@ const SheetClose = styled.button`
   border-radius: 6px;
   padding: 4px 10px;
   transition: background 0.15s;
+  z-index: 1;
   &:hover {
     background: #f5f5f5;
     color: #222;
@@ -69,6 +75,18 @@ export default function Sheet({ open, onClose, children, baseIndex }) {
     const prev = document.activeElement;
     contentRef.current?.focus();
     return () => prev?.focus();
+  }, [open]);
+
+  // Prevent body scroll when sheet is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [open]);
 
   return (

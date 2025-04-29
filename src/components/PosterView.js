@@ -45,6 +45,14 @@ const MobileImage = styled.div`
     margin-bottom: 16px;
     overflow: hidden;
     flex-shrink: 0;
+    
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 60vh;
+      object-fit: contain;
+    }
   }
 `;
 
@@ -73,16 +81,12 @@ const DetailsSection = styled.div`
   background: white;
   padding: 32px;
   flex: 1 1 auto;
-  overflow-y: auto;
   
   @media (max-width: 768px) {
     padding: 24px;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
-    max-height: 100vh;
-    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    flex: 1 1 auto;
   }
 `;
 
@@ -168,7 +172,12 @@ export default function PosterView({ poster, onClose }) {
               alt={poster.title || 'Event Poster'}
               width={800}
               height={1200}
-              style={{ width: '100%', height: 'auto', maxHeight: '60vh', objectFit: 'contain', display: 'block' }}
+              style={{ 
+                width: '100%', 
+                height: 'auto', 
+                maxHeight: '60vh', 
+                objectFit: 'contain'
+              }}
               priority
             />
           </MobileImage>
