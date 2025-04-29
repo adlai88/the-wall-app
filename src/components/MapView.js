@@ -13,6 +13,7 @@ import { submitEvent, getEvents } from '../api';
 import { toast } from 'sonner';
 import { geocodePlace } from '../utils/geocode';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import PlaceSuggestions from './PlaceSuggestions';
 
 // Fix Leaflet default marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -429,6 +430,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [imageSizes, setImageSizes] = useState({}); // { [posterId]: { width, height } }
   const [locationFlyToRequest, setLocationFlyToRequest] = useState(false);
   const [tipsCollapsed, setTipsCollapsed] = useState(true);
+  const [placeSuggestions, setPlaceSuggestions] = useState([]);
   const mapRef = useRef(null);
   
   // Update filtered posters when events prop changes
@@ -440,6 +442,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredPosters(events);
+      setPlaceSuggestions([]); // Clear place suggestions when search is empty
       return;
     }
 
@@ -452,6 +455,27 @@ export default function MapView({ events = [], setEvents, onNav }) {
     );
     
     setFilteredPosters(filtered);
+    
+    // Only show place suggestions if we have no poster matches
+    if (filtered.length === 0) {
+      // Keep existing place suggestions logic
+      geocodePlace(query.trim()).then(results => {
+        if (results && results.length > 0) {
+          setPlaceSuggestions(results.map(place => ({
+            ...place,
+            address: place.display_name.split(', ').slice(1).join(', ')
+          })));
+        } else {
+          setPlaceSuggestions([]);
+        }
+      }).catch(err => {
+        console.error('Error searching for places:', err);
+        setPlaceSuggestions([]);
+      });
+    } else {
+      // Clear place suggestions if we have poster matches
+      setPlaceSuggestions([]);
+    }
   }, [searchQuery, events]);
   
   // Fetch posters periodically
@@ -748,22 +772,34 @@ export default function MapView({ events = [], setEvents, onNav }) {
     if (e.key === 'Enter') {
       e.preventDefault();
       const query = searchQuery.toLowerCase().trim();
-      // Synchronously check for poster matches in all events
+      
+      // Check for poster matches first
       const posterMatch = events.some(poster =>
         (poster.title || '').toLowerCase().includes(query) ||
         (poster.location || '').toLowerCase().includes(query) ||
         (poster.description || '').toLowerCase().includes(query) ||
         (poster.category || '').toLowerCase().includes(query)
       );
+      
       if (posterMatch) return; // Posters take priority
       if (searchQuery.trim().length === 0) return;
+      
+      // If we have suggestions, select the first one
+      if (placeSuggestions && placeSuggestions.length > 0) {
+        handlePlaceSelect(placeSuggestions[0]);
+        return;
+      }
+      
+      // If no suggestions, try to search for places
       toast.loading('Searching for place...');
       try {
-        const result = await geocodePlace(searchQuery.trim());
+        const results = await geocodePlace(searchQuery.trim());
         toast.dismiss();
-        if (result) {
-          flyToLocation(result.lat, result.lon, 12);
-          toast.success(`Moved to ${result.display_name}`);
+        if (results && results.length > 0) {
+          setPlaceSuggestions(results.map(place => ({
+            ...place,
+            address: place.display_name.split(', ').slice(1).join(', ')
+          })));
         } else {
           toast.error(`No location found for "${searchQuery.trim()}"`);
         }
@@ -772,6 +808,55 @@ export default function MapView({ events = [], setEvents, onNav }) {
         toast.error('Error searching for place');
       }
     }
+  };
+
+  // Handle search input changes
+  const handleSearchChange = async (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    // Clear suggestions if query is empty
+    if (!query.trim()) {
+      setPlaceSuggestions([]);
+      return;
+    }
+
+    // Check for poster matches first
+    const posterMatch = events.some(poster =>
+      (poster.title || '').toLowerCase().includes(query.toLowerCase()) ||
+      (poster.location || '').toLowerCase().includes(query.toLowerCase()) ||
+      (poster.description || '').toLowerCase().includes(query.toLowerCase()) ||
+      (poster.category || '').toLowerCase().includes(query.toLowerCase())
+    );
+
+    if (posterMatch) {
+      setPlaceSuggestions([]);
+      return;
+    }
+
+    // Search for places
+    try {
+      const results = await geocodePlace(query.trim());
+      if (results && results.length > 0) {
+        setPlaceSuggestions(results.map(place => ({
+          ...place,
+          address: place.display_name.split(', ').slice(1).join(', ')
+        })));
+      } else {
+        setPlaceSuggestions([]);
+      }
+    } catch (err) {
+      console.error('Error searching for places:', err);
+      setPlaceSuggestions([]);
+    }
+  };
+
+  // Handle place selection from suggestions
+  const handlePlaceSelect = (place) => {
+    setSearchQuery(place.display_name);
+    setPlaceSuggestions(null); // Set to null instead of empty array to exit search mode
+    flyToLocation(place.lat, place.lon, 12);
+    toast.success(`Moved to ${place.display_name.split(',')[0]}`);
   };
 
   return (
@@ -783,7 +868,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
             type="text"
             placeholder="Search posters and places..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
             onKeyDown={handleSearchKeyDown}
           />
           {searchQuery && (
@@ -800,15 +885,23 @@ export default function MapView({ events = [], setEvents, onNav }) {
                 alignItems: 'center',
                 transform: 'translateY(2px)'
               }}
-              onClick={() => setSearchQuery('')}
+              onClick={() => {
+                setSearchQuery('');
+                setPlaceSuggestions(null);
+              }}
               aria-label="Clear search"
             >
               ×
             </button>
           )}
         </SearchBar>
+        <PlaceSuggestions 
+          suggestions={placeSuggestions} 
+          onSelect={handlePlaceSelect}
+          searchQuery={searchQuery}
+        />
 
-        {weatherData && (
+        {weatherData && !weatherError && (
           <>
             <AppTips onClick={() => setTipsCollapsed(c => !c)} style={{ cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

@@ -4,7 +4,7 @@ const SHANGHAI_COORDS = { lat: 31.2304, lon: 121.4737 };
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000; // 2 seconds
-const TIMEOUT = 10000; // 10 seconds
+const TIMEOUT = 30000; // Increased to 30 seconds
 
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
