@@ -22,7 +22,7 @@ const Logo = styled.div`
 `;
 
 const Description = styled.p`
-  text-align: center;
+  text-align: left;
   line-height: 1.6;
   margin-bottom: 48px;
   color: #666;
@@ -80,20 +80,20 @@ export default function AboutInfoPage() {
     <Container>
       <Logo>TW</Logo>
       <Description>
-        The Wall is a map-based event discovery application for Shanghai that allows users to find events happening around the city without registration or social interactions.
+        Wallllll is a map-based event discovery application that allows users to find happenings around their city without registration or social interactions.
       </Description>
 
       <Section>
         <SectionTitle>How It Works</SectionTitle>
         <SectionContent>
-          Browse the map to discover event posters pinned to locations around Shanghai. Tap on pins to view event details. Add your own events by uploading a poster and pinning it to a location.
+          Browse the map to discover event posters pinned to locations. Tap on pins to view event details. Add your own events by uploading a poster and pinning it to a location.
         </SectionContent>
       </Section>
 
       <Section>
         <SectionTitle>For Event Organizers</SectionTitle>
         <SectionContent>
-          Promote your events by adding them to The Wall. Simply upload your event poster, set the location and time, and submit for approval. Your event will be visible to all users after moderation.
+          Promote your events by adding them to Wallllll. Simply upload your event poster, set the location and time, and submit for approval. Your event will be visible to all users after moderation.
         </SectionContent>
       </Section>
 
@@ -102,7 +102,7 @@ export default function AboutInfoPage() {
           Send Feedback
         </Button>
         <Button onClick={() => window.open('mailto:report@example.com')}>
-          Report an Issue
+          Make a Donation
         </Button>
         <IconContainer>
           <span>📱</span>

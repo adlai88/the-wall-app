@@ -24,9 +24,36 @@ async function fetchWithRetry(url, retries = MAX_RETRIES) {
   }
 }
 
+async function getUserLocation() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve(SHANGHAI_COORDS);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          lat: position.coords.latitude,
+          lon: position.coords.longitude
+        });
+      },
+      () => {
+        // If error getting location, fallback to Shanghai
+        resolve(SHANGHAI_COORDS);
+      },
+      { timeout: 5000 }
+    );
+  });
+}
+
 export async function getWeather() {
   try {
-    const response = await fetchWithRetry('/api/weather');
+    // Get user's location first
+    const coords = await getUserLocation();
+    
+    // Add coordinates to the weather API request
+    const response = await fetchWithRetry(`/api/weather?lat=${coords.lat}&lon=${coords.lon}`);
     return response;
   } catch (error) {
     console.error('Weather service error:', error.message);
