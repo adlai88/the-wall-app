@@ -57,7 +57,9 @@ The app will be available at `http://localhost:3000`
 
 ## Contributing
 
-We welcome contributions! Here's how you can help:
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Process
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -65,15 +67,42 @@ We welcome contributions! Here's how you can help:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and development process.
+### Code Style
+
+- We use ESLint for JavaScript/TypeScript linting
+- 2 spaces for indentation
+- Prettier for code formatting
+- Component-specific styled-components
 
 ## Environment Variables
 
+Required environment variables:
 - `OPENWEATHERMAP_API_KEY`: Your OpenWeatherMap API key
+
+Optional environment variables:
+- None at the moment
+
+## Testing
+
+```bash
+npm run test        # Run unit tests
+npm run test:e2e    # Run end-to-end tests
+npm run test:watch  # Run tests in watch mode
+```
+
+## Deployment
+
+The app can be deployed to any platform that supports Next.js applications. We recommend Vercel for the easiest deployment experience.
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+- Create an issue for bug reports
+- Start a discussion for feature requests
+- Check out our [Code of Conduct](CODE_OF_CONDUCT.md)
 
 ## Acknowledgments
 
@@ -81,6 +110,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - OpenWeatherMap for weather data
 - All our contributors and users
 
-## Support
+## Project Status
 
-If you find a bug or want to request a feature, please create an issue.
+The Wall App is under active development. Check our [Projects](https://github.com/yourusername/the-wall-app/projects) page for current progress.

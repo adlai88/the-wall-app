@@ -343,6 +343,28 @@ const createUserLocationIcon = () => {
   });
 };
 
+// Create a custom icon for searched locations
+const createSearchMarkerIcon = () => {
+  return L.divIcon({
+    className: 'search-location-marker',
+    html: `
+      <div style="
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+      ">
+        📍
+      </div>
+    `,
+    iconSize: [30, 30],
+    iconAnchor: [15, 30], // Bottom middle of the pin
+  });
+};
+
 // Map click handler component
 function MapClickHandler({ onLocationSelect, isPlacingPin }) {
   useMapEvents({
@@ -846,6 +868,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
     setSearchQuery(place.display_name);
     setPlaceSuggestions(null); // Set to null instead of empty array to exit search mode
     flyToLocation(place.lat, place.lon, 12);
+    setSelectedLocation([place.lat, place.lon]); // Note: Changed to [lat, lon] for Leaflet
     toast.success(`Moved to ${place.display_name.split(',')[0]}`);
   };
 
@@ -961,6 +984,19 @@ export default function MapView({ events = [], setEvents, onNav }) {
               icon={createUserLocationIcon()}
             >
               <Popup closeButton={false}>You are here</Popup>
+            </Marker>
+          )}
+          
+          {selectedLocation && !isPlacingPin && (
+            <Marker
+              position={selectedLocation}
+              icon={createSearchMarkerIcon()}
+            >
+              <Popup closeButton={false}>
+                Selected location
+                <br />
+                <small style={{ color: '#666' }}>Click [+] to add a poster here</small>
+              </Popup>
             </Marker>
           )}
           
