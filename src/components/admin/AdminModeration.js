@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { supabase } from '../../lib/supabase';
+import { toast } from 'sonner';
 
 const Container = styled.div`
   width: 100%;
@@ -146,6 +147,19 @@ const EventDetails = styled.div`
   }
 `;
 
+const PosterStatus = styled.div`
+  font-size: 12px;
+  color: ${props => props.$expired ? '#ff5722' : '#4CAF50'};
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  
+  &:before {
+    content: '${props => props.$expired ? '⏰' : '✅'}';
+  }
+`;
+
 const EventLocation = styled.div`
   font-size: 12px;
   color: #666;
@@ -186,12 +200,48 @@ const ActionButton = styled.button`
   transition: all 0.2s;
 `;
 
-const RejectButton = styled(ActionButton)`
-  background-color: #f8f8f8;
-  color: #666;
+const DeleteButton = styled(ActionButton)`
+  background-color: #ff5722;
+  color: white;
   
   &:hover {
-    background-color: #eee;
+    background-color: #f4511e;
+  }
+`;
+
+const HideButton = styled(ActionButton)`
+  background-color: #ff9800;
+  color: white;
+  
+  &:hover {
+    background-color: #f57c00;
+  }
+`;
+
+const UnhideButton = styled(ActionButton)`
+  background-color: #2196F3;
+  color: white;
+  
+  &:hover {
+    background-color: #1976D2;
+  }
+`;
+
+const RejectButton = styled(ActionButton)`
+  background-color: #f44336;
+  color: white;
+  
+  &:hover {
+    background-color: #d32f2f;
+  }
+`;
+
+const ReApproveButton = styled(ActionButton)`
+  background-color: #4CAF50;
+  color: white;
+  
+  &:hover {
+    background-color: #388E3C;
   }
 `;
 
@@ -316,12 +366,47 @@ export default function AdminModeration() {
 
   const handleAction = async (posterId, action) => {
     try {
-      const { error } = await supabase
-        .from('posters')
-        .update({ moderation_status: action })
-        .eq('id', posterId);
+      if (action === 'delete') {
+        const { error } = await supabase
+          .from('posters')
+          .delete()
+          .eq('id', posterId);
+        
+        if (error) throw error;
+        toast.success('Poster deleted successfully');
+      } else if (action === 'hide') {
+        const { error } = await supabase
+          .from('posters')
+          .update({ status: 'expired' })
+          .eq('id', posterId);
+        
+        if (error) throw error;
+        toast.success('Poster hidden from public view');
+      } else if (action === 'unhide') {
+        const { error } = await supabase
+          .from('posters')
+          .update({ status: 'active' })
+          .eq('id', posterId);
+        
+        if (error) throw error;
+        toast.success('Poster is now visible to the public');
+      } else if (action === 'approved') {
+        const { error } = await supabase
+          .from('posters')
+          .update({ moderation_status: 'approved' })
+          .eq('id', posterId);
 
-      if (error) throw error;
+        if (error) throw error;
+        toast.success('Poster approved successfully');
+      } else if (action === 'rejected') {
+        const { error } = await supabase
+          .from('posters')
+          .update({ moderation_status: 'rejected' })
+          .eq('id', posterId);
+
+        if (error) throw error;
+        toast.success('Poster rejected');
+      }
       
       // Refresh the posters list and pending count
       const updatedPosters = await fetchPosters(activeTab);
@@ -333,6 +418,7 @@ export default function AdminModeration() {
     } catch (err) {
       console.error('Error updating poster:', err);
       setError(err.message);
+      toast.error('Failed to update poster. Please try again.');
     }
   };
 
@@ -413,22 +499,46 @@ export default function AdminModeration() {
           <div>
             <EventTitle>{poster.title}</EventTitle>
             <EventDetails>Display until: {new Date(poster.display_until).toLocaleDateString()}</EventDetails>
+            <PosterStatus $expired={new Date(poster.display_until) < new Date() || poster.status === 'expired'}>
+              {new Date(poster.display_until) < new Date() || poster.status === 'expired' ? 'Expired' : 'Active'}
+            </PosterStatus>
             <EventLocation>{poster.location}</EventLocation>
             <EventDescription>{poster.description}</EventDescription>
           </div>
-          {activeTab === 'pending' && (
-            <ActionButtons>
-              <RejectButton onClick={() => handleAction(poster.id, 'rejected')}>
-                Reject
-              </RejectButton>
-              <EditButton onClick={() => router.push(`/admin/posters/${poster.id}/edit`)}>
-                Edit
-              </EditButton>
-              <ApproveButton onClick={() => handleAction(poster.id, 'approved')}>
-                Approve
-              </ApproveButton>
-            </ActionButtons>
-          )}
+          <ActionButtons>
+            <DeleteButton onClick={() => handleAction(poster.id, 'delete')}>
+              Delete
+            </DeleteButton>
+            {activeTab === 'pending' ? (
+              <>
+                <RejectButton onClick={() => handleAction(poster.id, 'rejected')}>
+                  Reject
+                </RejectButton>
+                <ApproveButton onClick={() => handleAction(poster.id, 'approved')}>
+                  Approve
+                </ApproveButton>
+              </>
+            ) : activeTab === 'approved' ? (
+              <>
+                <RejectButton onClick={() => handleAction(poster.id, 'rejected')}>
+                  Reject
+                </RejectButton>
+                {poster.status === 'active' ? (
+                  <HideButton onClick={() => handleAction(poster.id, 'hide')}>
+                    Hide
+                  </HideButton>
+                ) : (
+                  <UnhideButton onClick={() => handleAction(poster.id, 'unhide')}>
+                    Unhide
+                  </UnhideButton>
+                )}
+              </>
+            ) : activeTab === 'rejected' && (
+              <ReApproveButton onClick={() => handleAction(poster.id, 'approved')}>
+                Re-approve
+              </ReApproveButton>
+            )}
+          </ActionButtons>
         </EventContent>
       </EventCard>
     ));

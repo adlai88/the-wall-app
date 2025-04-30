@@ -1,5 +1,12 @@
-import AdminModeration from '../components/admin/AdminModeration';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
-export default function Admin() {
-  return <AdminModeration />;
+export default function AdminRedirect() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/admin/moderation');
+  }, [router]);
+
+  return null;
 } 
