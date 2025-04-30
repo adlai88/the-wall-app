@@ -351,11 +351,38 @@ export default function AdminModeration() {
 
   const fetchPosters = async (status) => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('posters')
-        .select('*')
-        .eq('moderation_status', status);
+        .select('*');
+
+      // Different queries based on tab
+      switch (status) {
+        case 'pending':
+          query = query.eq('moderation_status', 'pending');
+          break;
+        case 'approved':
+          query = query
+            .eq('moderation_status', 'approved')
+            .eq('status', 'active')
+            .eq('hidden', false);
+          break;
+        case 'hidden':
+          query = query
+            .eq('moderation_status', 'approved')
+            .eq('hidden', true);
+          break;
+        case 'expired':
+          query = query
+            .eq('moderation_status', 'approved')
+            .eq('status', 'expired')
+            .eq('hidden', false);
+          break;
+        case 'rejected':
+          query = query.eq('moderation_status', 'rejected');
+          break;
+      }
       
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     } catch (err) {
@@ -377,7 +404,7 @@ export default function AdminModeration() {
       } else if (action === 'hide') {
         const { error } = await supabase
           .from('posters')
-          .update({ status: 'expired' })
+          .update({ hidden: true })
           .eq('id', posterId);
         
         if (error) throw error;
@@ -385,7 +412,7 @@ export default function AdminModeration() {
       } else if (action === 'unhide') {
         const { error } = await supabase
           .from('posters')
-          .update({ status: 'active' })
+          .update({ hidden: false })
           .eq('id', posterId);
         
         if (error) throw error;
@@ -393,7 +420,7 @@ export default function AdminModeration() {
       } else if (action === 'approved') {
         const { error } = await supabase
           .from('posters')
-          .update({ moderation_status: 'approved' })
+          .update({ moderation_status: 'approved', hidden: false })
           .eq('id', posterId);
 
         if (error) throw error;
@@ -563,6 +590,18 @@ export default function AdminModeration() {
           onClick={() => handleTabChange('approved')}
         >
           Approved
+        </Tab>
+        <Tab
+          $active={activeTab === 'hidden'}
+          onClick={() => handleTabChange('hidden')}
+        >
+          Hidden
+        </Tab>
+        <Tab
+          $active={activeTab === 'expired'}
+          onClick={() => handleTabChange('expired')}
+        >
+          Expired
         </Tab>
         <Tab
           $active={activeTab === 'rejected'}

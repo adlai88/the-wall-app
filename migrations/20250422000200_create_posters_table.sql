@@ -21,6 +21,7 @@ CREATE TABLE posters (
     category TEXT NOT NULL,
     display_until DATE NOT NULL,
     poster_image TEXT,
+    hidden BOOLEAN DEFAULT false,
     status TEXT DEFAULT 'active' CHECK (status IN ('active', 'expired')),
     moderation_status TEXT DEFAULT 'pending' CHECK (moderation_status IN ('pending', 'approved', 'rejected')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
@@ -32,6 +33,9 @@ CREATE INDEX idx_posters_coordinates ON posters USING btree (coordinates);
 
 -- Create index for status
 CREATE INDEX idx_posters_status ON posters USING btree (status);
+
+-- Create index for hidden
+CREATE INDEX idx_posters_hidden ON posters USING btree (hidden);
 
 -- Create index for moderation_status
 CREATE INDEX idx_posters_moderation_status ON posters USING btree (moderation_status);

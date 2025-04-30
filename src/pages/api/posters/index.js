@@ -15,6 +15,7 @@ export default async function handler(req, res) {
         .from('posters')
         .select('*')
         .eq('moderation_status', 'approved')
+        .eq('hidden', false)
         .eq('status', 'active')
         .gt('display_until', new Date().toISOString()) // Only show posters that are still meant to be displayed
       
@@ -80,6 +81,7 @@ export default async function handler(req, res) {
           display_until: posterData.display_until,
           poster_image: posterImageUrl,
           status: 'active',
+          hidden: false,
           moderation_status: 'pending'
         }])
         .select()
