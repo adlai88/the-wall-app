@@ -309,6 +309,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
 
       const data = await response.json();
       await onSubmit(data);
+      toast.success('Poster submitted successfully! It will be visible after moderation.');
       onClose();
     } catch (error) {
       console.error('Error submitting poster:', error);
