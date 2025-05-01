@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import Image from 'next/image';
 
 const Container = styled.div`
   padding: 0 16px;
@@ -10,15 +11,10 @@ const Container = styled.div`
 const Logo = styled.div`
   width: 80px;
   height: 80px;
-  background: #ff5722;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
   margin: 0 auto 32px;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
 `;
 
 const Description = styled.p`
@@ -78,7 +74,15 @@ const IconContainer = styled.div`
 export default function AboutInfoPage() {
   return (
     <Container>
-      <Logo>TW</Logo>
+      <Logo>
+        <Image
+          src="/wallllll_logo.png"
+          alt="The Wall App Logo"
+          fill
+          style={{ objectFit: 'contain' }}
+          priority
+        />
+      </Logo>
       <Description>
         Wallllll is a map app that allows users to find happenings around their city without registration or social interactions.
       </Description>
