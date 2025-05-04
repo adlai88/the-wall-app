@@ -517,19 +517,6 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
               <div style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>Optional Details</div>
 
               <FormGroup>
-                <Label>Link <span style={{ color: '#888' }}>(optional)</span></Label>
-                <Input
-                  type="url"
-                  value={formData.link}
-                  onChange={e => setFormData(prev => ({ ...prev, link: e.target.value }))}
-                  placeholder="https://example.com"
-                  pattern="https?://.+"
-                  autoComplete="off"
-                />
-                {linkError && <ErrorMessage>{linkError}</ErrorMessage>}
-              </FormGroup>
-
-              <FormGroup>
                 <Label>Title</Label>
                 <Input
                   value={formData.title}
@@ -546,7 +533,20 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
                   placeholder="Enter location name or address"
                 />
               </FormGroup>
-              
+
+              <FormGroup>
+                <Label>Link <span style={{ color: '#888' }}>(optional)</span></Label>
+                <Input
+                  type="url"
+                  value={formData.link}
+                  onChange={e => setFormData(prev => ({ ...prev, link: e.target.value }))}
+                  placeholder="https://example.com"
+                  pattern="https?://.+"
+                  autoComplete="off"
+                />
+                {linkError && <ErrorMessage>{linkError}</ErrorMessage>}
+              </FormGroup>
+
               <FormGroup>
                 <Label>Description</Label>
                 <TextArea
