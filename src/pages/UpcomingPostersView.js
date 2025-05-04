@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import BottomNav from '../components/BottomNav'
-import FullImageView from '../components/FullImageView'
 import PosterView from '../components/PosterView'
 import { FiCalendar } from 'react-icons/fi'
+import ReactDOM from 'react-dom'
 
 const Container = styled.div`
   width: 100%;
@@ -214,11 +214,22 @@ const MoreButton = styled.button`
   }
 `;
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isMobile;
+}
+
 export default function UpcomingPostersView({ posters = [], selectedCategory, setSelectedCategory, hideHeaders = false, hideTableBorder = false }) {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedImage, setSelectedImage] = useState(null)
   const [selectedPoster, setSelectedPoster] = useState(null)
+  const isMobile = useIsMobile();
 
   const categories = ['all', 'general', 'event', 'announcement', 'community', 'other']
 
@@ -375,16 +386,14 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
       </Container>
 
       {selectedPoster && (
-        <PosterView
-          poster={selectedPoster}
-          onClose={() => setSelectedPoster(null)}
-        />
-      )}
-      {selectedImage && (
-        <FullImageView
-          imageUrl={selectedImage}
-          onClose={() => setSelectedImage(null)}
-        />
+        isMobile
+          ? <PosterView poster={selectedPoster} onClose={() => setSelectedPoster(null)} />
+          : (typeof window !== 'undefined' && document.getElementById('portal-root')
+              ? ReactDOM.createPortal(
+                  <PosterView poster={selectedPoster} onClose={() => setSelectedPoster(null)} />, 
+                  document.getElementById('portal-root')
+                )
+              : null)
       )}
     </>
   )
