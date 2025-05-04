@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import Sheet from './Sheet';
+import { FiCalendar } from 'react-icons/fi';
 
 const Overlay = styled.div`
   position: fixed;
@@ -256,7 +257,10 @@ export default function PosterView({ poster, onClose }) {
             <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
             <div style={{ color: '#888', fontSize: 15, marginBottom: 12 }}>
               {poster.category === 'event' && poster.event_start_date ? (
-                <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>📅 {formatEventDate(poster.event_start_date, poster.event_end_date)}</span>
+                <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <FiCalendar style={{ marginRight: 4, fontSize: 15 }} />
+                  {formatEventDate(poster.event_start_date, poster.event_end_date)}
+                </span>
               ) : (
                 <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>🗓️ Displayed until {formatDate(poster.display_until)}</span>
               )}
@@ -330,7 +334,10 @@ export default function PosterView({ poster, onClose }) {
           <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
             <div style={{ color: '#888', fontSize: 15, marginBottom: 12 }}>
               {poster.category === 'event' && poster.event_start_date ? (
-                <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>📅 {formatEventDate(poster.event_start_date, poster.event_end_date)}</span>
+                <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <FiCalendar style={{ marginRight: 4, fontSize: 15 }} />
+                  {formatEventDate(poster.event_start_date, poster.event_end_date)}
+                </span>
               ) : (
                 <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>🗓️ Displayed until {formatDate(poster.display_until)}</span>
               )}
