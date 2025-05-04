@@ -1,3 +1,28 @@
+# Background and Motivation
+
+The goal is to make the app installable as a Progressive Web App (PWA), so users can add it to their homescreen and get a more native-like experience. This can improve engagement, offline access, and discoverability.
+
+# Key Challenges and Analysis
+- Ensuring the app meets PWA installability criteria (manifest, HTTPS, service worker, etc.)
+- Integrating with Next.js (which has some PWA plugins but also SSR caveats)
+- Handling caching and offline support without breaking dynamic features
+- Testing install prompts and cross-device compatibility
+
+# High-level Task Breakdown
+
+- [ ] **Add a Web App Manifest**
+  - Success: `/manifest.json` is served, includes name, icons, theme color, etc., and is referenced in `<head>`.
+- [ ] **Add a Service Worker**
+  - Success: Service worker is registered, basic offline support is enabled (e.g., app shell loads offline).
+- [ ] **Update `<head>` for PWA meta tags**
+  - Success: Manifest, theme color, and mobile web app meta tags are present.
+- [ ] **Test Installability**
+  - Success: App passes Lighthouse PWA audit and shows "Add to Homescreen" prompt on supported devices.
+- [ ] **(Optional) Add Custom Install Prompt**
+  - Success: User sees a custom install prompt (if desired) instead of only browser default.
+- [ ] **(Optional) Tune Caching Strategies**
+  - Success: Dynamic content is not stale, static assets are cached efficiently.
+
 # Project Status Board
 
 - [x] Add debug log for formData.display_until before submission in PosterCreationModal.js
@@ -8,6 +33,12 @@
 - [x] Preserve paragraph and line breaks in PosterView description rendering
 - [x] Add extra spacing between paragraphs in PosterView description
 - [x] Optimize image compression settings for best quality within Vercel Hobby limits
+- [ ] Add manifest.json and reference in <head>
+- [ ] Add service worker registration
+- [ ] Add PWA meta tags
+- [ ] Test installability (Lighthouse, device)
+- [ ] (Optional) Custom install prompt
+- [ ] (Optional) Tune caching
 
 # Executor's Feedback or Assistance Requests
 
@@ -20,13 +51,12 @@
 
 # Current Status / Progress Tracking
 
-- Awaiting user test and feedback on mobile poster submission.
-- Awaiting user review of Link field placement and field order in modal.
-- Awaiting user review of description formatting and paragraph spacing in PosterView.
-- Awaiting user review of new image quality after compression settings update.
+- Starting basic PWA implementation. Next step: add manifest.json and reference it in <head>.
 
 # Lessons
 - Mobile browsers may format date inputs differently, so always normalize date values before backend submission.
 - To preserve formatting for user-pasted text, split description by double newlines for paragraphs and single newlines for line breaks.
 - Use margin-bottom on paragraph elements to visually separate paragraphs in rendered text.
 - For best image quality within Vercel Hobby limits, use maxSizeMB: 1.5, maxWidthOrHeight: 1920, and initialQuality: 0.92 for browser-image-compression.
+- Use the simplest PWA plugin for Next.js unless custom service worker logic is needed.
+- Test on both iOS and Android for install prompt differences.
