@@ -375,7 +375,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
         </ModalHeader>
 
         <ModalBody>
-          <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit} noValidate>
             <FormGroup>
               <Label>Upload Image <span style={{ color: '#ff3b30' }}>*</span></Label>
               <ImageUpload 
