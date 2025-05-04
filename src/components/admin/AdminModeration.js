@@ -331,6 +331,27 @@ const NoEvents = styled.div`
   color: #666;
 `;
 
+const CategoryTag = styled.span`
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  background: ${({ category }) => {
+    switch (category) {
+      case 'event': return '#ff9800';
+      case 'community': return '#4caf50';
+      case 'announcement': return '#2196f3';
+      case 'general': return '#888';
+      case 'other': return '#9c27b0';
+      default: return '#bbb';
+    }
+  }};
+  text-transform: capitalize;
+`;
+
 const formatEventDate = (start, end) => {
   if (!start) return '';
   const startDate = new Date(start);
@@ -568,7 +589,10 @@ export default function AdminModeration() {
         </EventImageContainer>
         <EventContent>
           <div>
-            <EventTitle>{poster.title}</EventTitle>
+            <EventTitle>
+              {poster.title}
+              <CategoryTag category={poster.category}>{poster.category}</CategoryTag>
+            </EventTitle>
             <EventDetails style={{ marginBottom: 0, display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-start' }}>
               {poster.category === 'event' && poster.event_start_date ? (
                 <>
