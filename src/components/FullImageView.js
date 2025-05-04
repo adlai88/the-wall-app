@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import ModalCloseButton from './ModalCloseButton';
 
 const FullImageContainer = styled.div`
   position: fixed;
@@ -30,22 +31,7 @@ const Image = styled.img`
   }
 `;
 
-const CloseButton = styled.button`
-  position: absolute;
-  top: max(15px, env(safe-area-inset-top, 15px));
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #888;
-  z-index: 2001;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  &:hover {
-    color: #222;
-    background: #f5f5f5;
-    border-radius: 50%;
-  }
-`;
-
 const CloseIcon = styled.span`
+  display: block;
+  transform: translateY(-1px); /* Optical alignment */
+`;

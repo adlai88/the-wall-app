@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import Sheet from './Sheet';
+import ModalCloseButton from './ModalCloseButton';
 
 const Overlay = styled.div`
   position: fixed;
@@ -166,7 +167,8 @@ export default function PosterView({ poster, onClose }) {
       </Overlay>
       {/* Mobile: details sheet with image at top */}
       <Sheet open={true} onClose={onClose} baseIndex={9100}>
-        <DetailsSection>
+        <DetailsSection style={{ position: 'relative' }}>
+          <ModalCloseButton onClick={onClose}>×</ModalCloseButton>
           <MobileImage>
             <Image
               src={poster.poster_image}

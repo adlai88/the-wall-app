@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { toast } from 'sonner';
 import imageCompression from 'browser-image-compression';
+import ModalCloseButton from './ModalCloseButton';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -69,24 +70,6 @@ const ModalBody = styled.div`
   @media (max-width: 768px) {
     padding: 15px;
     padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
-  }
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: max(15px, env(safe-area-inset-top, 15px));
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #888;
-  z-index: 1002;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  &:hover {
-    color: #222;
-    background: #f5f5f5;
-    border-radius: 50%;
   }
 `;
 
@@ -410,7 +393,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
     <ModalOverlay onClick={onClose}>
       <ModalContent onClick={e => e.stopPropagation()}>
         <ModalHeader>
-          <CloseButton onClick={onClose}>×</CloseButton>
+          <ModalCloseButton onClick={onClose}>×</ModalCloseButton>
           <Title>Pin New Poster</Title>
           <LocationPreview>Location: {coordinates[1].toFixed(4)}°N, {coordinates[0].toFixed(4)}°E</LocationPreview>
         </ModalHeader>
