@@ -337,10 +337,12 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result;
+        // Only keep the base64 part after the comma
+        const base64Data = base64String.split(',')[1];
         setFormData(prev => ({ 
           ...prev, 
           poster_image: {
-            data: base64String,
+            data: base64Data,
             type: file.type,
             name: file.name
           }
