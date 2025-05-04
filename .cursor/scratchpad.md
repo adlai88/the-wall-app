@@ -53,6 +53,10 @@ iOS users do not receive a native PWA install prompt. A custom bottom drawer/mod
 - [ ] Test installability (Lighthouse, device)
 - [ ] (Optional) Custom install prompt
 - [ ] (Optional) Tune caching
+- [x] Implement Add to Home Screen drawer using vaul Drawer, styled per screenshot, with instructions and icons
+- [x] Integrate drawer into main page with temporary trigger button for testing
+- [x] Remove temporary trigger button and automate drawer for iOS Safari users (not in standalone, not recently dismissed)
+- [ ] Await user confirmation of correct behavior on device
 
 # Executor's Feedback or Assistance Requests
 
@@ -62,6 +66,7 @@ iOS users do not receive a native PWA install prompt. A custom bottom drawer/mod
 - The Link field has been moved to the Optional Details section in the PosterCreationModal as requested. The order of fields is now: Title, Location Name, Link, Description. Please review and confirm if this matches your expectations.
 - PosterView now preserves paragraph and line breaks in the description, so pasted formatted text should display as intended. Extra spacing is now added between paragraphs. Please review and confirm if this resolves the formatting and spacing issue.
 - Image compression settings have been optimized for best quality within Vercel Hobby limits (maxSizeMB: 1.5, maxWidthOrHeight: 1920, initialQuality: 0.92). Please review the new image quality and let me know if further adjustments are needed.
+- The Add to Home Screen drawer now appears automatically for iOS Safari users who are not in standalone mode and have not dismissed it in the last 7 days. The temporary button has been removed. Please test on your device and confirm if the behavior matches your expectations.
 
 # Current Status / Progress Tracking
 

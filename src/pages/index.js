@@ -6,6 +6,7 @@ import LoadingView from '../components/LoadingView'
 import BottomNav from '../components/BottomNav'
 import Sheet from '../components/Sheet'
 import { Drawer } from 'vaul'
+import AddToHomeScreenDrawer from '../components/AddToHomeScreenDrawer'
 
 // Dynamically import MapView to avoid SSR issues with Leaflet
 const MapView = dynamic(() => import('../components/MapView'), {
@@ -246,6 +247,44 @@ export default function Home() {
   const [error, setError] = useState(null)
   const [overlay, setOverlay] = useState(null) // 'upcoming', 'about', or null
   const [hasMounted, setHasMounted] = useState(false);
+  const [showA2HS, setShowA2HS] = useState(false); // Add to Home Screen drawer
+
+  // Helper: detect iOS Safari
+  function isIosSafari() {
+    if (typeof window === 'undefined') return false;
+    const ua = window.navigator.userAgent;
+    const isIOS = /iP(ad|hone|od)/.test(ua);
+    const isWebkit = /WebKit/.test(ua);
+    const isNotCriOS = !/CriOS/.test(ua);
+    const isNotFxiOS = !/FxiOS/.test(ua);
+    return isIOS && isWebkit && isNotCriOS && isNotFxiOS;
+  }
+  // Helper: detect standalone mode
+  function isInStandaloneMode() {
+    if (typeof window === 'undefined') return false;
+    return (
+      window.navigator.standalone === true ||
+      window.matchMedia('(display-mode: standalone)').matches
+    );
+  }
+
+  // Automated drawer logic
+  useEffect(() => {
+    if (!hasMounted) return;
+    if (!isIosSafari()) return;
+    if (isInStandaloneMode()) return;
+    const dismissed = localStorage.getItem('a2hs_dismissed_until');
+    if (dismissed && Date.now() < parseInt(dismissed, 10)) return;
+    const timer = setTimeout(() => setShowA2HS(true), 1000);
+    return () => clearTimeout(timer);
+  }, [hasMounted]);
+
+  // When user closes drawer, remember for 7 days
+  const handleA2HSOnClose = () => {
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+    localStorage.setItem('a2hs_dismissed_until', (Date.now() + sevenDays).toString());
+    setShowA2HS(false);
+  };
 
   useEffect(() => {
     setHasMounted(true);
@@ -277,6 +316,9 @@ export default function Home() {
         setEvents={setEvents} 
         onNav={nav => setOverlay(nav === 'map' ? null : nav)}
       />
+      {/* TEMP: Button to trigger Add to Home Screen drawer */}
+      {/* <button ...>Add to Home Screen</button> */}
+      <AddToHomeScreenDrawer open={showA2HS} onClose={handleA2HSOnClose} />
       {hasMounted && (
         <>
           {/* Upcoming overlay as Drawer */}
