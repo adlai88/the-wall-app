@@ -1065,7 +1065,14 @@ export default function MapView({ events = [], setEvents, onNav }) {
         onLocationClick={handleLocationClick}
         isLocating={isLocating}
         onNav={onNav}
-        onAddPoster={handlePinPosterClick}
+        onAddPoster={() => {
+          if (isPlacingPin) {
+            exitPinMode();
+          } else {
+            handlePinPosterClick();
+          }
+        }}
+        isPlacingPin={isPlacingPin}
       />
     </>
   );

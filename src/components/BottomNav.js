@@ -76,7 +76,7 @@ const AddPosterButton = styled.button`
   }
 `;
 
-function BottomNav({ active, onLocationClick, isLocating, onNav, onAddPoster }) {
+function BottomNav({ active, onLocationClick, isLocating, onNav, onAddPoster, isPlacingPin }) {
   const router = useRouter();
   
   return (
@@ -107,8 +107,8 @@ function BottomNav({ active, onLocationClick, isLocating, onNav, onAddPoster }) 
         </NavIcon>
         <span>Location</span>
       </LocationButton>
-      <AddPosterButton onClick={onAddPoster} aria-label="Add Poster">
-        +
+      <AddPosterButton onClick={onAddPoster} aria-label={isPlacingPin ? "Exit Add Poster" : "Add Poster"}>
+        {isPlacingPin ? '×' : '+'}
       </AddPosterButton>
       <NavItem 
         $active={active === 'upcoming'} 
