@@ -48,8 +48,10 @@ export default async function handler(req, res) {
 
       // Handle base64 image if provided
       if (posterData.poster_image?.data) {
-        // Remove the data:image/xyz;base64, prefix
-        const base64Data = posterData.poster_image.data.split(',')[1];
+        let base64Data = posterData.poster_image.data;
+        if (base64Data.includes(',')) {
+          base64Data = base64Data.split(',')[1];
+        }
         const buffer = Buffer.from(base64Data, 'base64');
         
         const fileName = `${Date.now()}-${posterData.poster_image.name}`;
