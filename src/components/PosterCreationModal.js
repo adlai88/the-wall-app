@@ -528,7 +528,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
                 <TextArea
                   value={formData.description}
                   onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Describe your poster..."
+                  placeholder="Enter some details..."
                 />
               </FormGroup>
             </div>
