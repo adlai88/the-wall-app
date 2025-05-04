@@ -31,55 +31,21 @@ const Image = styled.img`
 `;
 
 const CloseButton = styled.button`
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  color: white;
-  font-size: 28px;
-  line-height: 1;
+  position: absolute;
+  top: max(15px, env(safe-area-inset-top, 15px));
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-  z-index: 2001; /* Ensure it's above the container */
-  
+  color: #888;
+  z-index: 2001;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   &:hover {
-    background-color: rgba(0, 0, 0, 0.7);
-  }
-
-  /* Ensure proper touch target size and safe area on mobile */
-  @media (max-width: 768px) {
-    top: max(20px, env(safe-area-inset-top));
-    right: max(20px, env(safe-area-inset-right));
+    color: #222;
+    background: #f5f5f5;
+    border-radius: 50%;
   }
 `;
 
 const CloseIcon = styled.span`
-  display: block;
-  transform: translateY(-1px); /* Optical alignment */
-`;
-
-function FullImageView({ imageUrl, onClose }) {
-  const handleClick = (e) => {
-    e.stopPropagation();
-    onClose();
-  };
-
-  return (
-    <FullImageContainer onClick={handleClick}>
-      <Image src={imageUrl} alt="Event" onClick={(e) => e.stopPropagation()} />
-      <CloseButton onClick={handleClick}>
-        <CloseIcon>×</CloseIcon>
-      </CloseButton>
-    </FullImageContainer>
-  );
-}
-
-export default FullImageView;
