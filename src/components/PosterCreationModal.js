@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { toast } from 'sonner';
+import imageCompression from 'browser-image-compression';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -339,25 +340,45 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
     }
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result;
-        // Only keep the base64 part after the comma
-        const base64Data = base64String.split(',')[1];
-        setFormData(prev => ({ 
-          ...prev, 
-          poster_image: {
-            data: base64Data,
-            type: file.type,
-            name: file.name
-          }
-        }));
-        setPreviewUrl(base64String);
-      };
-      reader.readAsDataURL(file);
+      // File type validation
+      if (!['image/jpeg', 'image/png'].includes(file.type)) {
+        toast.error('Only JPEG and PNG images are supported.');
+        return;
+      }
+      // Compress image
+      try {
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true
+        };
+        const compressedFile = await imageCompression(file, options);
+        if (compressedFile.size > 4 * 1024 * 1024) { // 4MB limit
+          toast.error('Image is too large even after compression. Please choose a smaller image.');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result;
+          // Only keep the base64 part after the comma
+          const base64Data = base64String.split(',')[1];
+          setFormData(prev => ({ 
+            ...prev, 
+            poster_image: {
+              data: base64Data,
+              type: compressedFile.type,
+              name: compressedFile.name
+            }
+          }));
+          setPreviewUrl(base64String);
+        };
+        reader.readAsDataURL(compressedFile);
+      } catch (err) {
+        toast.error('Failed to compress image. Please try another file.');
+      }
     }
   };
 
@@ -395,7 +416,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
                   type="file"
                   ref={fileInputRef}
                   onChange={handleImageUpload}
-                  accept="image/*"
+                  accept="image/jpeg,image/png"
                   style={{ display: 'none' }}
                   required
                 />
