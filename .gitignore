@@ -35,4 +35,8 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts 
+
+# Ignore Cursor AI metadata and scratchpad
+.cursor/
+
+# next-env.d.ts 
