@@ -245,17 +245,15 @@ export default function PosterView({ poster, onClose }) {
             )}
           </PosterLocation>
           {poster.link && (
-            <div style={{ fontSize: 15, margin: '0 0 16px 0', wordBreak: 'break-all' }}>
+            <div style={{ fontSize: 15, margin: '0 0 16px 0' }}>
               <a
                 href={poster.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: '#007aff', textDecoration: 'underline' }}
+                style={{ color: '#007aff', textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', fontWeight: 500 }}
                 title={poster.link}
               >
-                {poster.link.length > 40
-                  ? `${poster.link.slice(0, 24)}...${poster.link.slice(-11)}`
-                  : poster.link}
+                <span role="img" aria-label="Link" style={{ marginRight: 6 }}>🔗</span>Link
               </a>
             </div>
           )}
