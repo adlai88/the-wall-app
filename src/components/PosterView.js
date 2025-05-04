@@ -284,15 +284,16 @@ export default function PosterView({ poster, onClose }) {
               )}
             </PosterLocation>
             {poster.link && (
-              <div style={{ fontSize: 15, margin: '0 0 16px 0' }}>
+              <div style={{ fontSize: 15, margin: '0 0 16px 0', display: 'flex', alignItems: 'center' }}>
+                <span role="img" aria-label="Link" style={{ marginRight: 6 }}>🔗</span>
                 <a
                   href={poster.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#007aff', textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', fontWeight: 500 }}
+                  style={{ color: '#007aff', textDecoration: 'underline', fontWeight: 500 }}
                   title={poster.link}
                 >
-                  <span role="img" aria-label="Link" style={{ marginRight: 6 }}>🔗</span>Link
+                  Link
                 </a>
               </div>
             )}
@@ -361,15 +362,16 @@ export default function PosterView({ poster, onClose }) {
               )}
           </PosterLocation>
             {poster.link && (
-              <div style={{ fontSize: 15, margin: '0 0 16px 0' }}>
+              <div style={{ fontSize: 15, margin: '0 0 16px 0', display: 'flex', alignItems: 'center' }}>
+                <span role="img" aria-label="Link" style={{ marginRight: 6 }}>🔗</span>
                 <a
                   href={poster.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#007aff', textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', fontWeight: 500 }}
+                  style={{ color: '#007aff', textDecoration: 'underline', fontWeight: 500 }}
                   title={poster.link}
                 >
-                  <span role="img" aria-label="Link" style={{ marginRight: 6 }}>🔗</span>Link
+                  Link
                 </a>
               </div>
             )}
