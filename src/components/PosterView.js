@@ -121,6 +121,7 @@ const PosterDescription = styled.p`
   line-height: 1.6;
   color: #444;
   margin: 0;
+  margin-bottom: 1em;
 `;
 
 export default function PosterView({ poster, onClose }) {
