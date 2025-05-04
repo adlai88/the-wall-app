@@ -229,9 +229,21 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
       return matchesCategory && matchesSearch
     })
     .sort((a, b) => {
-      const dateA = new Date(a.display_until)
-      const dateB = new Date(b.display_until)
-      return dateA - dateB
+      // Sort by event_start_date (if exists), then by display_until
+      const aEvent = a.event_start_date ? new Date(a.event_start_date) : null;
+      const bEvent = b.event_start_date ? new Date(b.event_start_date) : null;
+      if (aEvent && bEvent) {
+        return aEvent - bEvent;
+      } else if (aEvent && !bEvent) {
+        return -1;
+      } else if (!aEvent && bEvent) {
+        return 1;
+      } else {
+        // Neither has event_start_date, sort by display_until
+        const dateA = new Date(a.display_until);
+        const dateB = new Date(b.display_until);
+        return dateA - dateB;
+      }
     })
 
   const handlePosterClick = (poster) => {
