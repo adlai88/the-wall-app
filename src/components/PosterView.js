@@ -244,7 +244,17 @@ export default function PosterView({ poster, onClose }) {
             )}
           </PosterLocation>
           {poster.description && (
-            <PosterDescription>{poster.description}</PosterDescription>
+            Array.isArray(poster.description)
+              ? poster.description.map((para, idx) => (
+                  <PosterDescription key={idx}>{para}</PosterDescription>
+                ))
+              : poster.description.split(/\n{2,}/).map((para, idx) => (
+                  <PosterDescription key={idx}>
+                    {para.split(/\n/).map((line, i, arr) =>
+                      i < arr.length - 1 ? [line, <br key={i} />] : line
+                    )}
+                  </PosterDescription>
+                ))
           )}
         </DetailsSection>
       </Sheet>
