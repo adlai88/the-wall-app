@@ -172,7 +172,7 @@ const ButtonContainer = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 36px);
     padding: 15px;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
     z-index: 1001;
@@ -182,8 +182,8 @@ const ButtonContainer = styled.div`
 `;
 
 const SubmitButton = styled.button`
-  background: #fff;
-  color: #222;
+  background: #000;
+  color: #fff;
   border: 1px solid #e5e5e5;
   border-radius: 6px;
   padding: 14px;
@@ -192,11 +192,11 @@ const SubmitButton = styled.button`
   cursor: pointer;
   width: 100%;
   font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  transition: background 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
   &:hover {
-    background: #f5f5f5;
-    color: #007aff;
-    border-color: #007aff;
+    background: #fff;
+    color: #000;
+    border-color: #000;
   }
   &:disabled {
     background: #f5f5f5;
