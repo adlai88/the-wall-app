@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import styled from 'styled-components'
 import { getEvents } from '../api'
 import LoadingView from '../components/LoadingView'
@@ -123,26 +123,85 @@ const CategoryButton = styled.button`
   }
 `;
 
+const CategoryScrollContainer = styled.div`
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  white-space: nowrap;
+  max-width: 100%;
+  width: 100%;
+  margin-top: 2px;
+  margin-bottom: 4px;
+  align-items: center;
+  justify-content: flex-start;
+  scrollbar-width: none;
+  position: relative;
+  padding: 0;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const BlurOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  pointer-events: none;
+  z-index: 1;
+`;
+
+const LeftBlur = styled(BlurOverlay)`
+  left: 0;
+  background: linear-gradient(to right, #fff 70%, rgba(255,255,255,0));
+`;
+const RightBlur = styled(BlurOverlay)`
+  right: 0;
+  background: linear-gradient(to left, #fff 70%, rgba(255,255,255,0));
+`;
+
 // --- Upcoming Overlay ---
 import UpcomingPostersView from './UpcomingPostersView';
 function UpcomingOverlayContent({ events, onClose }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const categories = ['all', 'general', 'event', 'announcement', 'community', 'other'];
+  const scrollRef = useRef();
+  const [showLeftBlur, setShowLeftBlur] = useState(false);
+  const [showRightBlur, setShowRightBlur] = useState(false);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const checkBlur = () => {
+      setShowLeftBlur(el.scrollLeft > 0);
+      setShowRightBlur(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+    };
+    checkBlur();
+    el.addEventListener('scroll', checkBlur);
+    window.addEventListener('resize', checkBlur);
+    return () => {
+      el.removeEventListener('scroll', checkBlur);
+      window.removeEventListener('resize', checkBlur);
+    };
+  }, []);
 
   return (
     <div style={{ width: '100%' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', background: '#fff', borderBottom: '1px solid #eee', padding: '0 8px' }}>
-        {/* Close button removed, handled by Sheet */}
-        <div style={{ display: 'flex', gap: 6, overflowX: 'auto', whiteSpace: 'nowrap', maxWidth: '100%', width: '100%', marginTop: 2, marginBottom: 4, alignItems: 'center', justifyContent: 'flex-start', scrollbarWidth: 'none' }}>
-          {categories.map(category => (
-            <CategoryButton
-              key={category}
-              active={selectedCategory === category}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category.charAt(0).toUpperCase() + category.slice(1)}
-            </CategoryButton>
-          ))}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', background: '#fff', borderBottom: '1px solid #eee', padding: 0, position: 'relative' }}>
+        <div style={{ position: 'relative', width: '100%' }}>
+          <CategoryScrollContainer ref={scrollRef}>
+            {categories.map(category => (
+              <CategoryButton
+                key={category}
+                active={selectedCategory === category}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </CategoryButton>
+            ))}
+          </CategoryScrollContainer>
+          {showLeftBlur && <LeftBlur />}
+          {showRightBlur && <RightBlur />}
         </div>
       </div>
       <div style={{marginTop: 0, background: '#fff'}}>
