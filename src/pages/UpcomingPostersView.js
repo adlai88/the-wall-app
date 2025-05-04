@@ -344,22 +344,27 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                               <FiCalendar style={{ marginRight: 4, fontSize: 15 }} />
                               {formatEventDate(poster.event_start_date, poster.event_end_date)}
                             </span>
-                            <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>Displayed until {formatDate(poster.display_until)}</span>
                           </>
-                        ) : (
-                          <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>Displayed until {formatDate(poster.display_until)}</span>
-                        )}
-                        {poster.link && (
-                          <a
-                            href={poster.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ color: '#007aff', textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', marginTop: 2, fontWeight: 500 }}
-                            title={poster.link}
-                          >
-                            <span role="img" aria-label="Link" style={{ marginRight: 4 }}>🔗</span>Link
-                          </a>
-                        )}
+                        ) : null}
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span role="img" aria-label="Location" style={{ marginRight: 4, fontSize: 15 }}>📍</span>
+                          {poster.location && poster.location.trim() ? (
+                            poster.location
+                          ) : poster.coordinates ? (
+                            (() => {
+                              let lat = '', lon = '';
+                              const match = poster.coordinates.match(/(-?\d+\.?\d*)[\,\s]+(-?\d+\.?\d*)/);
+                              if (match) {
+                                lat = match[1];
+                                lon = match[2];
+                              }
+                              return lat && lon ? `Latitude: ${lat}, Longitude: ${lon}` : 'Location not specified';
+                            })()
+                          ) : (
+                            'Location not specified'
+                          )}
+                        </span>
+                        <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>Displayed until {formatDate(poster.display_until)}</span>
                       </div>
                     </TableCell>
                     <TableCell>
