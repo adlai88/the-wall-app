@@ -527,7 +527,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
               </FormGroup>
 
               <FormGroup>
-                <Label>Location Name</Label>
+                <Label>Location</Label>
                 <Input
                   value={formData.location}
                   onChange={e => setFormData(prev => ({ ...prev, location: e.target.value }))}
