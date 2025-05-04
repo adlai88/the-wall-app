@@ -4,7 +4,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ff5722",
+  "theme_color": "#000000",
   "description": "A community wall for events and posters.",
   "icons": [
     {

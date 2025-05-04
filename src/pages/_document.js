@@ -5,7 +5,7 @@ export default function Document() {
     <Html lang="en">
       <Head>
         {/* PWA primary color */}
-        <meta name="theme-color" content="#ff5722" />
+        <meta name="theme-color" content="#000000" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/icons/icon-192x192.png" sizes="192x192" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
