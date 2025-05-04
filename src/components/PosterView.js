@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import Sheet from './Sheet';
@@ -6,32 +6,54 @@ import Sheet from './Sheet';
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
+  background: transparent;
   z-index: 9000;
   display: flex;
-  align-items: center;
+  flex-direction: row;
+  align-items: stretch;
   justify-content: center;
-  padding-right: 400px; // Make space for the sheet
-  
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
   @media (max-width: 768px) {
-    padding-right: 0;
     flex-direction: column;
     align-items: stretch;
+    justify-content: flex-start;
   }
 `;
 
 const ImageSection = styled.div`
   max-width: 800px;
   width: 100%;
-  height: calc(100vh - 120px); // Add some padding top and bottom
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  
+  background: #111;
+  padding: 40px;
+  box-sizing: border-box;
   @media (max-width: 768px) {
     display: none;
+    padding: 0;
+  }
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 9200;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #888;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px 10px;
+  transition: background 0.15s;
+  &:hover {
+    background: #f5f5f5;
+    color: #222;
   }
 `;
 
@@ -63,14 +85,12 @@ const ImageWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  
   img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
     border-radius: 4px;
   }
-
   @media (max-width: 768px) {
     height: 100%;
   }
@@ -124,7 +144,32 @@ const PosterDescription = styled.p`
   margin-bottom: 1em;
 `;
 
+const DesktopSidebarWrapper = styled.div`
+  position: relative;
+  width: 400px;
+  max-width: 100vw;
+  background: white;
+  padding: 32px;
+  flex: 1 1 auto;
+  height: 100vh;
+  overflow-y: auto;
+  box-shadow: -2px 0 12px rgba(0,0,0,0.08);
+  z-index: 9101;
+`;
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isMobile;
+}
+
 export default function PosterView({ poster, onClose }) {
+  const isMobile = useIsMobile();
   if (!poster) return null;
 
   const formatDate = (dateString) => {
@@ -183,10 +228,17 @@ export default function PosterView({ poster, onClose }) {
     })}`;
   };
 
+  // Handler to close only if clicking on the overlay, not the sidebar or image
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
     <>
-      {/* Desktop: overlay with image on left, details in sheet */}
-      <Overlay onClick={onClose}>
+      {/* Desktop: overlay with image on left, details in sidebar */}
+      <Overlay onClick={handleOverlayClick}>
         <ImageSection onClick={e => e.stopPropagation()}>
           <ImageWrapper>
             <Image
@@ -198,80 +250,138 @@ export default function PosterView({ poster, onClose }) {
             />
           </ImageWrapper>
         </ImageSection>
+        {!isMobile && (
+          <DesktopSidebarWrapper onClick={e => e.stopPropagation()}>
+            <CloseButton onClick={onClose} aria-label="Close">×</CloseButton>
+            <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
+            <div style={{ color: '#888', fontSize: 15, marginBottom: 12 }}>
+              {poster.category === 'event' && poster.event_start_date ? (
+                <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>📅 {formatEventDate(poster.event_start_date, poster.event_end_date)}</span>
+              ) : (
+                <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>🗓️ Displayed until {formatDate(poster.display_until)}</span>
+              )}
+            </div>
+            <PosterLocation>
+              <span>📍</span>
+              {poster.location && poster.location.trim() ? (
+                poster.location
+              ) : poster.coordinates ? (
+                (() => {
+                  let lat = '', lon = '';
+                  const match = poster.coordinates.match(/(-?\d+\.?\d*)[\,\s]+(-?\d+\.?\d*)/);
+                  if (match) {
+                    lat = match[1];
+                    lon = match[2];
+                  }
+                  return lat && lon ? `Latitude: ${lat}, Longitude: ${lon}` : 'Location not specified';
+                })()
+              ) : (
+                'Location not specified'
+              )}
+            </PosterLocation>
+            {poster.link && (
+              <div style={{ fontSize: 15, margin: '0 0 16px 0' }}>
+                <a
+                  href={poster.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#007aff', textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', fontWeight: 500 }}
+                  title={poster.link}
+                >
+                  <span role="img" aria-label="Link" style={{ marginRight: 6 }}>🔗</span>Link
+                </a>
+              </div>
+            )}
+            {poster.description && (
+              Array.isArray(poster.description)
+                ? poster.description.map((para, idx) => (
+                    <PosterDescription key={idx}>{para}</PosterDescription>
+                  ))
+                : poster.description.split(/\n{2,}/).map((para, idx) => (
+                    <PosterDescription key={idx}>
+                      {para.split(/\n/).map((line, i, arr) =>
+                        i < arr.length - 1 ? [line, <br key={i} />] : line
+                      )}
+                    </PosterDescription>
+                  ))
+            )}
+          </DesktopSidebarWrapper>
+        )}
       </Overlay>
       {/* Mobile: details sheet with image at top */}
-      <Sheet open={true} onClose={onClose} baseIndex={9100}>
-        <DetailsSection>
-          <MobileImage>
-            <Image
-              src={poster.poster_image}
-              alt={poster.title || 'Event Poster'}
-              width={800}
-              height={1200}
-              style={{ 
-                width: '100%', 
-                height: 'auto', 
-                maxHeight: '60vh', 
-                objectFit: 'contain'
-              }}
-              priority
-            />
-          </MobileImage>
-          <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
-          <div style={{ color: '#888', fontSize: 15, marginBottom: 12 }}>
-            {poster.category === 'event' && poster.event_start_date ? (
-              <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>📅 {formatEventDate(poster.event_start_date, poster.event_end_date)}</span>
-            ) : (
-              <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>🗓️ Displayed until {formatDate(poster.display_until)}</span>
-            )}
-          </div>
-          <PosterLocation>
-            <span>📍</span>
-            {poster.location && poster.location.trim() ? (
-              poster.location
-            ) : poster.coordinates ? (
-              (() => {
-                // Try to parse coordinates as (lat,lon) or [lat,lon]
-                let lat = '', lon = '';
-                const match = poster.coordinates.match(/(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)/);
-                if (match) {
-                  lat = match[1];
-                  lon = match[2];
-                }
-                return lat && lon ? `Latitude: ${lat}, Longitude: ${lon}` : 'Location not specified';
-              })()
-            ) : (
-              'Location not specified'
-            )}
-          </PosterLocation>
-          {poster.link && (
-            <div style={{ fontSize: 15, margin: '0 0 16px 0' }}>
-              <a
-                href={poster.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#007aff', textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', fontWeight: 500 }}
-                title={poster.link}
-              >
-                <span role="img" aria-label="Link" style={{ marginRight: 6 }}>🔗</span>Link
-              </a>
+      {isMobile && (
+        <Sheet open={true} onClose={onClose} baseIndex={9100}>
+          <DetailsSection>
+            <MobileImage>
+              <Image
+                src={poster.poster_image}
+                alt={poster.title || 'Event Poster'}
+                width={800}
+                height={1200}
+                style={{ 
+                  width: '100%', 
+                  height: 'auto', 
+                  maxHeight: '60vh', 
+                  objectFit: 'contain'
+                }}
+                priority
+              />
+            </MobileImage>
+            <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
+            <div style={{ color: '#888', fontSize: 15, marginBottom: 12 }}>
+              {poster.category === 'event' && poster.event_start_date ? (
+                <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>📅 {formatEventDate(poster.event_start_date, poster.event_end_date)}</span>
+              ) : (
+                <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>🗓️ Displayed until {formatDate(poster.display_until)}</span>
+              )}
             </div>
-          )}
-          {poster.description && (
-            Array.isArray(poster.description)
-              ? poster.description.map((para, idx) => (
-                  <PosterDescription key={idx}>{para}</PosterDescription>
-                ))
-              : poster.description.split(/\n{2,}/).map((para, idx) => (
-                  <PosterDescription key={idx}>
-                    {para.split(/\n/).map((line, i, arr) =>
-                      i < arr.length - 1 ? [line, <br key={i} />] : line
-                    )}
-                  </PosterDescription>
-                ))
-          )}
-        </DetailsSection>
-      </Sheet>
+            <PosterLocation>
+              <span>📍</span>
+              {poster.location && poster.location.trim() ? (
+                poster.location
+              ) : poster.coordinates ? (
+                (() => {
+                  let lat = '', lon = '';
+                  const match = poster.coordinates.match(/(-?\d+\.?\d*)[\,\s]+(-?\d+\.?\d*)/);
+                  if (match) {
+                    lat = match[1];
+                    lon = match[2];
+                  }
+                  return lat && lon ? `Latitude: ${lat}, Longitude: ${lon}` : 'Location not specified';
+                })()
+              ) : (
+                'Location not specified'
+              )}
+            </PosterLocation>
+            {poster.link && (
+              <div style={{ fontSize: 15, margin: '0 0 16px 0' }}>
+                <a
+                  href={poster.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#007aff', textDecoration: 'underline', display: 'inline-flex', alignItems: 'center', fontWeight: 500 }}
+                  title={poster.link}
+                >
+                  <span role="img" aria-label="Link" style={{ marginRight: 6 }}>🔗</span>Link
+                </a>
+              </div>
+            )}
+            {poster.description && (
+              Array.isArray(poster.description)
+                ? poster.description.map((para, idx) => (
+                    <PosterDescription key={idx}>{para}</PosterDescription>
+                  ))
+                : poster.description.split(/\n{2,}/).map((para, idx) => (
+                    <PosterDescription key={idx}>
+                      {para.split(/\n/).map((line, i, arr) =>
+                        i < arr.length - 1 ? [line, <br key={i} />] : line
+                      )}
+                    </PosterDescription>
+                  ))
+            )}
+          </DetailsSection>
+        </Sheet>
+      )}
     </>
   );
 } 
