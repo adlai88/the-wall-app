@@ -313,9 +313,13 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                       <TitleCell>{poster.title || 'Untitled Poster'}</TitleCell>
                       <div style={{ color: '#888', fontSize: 13 }}>
                         {poster.category === 'event' && poster.event_start_date ? (
-                          <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>📅 {formatEventDate(poster.event_start_date, poster.event_end_date)}</span>
+                          <>
+                            <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>📅 {formatEventDate(poster.event_start_date, poster.event_end_date)}</span>
+                            <br />
+                            <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>Displayed until {formatDate(poster.display_until)}</span>
+                          </>
                         ) : (
-                          <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>🗓️ Displayed until {formatDate(poster.display_until)}</span>
+                          <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>Displayed until {formatDate(poster.display_until)}</span>
                         )}
                       </div>
                     </TableCell>
