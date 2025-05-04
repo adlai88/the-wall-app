@@ -52,25 +52,23 @@ const LocationButton = styled(NavItem)`
 `;
 
 const AddPosterButton = styled.button`
-  display: none;
-  @media (max-width: 768px) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    background-color: black;
-    color: white;
-    font-size: 30px;
-    font-weight: bold;
-    border: 1px solid #222;
-    cursor: pointer;
-    margin: 0 10px;
-    flex-shrink: 0;
-    &:hover {
-      background-color: white;
-      color: black;
-    }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background-color: black;
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+  border: 1px solid #222;
+  cursor: pointer;
+  margin: 0 10px;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+  &:hover {
+    background-color: white;
+    color: black;
   }
 `;
 

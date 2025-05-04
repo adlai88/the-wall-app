@@ -1030,15 +1030,12 @@ export default function MapView({ events = [], setEvents, onNav }) {
           />
         </MapContainer>
         
+        {/* Only show floating PinPosterButton on mobile */}
         {isPlacingPin && (
-          <PinPosterButton onClick={exitPinMode}>
-            ×
-          </PinPosterButton>
+          <PinPosterButton onClick={exitPinMode} style={{ display: 'none' }} />
         )}
         {!isPlacingPin && (
-          <PinPosterButton onClick={handlePinPosterClick}>
-            +
-          </PinPosterButton>
+          <PinPosterButton onClick={handlePinPosterClick} style={{ display: 'none' }} />
         )}
       </MapContainerStyled>
       
