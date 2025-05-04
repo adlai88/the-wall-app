@@ -190,15 +190,15 @@ function UpcomingOverlayContent({ events, onClose }) {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', background: '#fff', borderBottom: '1px solid #eee', padding: 0, position: 'relative' }}>
         <div style={{ position: 'relative', width: '100%' }}>
           <CategoryScrollContainer ref={scrollRef}>
-            {categories.map(category => (
-              <CategoryButton
-                key={category}
-                active={selectedCategory === category}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </CategoryButton>
-            ))}
+          {categories.map(category => (
+            <CategoryButton
+              key={category}
+              active={selectedCategory === category}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category.charAt(0).toUpperCase() + category.slice(1)}
+            </CategoryButton>
+          ))}
           </CategoryScrollContainer>
           {showLeftBlur && <LeftBlur />}
           {showRightBlur && <RightBlur />}

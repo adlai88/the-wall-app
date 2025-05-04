@@ -240,9 +240,9 @@ const PinPosterButton = styled.button`
     color: black;
   }
 
-  /* Add safe area padding and adjust position on mobile */
+  /* Hide on mobile */
   @media (max-width: 768px) {
-    bottom: calc(50px + env(safe-area-inset-bottom, 0px));
+    display: none;
   }
 `;
 
@@ -1065,6 +1065,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
         onLocationClick={handleLocationClick}
         isLocating={isLocating}
         onNav={onNav}
+        onAddPoster={handlePinPosterClick}
       />
     </>
   );

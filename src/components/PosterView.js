@@ -310,24 +310,24 @@ export default function PosterView({ poster, onClose }) {
       </Overlay>
       {/* Mobile: details sheet with image at top */}
       {isMobile && (
-        <Sheet open={true} onClose={onClose} baseIndex={9100}>
-          <DetailsSection>
-            <MobileImage>
-              <Image
-                src={poster.poster_image}
-                alt={poster.title || 'Event Poster'}
-                width={800}
-                height={1200}
-                style={{ 
-                  width: '100%', 
-                  height: 'auto', 
-                  maxHeight: '60vh', 
-                  objectFit: 'contain'
-                }}
-                priority
-              />
-            </MobileImage>
-            <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
+      <Sheet open={true} onClose={onClose} baseIndex={9100}>
+        <DetailsSection>
+          <MobileImage>
+            <Image
+              src={poster.poster_image}
+              alt={poster.title || 'Event Poster'}
+              width={800}
+              height={1200}
+              style={{ 
+                width: '100%', 
+                height: 'auto', 
+                maxHeight: '60vh', 
+                objectFit: 'contain'
+              }}
+              priority
+            />
+          </MobileImage>
+          <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
             <div style={{ color: '#888', fontSize: 15, marginBottom: 12 }}>
               {poster.category === 'event' && poster.event_start_date ? (
                 <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>📅 {formatEventDate(poster.event_start_date, poster.event_end_date)}</span>
@@ -335,8 +335,8 @@ export default function PosterView({ poster, onClose }) {
                 <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>🗓️ Displayed until {formatDate(poster.display_until)}</span>
               )}
             </div>
-            <PosterLocation>
-              <span>📍</span>
+          <PosterLocation>
+            <span>📍</span>
               {poster.location && poster.location.trim() ? (
                 poster.location
               ) : poster.coordinates ? (
@@ -352,7 +352,7 @@ export default function PosterView({ poster, onClose }) {
               ) : (
                 'Location not specified'
               )}
-            </PosterLocation>
+          </PosterLocation>
             {poster.link && (
               <div style={{ fontSize: 15, margin: '0 0 16px 0' }}>
                 <a
@@ -366,7 +366,7 @@ export default function PosterView({ poster, onClose }) {
                 </a>
               </div>
             )}
-            {poster.description && (
+          {poster.description && (
               Array.isArray(poster.description)
                 ? poster.description.map((para, idx) => (
                     <PosterDescription key={idx}>{para}</PosterDescription>
@@ -378,9 +378,9 @@ export default function PosterView({ poster, onClose }) {
                       )}
                     </PosterDescription>
                   ))
-            )}
-          </DetailsSection>
-        </Sheet>
+          )}
+        </DetailsSection>
+      </Sheet>
       )}
     </>
   );

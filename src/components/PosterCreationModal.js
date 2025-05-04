@@ -547,7 +547,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
                 />
                 {linkError && <ErrorMessage>{linkError}</ErrorMessage>}
               </FormGroup>
-
+              
               <FormGroup>
                 <Label>Description</Label>
                 <TextArea

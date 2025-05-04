@@ -30,6 +30,8 @@ const NavItem = styled.div`
   color: ${props => props.$active ? 'black' : '#666'};
   cursor: pointer;
   letter-spacing: 0;
+  flex: 1;
+  max-width: 25%;
 `;
 
 const NavIcon = styled.div`
@@ -50,7 +52,31 @@ const LocationButton = styled(NavItem)`
   cursor: ${props => props.$isLocating ? 'wait' : 'pointer'};
 `;
 
-function BottomNav({ active, onLocationClick, isLocating, onNav }) {
+const AddPosterButton = styled.button`
+  display: none;
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: black;
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    border: 1px solid #222;
+    cursor: pointer;
+    margin: 0 10px;
+    flex-shrink: 0;
+    
+    &:hover {
+      background-color: white;
+      color: black;
+    }
+  }
+`;
+
+function BottomNav({ active, onLocationClick, isLocating, onNav, onAddPoster }) {
   const router = useRouter();
   
   return (
@@ -81,6 +107,9 @@ function BottomNav({ active, onLocationClick, isLocating, onNav }) {
         </NavIcon>
         <span>Location</span>
       </LocationButton>
+      <AddPosterButton onClick={onAddPoster} aria-label="Add Poster">
+        +
+      </AddPosterButton>
       <NavItem 
         $active={active === 'upcoming'} 
         onClick={() => onNav ? onNav('upcoming') : router.push('/upcoming')}
