@@ -569,13 +569,10 @@ export default function AdminModeration() {
         <EventContent>
           <div>
             <EventTitle>{poster.title}</EventTitle>
-            <EventDetails style={{ marginBottom: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <EventDetails style={{ marginBottom: 0, display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'flex-start' }}>
               {poster.category === 'event' && poster.event_start_date ? (
                 <>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <FiCalendar style={{ marginRight: 4, fontSize: 15 }} />
-                    {formatEventDate(poster.event_start_date, poster.event_end_date)}
-                  </span>
+                  <span>{formatEventDate(poster.event_start_date, poster.event_end_date)}</span>
                   <span>Displayed until {formatDate(poster.display_until)}</span>
                 </>
               ) : (
