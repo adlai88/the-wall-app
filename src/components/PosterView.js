@@ -226,7 +226,22 @@ export default function PosterView({ poster, onClose }) {
           </div>
           <PosterLocation>
             <span>📍</span>
-            {poster.location || 'Location not specified'}
+            {poster.location && poster.location.trim() ? (
+              poster.location
+            ) : poster.coordinates ? (
+              (() => {
+                // Try to parse coordinates as (lat,lon) or [lat,lon]
+                let lat = '', lon = '';
+                const match = poster.coordinates.match(/(-?\d+\.?\d*)[,\s]+(-?\d+\.?\d*)/);
+                if (match) {
+                  lat = match[1];
+                  lon = match[2];
+                }
+                return lat && lon ? `Latitude: ${lat}, Longitude: ${lon}` : 'Location not specified';
+              })()
+            ) : (
+              'Location not specified'
+            )}
           </PosterLocation>
           {poster.description && (
             <PosterDescription>{poster.description}</PosterDescription>

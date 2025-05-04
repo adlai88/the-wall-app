@@ -88,7 +88,8 @@ export default async function handler(req, res) {
           hidden: false,
           moderation_status: 'pending',
           event_start_date: posterData.event_start_date || null,
-          event_end_date: posterData.event_end_date || null
+          event_end_date: posterData.event_end_date || null,
+          link: posterData.link || null
         }])
         .select()
         .single();

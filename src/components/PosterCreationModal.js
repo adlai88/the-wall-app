@@ -258,18 +258,21 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
     })(),
     category: 'general',
     event_start_date: '',
-    event_end_date: ''
+    event_end_date: '',
+    link: ''
   });
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = React.useRef(null);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
   const [eventDateError, setEventDateError] = useState('');
+  const [linkError, setLinkError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setEventDateError('');
+    setLinkError('');
     
     // User-friendly error for missing image
     if (!formData.poster_image) {
@@ -311,6 +314,13 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
       }
     }
 
+    // Validate link if provided
+    if (formData.link && !/^https?:\/\//i.test(formData.link.trim())) {
+      setLinkError('Please enter a valid URL (must start with http:// or https://)');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const lat = coordinates[1].toFixed(6);
       const lng = coordinates[0].toFixed(6);
@@ -330,7 +340,8 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
           display_until: formData.display_until,
           poster_image: formData.poster_image,
           event_start_date: formData.category === 'event' ? formData.event_start_date : null,
-          event_end_date: formData.category === 'event' ? (formData.event_end_date || formData.event_start_date) : null
+          event_end_date: formData.category === 'event' ? (formData.event_end_date || formData.event_start_date) : null,
+          link: formData.link || null
         }),
       });
 
@@ -501,6 +512,19 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
                 {eventDateError && <ErrorMessage>{eventDateError}</ErrorMessage>}
               </>
             )}
+
+            <FormGroup>
+              <Label>Link <span style={{ color: '#888' }}>(optional)</span></Label>
+              <Input
+                type="url"
+                value={formData.link}
+                onChange={e => setFormData(prev => ({ ...prev, link: e.target.value }))}
+                placeholder="https://example.com"
+                pattern="https?://.+"
+                autoComplete="off"
+              />
+              {linkError && <ErrorMessage>{linkError}</ErrorMessage>}
+            </FormGroup>
 
             <div style={{ borderTop: '1px solid #e5e5e5', margin: '20px 0', paddingTop: '20px' }}>
               <div style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>Optional Details</div>
