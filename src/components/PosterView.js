@@ -244,6 +244,21 @@ export default function PosterView({ poster, onClose }) {
               'Location not specified'
             )}
           </PosterLocation>
+          {poster.link && (
+            <div style={{ fontSize: 15, margin: '0 0 16px 0', wordBreak: 'break-all' }}>
+              <a
+                href={poster.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#007aff', textDecoration: 'underline' }}
+                title={poster.link}
+              >
+                {poster.link.length > 40
+                  ? `${poster.link.slice(0, 24)}...${poster.link.slice(-11)}`
+                  : poster.link}
+              </a>
+            </div>
+          )}
           {poster.description && (
             Array.isArray(poster.description)
               ? poster.description.map((para, idx) => (

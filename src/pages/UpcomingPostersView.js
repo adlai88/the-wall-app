@@ -312,6 +312,21 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                     </TableCell>
                     <TableCell>
                       <TitleCell>{poster.title || 'Untitled Poster'}</TitleCell>
+                      {poster.link && (
+                        <div style={{ fontSize: 13, color: '#007aff', margin: '2px 0', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <a
+                            href={poster.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: '#007aff', textDecoration: 'underline', wordBreak: 'break-all' }}
+                            title={poster.link}
+                          >
+                            {poster.link.length > 32
+                              ? `${poster.link.slice(0, 18)}...${poster.link.slice(-11)}`
+                              : poster.link}
+                          </a>
+                        </div>
+                      )}
                       <div style={{ color: '#888', fontSize: 13, display: 'flex', flexDirection: 'column', gap: 2 }}>
                         {poster.category === 'event' && poster.event_start_date ? (
                           <>

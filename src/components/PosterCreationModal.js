@@ -374,9 +374,10 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
       // Compress image
       try {
         const options = {
-          maxSizeMB: 1,
+          maxSizeMB: 1.5,
           maxWidthOrHeight: 1920,
-          useWebWorker: true
+          useWebWorker: true,
+          initialQuality: 0.92
         };
         const compressedFile = await imageCompression(file, options);
         if (compressedFile.size > 4 * 1024 * 1024) { // 4MB limit
