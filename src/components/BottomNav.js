@@ -16,8 +16,8 @@ const NavContainer = styled.div`
   left: 0;
   z-index: 1000;
   /* Remove isolation property */
-  /* Add padding for iOS safe area */
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* Add padding for iOS safe area and extra comfort */
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
 `;
 
 const NavItem = styled.div`
