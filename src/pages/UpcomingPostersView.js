@@ -246,6 +246,40 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
     })
   }
 
+  const formatEventDate = (start, end) => {
+    if (!start) return '';
+    const startDate = new Date(start);
+    if (!end || end === start) {
+      return startDate.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    }
+    const endDate = new Date(end);
+    // If same month/year, show as 'Jun 1–3, 2024'
+    if (
+      startDate.getFullYear() === endDate.getFullYear() &&
+      startDate.getMonth() === endDate.getMonth()
+    ) {
+      return `${startDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+      })}–${endDate.getDate()}, ${endDate.getFullYear()}`;
+    }
+    // Otherwise, show full range
+    return `${startDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })} – ${endDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })}`;
+  };
+
   return (
     <>
       <Container style={{ background: '#fff' }}>
@@ -277,7 +311,13 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                     </TableCell>
                     <TableCell>
                       <TitleCell>{poster.title || 'Untitled Poster'}</TitleCell>
-                      <div style={{ color: '#888', fontSize: 13 }}>{formatDate(poster.display_until)}</div>
+                      <div style={{ color: '#888', fontSize: 13 }}>
+                        {poster.category === 'event' && poster.event_start_date ? (
+                          <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>📅 {formatEventDate(poster.event_start_date, poster.event_end_date)}</span>
+                        ) : (
+                          <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>🗓️ Displayed until {formatDate(poster.display_until)}</span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <ActionCell>

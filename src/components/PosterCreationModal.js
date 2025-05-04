@@ -256,16 +256,20 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
       date.setDate(date.getDate() + 30); // Default to 30 days from now
       return date.toISOString().split('T')[0];
     })(),
-    category: 'general'
+    category: 'general',
+    event_start_date: '',
+    event_end_date: ''
   });
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = React.useRef(null);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
+  const [eventDateError, setEventDateError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setEventDateError('');
     
     // User-friendly error for missing image
     if (!formData.poster_image) {
@@ -293,6 +297,20 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
       return;
     }
 
+    // Event date validation if category is event
+    if (formData.category === 'event') {
+      if (!formData.event_start_date) {
+        setEventDateError('Event start date is required for events.');
+        setIsSubmitting(false);
+        return;
+      }
+      if (formData.event_end_date && formData.event_end_date < formData.event_start_date) {
+        setEventDateError('Event end date cannot be before start date.');
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     try {
       const lat = coordinates[1].toFixed(6);
       const lng = coordinates[0].toFixed(6);
@@ -310,7 +328,9 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
           coordinates: formattedCoords,
           category: formData.category,
           display_until: formData.display_until,
-          poster_image: formData.poster_image
+          poster_image: formData.poster_image,
+          event_start_date: formData.category === 'event' ? formData.event_start_date : null,
+          event_end_date: formData.category === 'event' ? (formData.event_end_date || formData.event_start_date) : null
         }),
       });
 
@@ -455,6 +475,32 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
                 required
               />
             </FormGroup>
+
+            {/* Event date fields, only show if category is event */}
+            {formData.category === 'event' && (
+              <>
+                <FormGroup>
+                  <Label>Event Start Date <span style={{ color: '#ff3b30' }}>*</span></Label>
+                  <Input
+                    type="date"
+                    value={formData.event_start_date}
+                    onChange={e => setFormData(prev => ({ ...prev, event_start_date: e.target.value }))}
+                    min={new Date().toISOString().split('T')[0]}
+                    required
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Event End Date <span style={{ color: '#888' }}>(optional)</span></Label>
+                  <Input
+                    type="date"
+                    value={formData.event_end_date}
+                    onChange={e => setFormData(prev => ({ ...prev, event_end_date: e.target.value }))}
+                    min={formData.event_start_date || new Date().toISOString().split('T')[0]}
+                  />
+                </FormGroup>
+                {eventDateError && <ErrorMessage>{eventDateError}</ErrorMessage>}
+              </>
+            )}
 
             <div style={{ borderTop: '1px solid #e5e5e5', margin: '20px 0', paddingTop: '20px' }}>
               <div style={{ color: '#666', fontSize: '14px', marginBottom: '15px' }}>Optional Details</div>
