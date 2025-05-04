@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { toast } from 'sonner';
 import imageCompression from 'browser-image-compression';
 
@@ -255,6 +255,13 @@ const Select = styled.select`
   }
 `;
 
+const GlobalStyle = createGlobalStyle`
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
 export default function PosterCreationModal({ onClose, coordinates, onSubmit }) {
   const [formData, setFormData] = useState({
     title: '',
@@ -271,6 +278,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = React.useRef(null);
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -348,6 +356,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
         toast.error('Only JPEG and PNG images are supported.');
         return;
       }
+      setIsProcessingImage(true);
       // Compress image
       try {
         const options = {
@@ -358,6 +367,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
         const compressedFile = await imageCompression(file, options);
         if (compressedFile.size > 4 * 1024 * 1024) { // 4MB limit
           toast.error('Image is too large even after compression. Please choose a smaller image.');
+          setIsProcessingImage(false);
           return;
         }
         const reader = new FileReader();
@@ -374,10 +384,12 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
             }
           }));
           setPreviewUrl(base64String);
+          setIsProcessingImage(false);
         };
         reader.readAsDataURL(compressedFile);
       } catch (err) {
         toast.error('Failed to compress image. Please try another file.');
+        setIsProcessingImage(false);
       }
     }
   };
@@ -412,17 +424,26 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
                 $preview={previewUrl}
                 style={{ borderColor: !formData.poster_image ? '#ff3b30' : '#e5e5e5' }}
               >
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  accept="image/jpeg,image/png"
-                  style={{ display: 'none' }}
-                  required
-                />
-                <UploadText $preview={previewUrl}>
-                  Click to upload poster image
-                </UploadText>
+                {isProcessingImage ? (
+                  <div style={{ color: '#888', fontSize: 16, textAlign: 'center' }}>
+                    <span className="spinner" style={{ display: 'inline-block', marginRight: 8, width: 18, height: 18, border: '2px solid #ccc', borderTop: '2px solid #007aff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span>
+                    Processing image...
+                  </div>
+                ) : (
+                  <>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageUpload}
+                      accept="image/jpeg,image/png"
+                      style={{ display: 'none' }}
+                      required
+                    />
+                    <UploadText $preview={previewUrl}>
+                      Click to upload poster image
+                    </UploadText>
+                  </>
+                )}
               </ImageUpload>
             </FormGroup>
 
@@ -486,7 +507,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
         </ModalBody>
 
         <ButtonContainer>
-          <SubmitButton type="submit" disabled={isSubmitting} onClick={handleSubmit}>
+          <SubmitButton type="submit" disabled={isSubmitting || isProcessingImage} onClick={handleSubmit}>
             {isSubmitting ? 'Pinning Poster...' : 'Pin Poster'}
           </SubmitButton>
         </ButtonContainer>
