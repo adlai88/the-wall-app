@@ -275,22 +275,30 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
     e.preventDefault();
     setIsSubmitting(true);
     
+    // User-friendly error for missing image
     if (!formData.poster_image) {
-      toast.error('Please upload a poster image');
+      toast.error('Please upload a poster image before submitting.');
       setIsSubmitting(false);
       return;
     }
-
-    // Debug log for display_until value
-    console.log('Submitting display_until:', formData.display_until);
-
-    // Defensive: ensure display_until is always in YYYY-MM-DD format
-    let displayUntil = formData.display_until;
-    if (displayUntil) {
-      const dateObj = new Date(displayUntil);
-      if (!isNaN(dateObj.getTime())) {
-        displayUntil = dateObj.toISOString().split('T')[0];
-      }
+    // User-friendly error for missing category
+    if (!formData.category) {
+      toast.error('Please select a category for your poster.');
+      setIsSubmitting(false);
+      return;
+    }
+    // User-friendly error for missing or invalid date
+    if (!formData.display_until) {
+      toast.error('Please choose a date for how long your poster should be displayed.');
+      setIsSubmitting(false);
+      return;
+    }
+    const today = new Date();
+    const displayDate = new Date(formData.display_until);
+    if (displayDate < today.setHours(0,0,0,0)) {
+      toast.error('The display until date must be today or a future date.');
+      setIsSubmitting(false);
+      return;
     }
 
     try {
@@ -309,7 +317,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
           location: formData.location,
           coordinates: formattedCoords,
           category: formData.category,
-          display_until: displayUntil,
+          display_until: formData.display_until,
           poster_image: formData.poster_image
         }),
       });
@@ -457,12 +465,6 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
         </ModalBody>
 
         <ButtonContainer>
-          <div style={{ background: '#fffbe6', color: '#b36b00', padding: '10px', borderRadius: '6px', marginBottom: '10px', fontSize: '13px' }}>
-            <strong>DEBUG:</strong><br />
-            display_until: {String(formData.display_until)}<br />
-            coordinates: ({coordinates[1]?.toFixed(6)},{coordinates[0]?.toFixed(6)})<br />
-            poster_image: {formData.poster_image ? (typeof formData.poster_image === 'object' ? `type: ${formData.poster_image.type}, name: ${formData.poster_image.name}, data: ${(formData.poster_image.data || '').slice(0, 30)}...` : 'Invalid object') : 'null'}
-          </div>
           <SubmitButton type="submit" disabled={isSubmitting} onClick={handleSubmit}>
             {isSubmitting ? 'Pinning Poster...' : 'Pin Poster'}
           </SubmitButton>
