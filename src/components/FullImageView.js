@@ -6,7 +6,7 @@ const FullImageContainer = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  bottom: 60px; /* Match bottom nav height */
+  bottom: 0;
   background-color: rgba(0, 0, 0, 0.9);
   display: flex;
   justify-content: center;
@@ -15,7 +15,7 @@ const FullImageContainer = styled.div`
 
   /* Add safe area padding on mobile */
   @media (max-width: 768px) {
-    bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+    bottom: env(safe-area-inset-bottom, 0px);
   }
 `;
 

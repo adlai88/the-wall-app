@@ -263,7 +263,7 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
             <tbody>
               {filteredPosters.length > 0 ? (
                 filteredPosters.map(poster => (
-                  <TableRow key={poster.id}>
+                  <TableRow key={poster.id} style={{ cursor: 'pointer' }} onClick={() => handlePosterClick(poster)}>
                     <TableCell>
                       <Thumb>
                         <Image
@@ -286,7 +286,6 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                             ↗
                           </ExternalLink>
                         )}
-                        <MoreButton onClick={() => handlePosterClick(poster)} title="More options">…</MoreButton>
                       </ActionCell>
                     </TableCell>
                   </TableRow>
