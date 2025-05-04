@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import BottomNav from '../components/BottomNav'
 import FullImageView from '../components/FullImageView'
+import PosterView from '../components/PosterView'
 import { FiCalendar } from 'react-icons/fi'
 
 const Container = styled.div`
@@ -217,6 +218,7 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedImage, setSelectedImage] = useState(null)
+  const [selectedPoster, setSelectedPoster] = useState(null)
 
   const categories = ['all', 'general', 'event', 'announcement', 'community', 'other']
 
@@ -247,7 +249,7 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
     })
 
   const handlePosterClick = (poster) => {
-    setSelectedImage(poster.poster_image)
+    setSelectedPoster(poster)
   }
 
   const formatDate = (date) => {
@@ -372,6 +374,12 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
         </TableWrapper>
       </Container>
 
+      {selectedPoster && (
+        <PosterView
+          poster={selectedPoster}
+          onClose={() => setSelectedPoster(null)}
+        />
+      )}
       {selectedImage && (
         <FullImageView
           imageUrl={selectedImage}
