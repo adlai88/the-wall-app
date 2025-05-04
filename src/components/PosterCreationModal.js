@@ -281,6 +281,18 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
       return;
     }
 
+    // Debug log for display_until value
+    console.log('Submitting display_until:', formData.display_until);
+
+    // Defensive: ensure display_until is always in YYYY-MM-DD format
+    let displayUntil = formData.display_until;
+    if (displayUntil) {
+      const dateObj = new Date(displayUntil);
+      if (!isNaN(dateObj.getTime())) {
+        displayUntil = dateObj.toISOString().split('T')[0];
+      }
+    }
+
     try {
       const lat = coordinates[1].toFixed(6);
       const lng = coordinates[0].toFixed(6);
@@ -297,7 +309,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
           location: formData.location,
           coordinates: formattedCoords,
           category: formData.category,
-          display_until: formData.display_until,
+          display_until: displayUntil,
           poster_image: formData.poster_image
         }),
       });

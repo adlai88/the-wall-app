@@ -388,6 +388,7 @@ const PIN_SIZES = {
 
 // Add this helper function before the MapView component
 const parseCoordinates = (coordString) => {
+  if (!coordString) return null;
   const match = coordString.match(/^\((-?\d+\.?\d*),(-?\d+\.?\d*)\)$/);
   if (!match) return null;
   return [parseFloat(match[1]), parseFloat(match[2])]; // Return [lat, lng] for Leaflet
@@ -429,6 +430,19 @@ function LocationFlyToHandler({ flyToRequest, setFlyToRequest, setUserLocation, 
   return null;
 }
 
+// Transform the optimized data format back to full format
+const transformPoster = (poster) => ({
+  id: poster.id,
+  title: poster.t,
+  description: poster.d,
+  location: poster.l,
+  coordinates: poster.c,
+  category: poster.cat,
+  display_until: poster.du,
+  poster_image: poster.i,
+  status: poster.s
+});
+
 export default function MapView({ events = [], setEvents, onNav }) {
   const router = useRouter();
   const [position, setPosition] = useState([31.2304, 121.4737]);
@@ -454,7 +468,8 @@ export default function MapView({ events = [], setEvents, onNav }) {
   
   // Update filtered posters when events prop changes
   useEffect(() => {
-    setFilteredPosters(events);
+    const transformedEvents = events.map(transformPoster);
+    setFilteredPosters(transformedEvents);
   }, [events]);
   
   // Debounce search query
@@ -469,7 +484,8 @@ export default function MapView({ events = [], setEvents, onNav }) {
   // Use debounced query for filtering and geocoding
   useEffect(() => {
     if (!debouncedSearchQuery.trim()) {
-      setFilteredPosters(events);
+      const transformedEvents = events.map(transformPoster);
+      setFilteredPosters(transformedEvents);
       setPlaceSuggestions([]);
       setIsSearching(false);
       return;
@@ -478,7 +494,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
     const query = debouncedSearchQuery.toLowerCase().trim();
     
     // Optimize filtering by creating a single toLowerCase() version of the query
-    const filtered = events.filter(poster => {
+    const filtered = events.map(transformPoster).filter(poster => {
       const title = (poster.title || '').toLowerCase();
       const location = (poster.location || '').toLowerCase();
       const description = (poster.description || '').toLowerCase();
@@ -534,27 +550,83 @@ export default function MapView({ events = [], setEvents, onNav }) {
     }
   }, [debouncedSearchQuery, events]);
   
-  // Fetch posters periodically
+  // Load image sizes for posters with images
   useEffect(() => {
+    const loadImageSizes = async (poster) => {
+      if (!poster.poster_image || imageSizes[poster.id]) return;
+      
+      return new Promise((resolve) => {
+        const img = new window.Image();
+        img.onload = function () {
+          let width = img.naturalWidth;
+          let height = img.naturalHeight;
+          // Fit within max dimensions, preserving aspect ratio
+          const ratio = Math.min(
+            MAX_MARKER_WIDTH / width,
+            MAX_MARKER_HEIGHT / height,
+            1
+          );
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+          resolve({ width, height });
+        };
+        img.src = poster.poster_image;
+      });
+    };
+
+    // Load images in batches of 5 to prevent overwhelming the browser
+    const loadBatch = async (posters) => {
+      const batchSize = 5;
+      for (let i = 0; i < posters.length; i += batchSize) {
+        const batch = posters.slice(i, i + batchSize);
+        const sizes = await Promise.all(
+          batch.map(async (poster) => {
+            const size = await loadImageSizes(poster);
+            return { id: poster.id, size };
+          })
+        );
+        
+        setImageSizes(prev => {
+          const newSizes = { ...prev };
+          sizes.forEach(({ id, size }) => {
+            if (size) newSizes[id] = size;
+          });
+          return newSizes;
+        });
+      }
+    };
+
+    loadBatch(events);
+  }, [events]);
+
+  // Fetch posters periodically with exponential backoff
+  useEffect(() => {
+    let interval = 30000; // Start with 30 seconds
+    const maxInterval = 300000; // Max 5 minutes
+    let timeoutId;
+
     const fetchPosters = async () => {
       try {
         const response = await fetch('/api/posters');
         const posters = await response.json();
         if (Array.isArray(posters)) {
-          setEvents(posters); // Update parent state
+          setEvents(posters);
+          // If successful, gradually increase the interval
+          interval = Math.min(interval * 1.5, maxInterval);
         }
       } catch (error) {
         console.error('Error fetching posters:', error);
+        // If error, reduce the interval back to 30 seconds
+        interval = 30000;
+      } finally {
+        timeoutId = setTimeout(fetchPosters, interval);
       }
     };
 
     // Fetch immediately
     fetchPosters();
 
-    // Then fetch every 30 seconds
-    const interval = setInterval(fetchPosters, 30000);
-    
-    return () => clearInterval(interval);
+    return () => clearTimeout(timeoutId);
   }, [setEvents]);
   
   // Test weather API on mount
@@ -591,32 +663,6 @@ export default function MapView({ events = [], setEvents, onNav }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Load image sizes for posters with images
-  useEffect(() => {
-    const newSizes = {};
-    let changed = false;
-    events.forEach((poster) => {
-      if (poster.poster_image && !imageSizes[poster.id]) {
-        const img = new window.Image();
-        img.onload = function () {
-          let width = img.naturalWidth;
-          let height = img.naturalHeight;
-          // Fit within max dimensions, preserving aspect ratio
-          const ratio = Math.min(
-            MAX_MARKER_WIDTH / width,
-            MAX_MARKER_HEIGHT / height,
-            1
-          );
-          width = Math.round(width * ratio);
-          height = Math.round(height * ratio);
-          setImageSizes((prev) => ({ ...prev, [poster.id]: { width, height } }));
-        };
-        img.src = poster.poster_image;
-      }
-    });
-    // eslint-disable-next-line
-  }, [events]);
-
   // Helper function to get color based on category
   const getCategoryColor = (category) => {
     const colors = {
@@ -630,8 +676,8 @@ export default function MapView({ events = [], setEvents, onNav }) {
     return colors[category] || '#ff5722';
   };
 
-  // Create custom marker icon for each poster
-  const createMarkerIcon = (poster) => {
+  // Create custom marker icon for each poster with image preloading
+  const createMarkerIcon = useCallback((poster) => {
     const now = new Date();
     const displayUntil = new Date(poster.display_until);
     const daysUntil = Math.ceil((displayUntil - now) / (1000 * 60 * 60 * 24));
@@ -649,7 +695,18 @@ export default function MapView({ events = [], setEvents, onNav }) {
     // If we have image size, use it for the icon size
     const imgSize = imageSizes[poster.id];
     if (poster.poster_image && imgSize) {
-      const imgStyle = 'width: 100%; height: 100%; display: block; box-sizing: border-box; vertical-align: bottom; margin: 0; padding: 0; object-fit: fill;';
+      const imgStyle = `
+        width: 100%;
+        height: 100%;
+        display: block;
+        box-sizing: border-box;
+        vertical-align: bottom;
+        margin: 0;
+        padding: 0;
+        object-fit: fill;
+        background-color: ${categoryColor};
+      `;
+
       return L.divIcon({
         className: 'custom-marker',
         html: `
@@ -670,6 +727,8 @@ export default function MapView({ events = [], setEvents, onNav }) {
             <img 
               src="${poster.poster_image}" 
               style="${imgStyle}"
+              loading="lazy"
+              decoding="async"
               onerror="this.style.display='none'; this.parentElement.style.backgroundColor='${categoryColor}';"
             />
           </div>
@@ -678,6 +737,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
         iconAnchor: [imgSize.width / 2, imgSize.height / 2],
       });
     }
+
     // Fallback: brutalist square
     return L.divIcon({
       className: 'custom-marker',
@@ -704,7 +764,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
       iconSize: [baseSize, baseSize],
       iconAnchor: [baseSize / 2, baseSize / 2],
     });
-  };
+  }, [imageSizes]);
   
   // Handle marker click
   const handleMarkerClick = (poster) => {

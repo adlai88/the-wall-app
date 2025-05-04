@@ -9,18 +9,36 @@ export const config = {
 };
 
 export default async function handler(req, res) {
+  // Set Cache-Control header for GET requests
   if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
+    
     try {
       const { data, error } = await supabase
         .from('posters')
-        .select('*')
+        .select('id, title, description, location, coordinates, category, display_until, poster_image, status')
         .eq('moderation_status', 'approved')
         .eq('hidden', false)
         .eq('status', 'active')
         .gt('display_until', new Date().toISOString()) // Only show posters that are still meant to be displayed
+        .order('display_until', { ascending: true });
       
       if (error) throw error;
-      return res.status(200).json(data);
+      
+      // Transform the data to reduce payload size
+      const transformedData = data.map(poster => ({
+        id: poster.id,
+        t: poster.title || '',
+        d: poster.description || '',
+        l: poster.location || '',
+        c: poster.coordinates,
+        cat: poster.category,
+        du: poster.display_until,
+        i: poster.poster_image,
+        s: poster.status
+      }));
+
+      return res.status(200).json(transformedData);
     } catch (error) {
       console.error('Error fetching posters:', error);
       return res.status(500).json({ error: 'Error fetching posters' });
