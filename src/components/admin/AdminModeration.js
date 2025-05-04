@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { supabase } from '../../lib/supabase';
 import { toast } from 'sonner';
+import { FiCalendar } from 'react-icons/fi';
 
 const Container = styled.div`
   width: 100%;
@@ -330,6 +331,49 @@ const NoEvents = styled.div`
   color: #666;
 `;
 
+const formatEventDate = (start, end) => {
+  if (!start) return '';
+  const startDate = new Date(start);
+  if (!end || end === start) {
+    return startDate.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }
+  const endDate = new Date(end);
+  if (
+    startDate.getFullYear() === endDate.getFullYear() &&
+    startDate.getMonth() === endDate.getMonth()
+  ) {
+    return `${startDate.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+    })}–${endDate.getDate()}, ${endDate.getFullYear()}`;
+  }
+  return `${startDate.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })} – ${endDate.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })}`;
+};
+
+const formatDate = (date) => {
+  if (!date) return '';
+  const d = new Date(date);
+  return d.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
+
 export default function AdminModeration() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('pending');
@@ -525,7 +569,19 @@ export default function AdminModeration() {
         <EventContent>
           <div>
             <EventTitle>{poster.title}</EventTitle>
-            <EventDetails>Display until: {new Date(poster.display_until).toLocaleDateString()}</EventDetails>
+            <EventDetails style={{ marginBottom: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {poster.category === 'event' && poster.event_start_date ? (
+                <>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <FiCalendar style={{ marginRight: 4, fontSize: 15 }} />
+                    {formatEventDate(poster.event_start_date, poster.event_end_date)}
+                  </span>
+                  <span>Displayed until {formatDate(poster.display_until)}</span>
+                </>
+              ) : (
+                <span>Displayed until {formatDate(poster.display_until)}</span>
+              )}
+            </EventDetails>
             <PosterStatus $expired={new Date(poster.display_until) < new Date() || poster.status === 'expired'}>
               {new Date(poster.display_until) < new Date() || poster.status === 'expired' ? 'Expired' : 'Active'}
             </PosterStatus>
