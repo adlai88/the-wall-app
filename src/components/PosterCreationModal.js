@@ -455,6 +455,12 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
         </ModalBody>
 
         <ButtonContainer>
+          {/* TEMPORARY DEBUG INFO FOR MOBILE */}
+          <div style={{ background: '#fffbe6', color: '#b36b00', padding: '10px', borderRadius: '6px', marginBottom: '10px', fontSize: '13px' }}>
+            <strong>DEBUG:</strong><br />
+            display_until: {String(formData.display_until)}<br />
+            poster_image: {formData.poster_image ? (typeof formData.poster_image === 'object' ? `type: ${formData.poster_image.type}, name: ${formData.poster_image.name}, data: ${(formData.poster_image.data || '').slice(0, 30)}...` : 'Invalid object') : 'null'}
+          </div>
           <SubmitButton type="submit" disabled={isSubmitting} onClick={handleSubmit}>
             {isSubmitting ? 'Pinning Poster...' : 'Pin Poster'}
           </SubmitButton>
