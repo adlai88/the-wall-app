@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import BottomNav from '../components/BottomNav'
 import FullImageView from '../components/FullImageView'
+import { FiCalendar } from 'react-icons/fi'
 
 const Container = styled.div`
   width: 100%;
@@ -311,11 +312,13 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                     </TableCell>
                     <TableCell>
                       <TitleCell>{poster.title || 'Untitled Poster'}</TitleCell>
-                      <div style={{ color: '#888', fontSize: 13 }}>
+                      <div style={{ color: '#888', fontSize: 13, display: 'flex', flexDirection: 'column', gap: 2 }}>
                         {poster.category === 'event' && poster.event_start_date ? (
                           <>
-                            <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>📅 {formatEventDate(poster.event_start_date, poster.event_end_date)}</span>
-                            <br />
+                            <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <FiCalendar style={{ marginRight: 4, fontSize: 15 }} />
+                              {formatEventDate(poster.event_start_date, poster.event_end_date)}
+                            </span>
                             <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>Displayed until {formatDate(poster.display_until)}</span>
                           </>
                         ) : (
