@@ -27,8 +27,8 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>The Wall App</title>
-        <meta name="description" content="Discover and share events in your city" />
+        <title>Wallllll</title>
+        <meta name="description" content="Discover and share happenings in your city" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
