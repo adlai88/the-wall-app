@@ -271,8 +271,7 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                           alt={poster.title || 'Untitled Poster'}
                           width={48}
                           height={48}
-                          objectFit="cover"
-                          style={{ borderRadius: 6 }}
+                          style={{ borderRadius: 6, objectFit: 'cover', width: 48, height: 48 }}
                         />
                       </Thumb>
                     </TableCell>
