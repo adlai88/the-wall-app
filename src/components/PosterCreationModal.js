@@ -536,7 +536,7 @@ export default function PosterCreationModal({ onClose, coordinates, onSubmit }) 
               </FormGroup>
 
               <FormGroup>
-                <Label>Link <span style={{ color: '#888' }}>(optional)</span></Label>
+                <Label>Link <span style={{ color: '#888' }}></span></Label>
                 <Input
                   type="url"
                   value={formData.link}
