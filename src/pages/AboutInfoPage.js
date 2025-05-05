@@ -93,7 +93,7 @@ export default function AboutInfoPage() {
           <li>Browse the map to discover posters pinned to locations.</li>
           <li>Tap on pins to view details.</li>
           <li>Add your own poster by uploading an image and pinning it to a location.</li>
-          <li>Posters can be displayed on the map for a maximum of 30 days before disappearing.</li>
+          <li>Posters are displayed on the map for a maximum of 30 days before disappearing.</li>
         </SectionContent>
       </Section>
 
