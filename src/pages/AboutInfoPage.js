@@ -84,14 +84,14 @@ export default function AboutInfoPage() {
         />
       </Logo>
       <Description>
-        Wallllll is a global culture map for people to discover happenings around their city (and the world) without registration or social interactions.
+        Wallllll is a global culture map that lets people discover happenings around their city (and the world) without registration or social interactions.
       </Description>
 
       <Section>
         <SectionTitle>How It Works</SectionTitle>
         <SectionContent as="ul" style={{ paddingLeft: 20, margin: 0 }}>
           <li>Browse the map to discover posters pinned to locations.</li>
-          <li>Tap on pins to view details.</li>
+          <li>Tap on posters to view details.</li>
           <li>Add your own poster by uploading an image and pinning it to a location.</li>
           <li>Posters are displayed on the map for a maximum of 30 days before disappearing.</li>
         </SectionContent>
@@ -100,7 +100,7 @@ export default function AboutInfoPage() {
       <Section>
         <SectionTitle>For Event Organizers</SectionTitle>
         <SectionContent>
-          Promote your events by adding them to Wallllll. Simply upload your event poster, set the location and time, and submit for approval. Your event will be visible to all users after moderation.
+          Promote your events by adding them to the map. Simply upload your event poster, set the location and time, and submit for approval. Your event will be visible to all users after moderation.
         </SectionContent>
       </Section>
 
