@@ -112,7 +112,7 @@ export default function AddToHomeScreenDrawer({ open, onClose }) {
               </Step>
               <Step>
                 <span style={{ fontWeight: 700, marginRight: 10 }}>3.</span>
-                <span className="step-label">Open <span style={{ fontWeight: 600 }}>Wallllll app</span> on your home screen</span>
+                <span className="step-label">Open Wallllll app on your home screen</span>
               </Step>
             </Steps>
           </DrawerContent>
