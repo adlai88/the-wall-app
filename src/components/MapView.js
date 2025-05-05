@@ -456,7 +456,10 @@ export default function MapView({ events = [], setEvents, onNav }) {
   // Update filtered posters when events prop changes
   useEffect(() => {
     if (events && events.length > 0) {
-    setFilteredPosters(events);
+      setFilteredPosters(events);
+      setLoading(false);
+    } else if (events && events.length === 0) {
+      setFilteredPosters([]);
       setLoading(false);
     }
   }, [events]);
@@ -541,7 +544,6 @@ export default function MapView({ events = [], setEvents, onNav }) {
   // Fetch posters periodically
   useEffect(() => {
     const fetchPosters = async () => {
-      setLoading(true);
       try {
         const response = await fetch('/api/posters');
         const posters = await response.json();
@@ -550,8 +552,6 @@ export default function MapView({ events = [], setEvents, onNav }) {
         }
       } catch (error) {
         console.error('Error fetching posters:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
