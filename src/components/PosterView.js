@@ -7,7 +7,7 @@ import { FiCalendar, FiClock, FiMapPin, FiLink } from 'react-icons/fi';
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: transparent;
+  background: rgba(0,0,0,0.32);
   z-index: 9000;
   display: flex;
   flex-direction: row;
@@ -16,6 +16,7 @@ const Overlay = styled.div`
   width: 100vw;
   height: 100vh;
   padding: 0;
+  pointer-events: auto;
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: stretch;

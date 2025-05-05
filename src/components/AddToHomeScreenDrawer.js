@@ -89,7 +89,7 @@ export default function AddToHomeScreenDrawer({ open, onClose }) {
   return (
     <Drawer.Root open={open} onOpenChange={onClose} modal forceMount>
       <Drawer.Portal>
-        <Drawer.Overlay style={{ background: 'rgba(0,0,0,0.18)' }} />
+        <Drawer.Overlay style={{ background: 'rgba(0,0,0,0.48)', zIndex: 9998, height: '100vh', width: '100vw', position: 'fixed', top: 0, left: 0, right: 0 }} />
         <Drawer.Content style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 99999 }}>
           <DrawerContent>
             <Handle />

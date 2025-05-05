@@ -93,6 +93,7 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - [x] Added loading state to MapView to prevent markers from rendering until posters are loaded; loading indicator shown (fixes marker flash/disappear issue)
 - [x] Loading indicator background now matches MapView background color (#e0e0e0) for visual consistency
 - [x] Loading indicator overlay now has no background (fully transparent)
+- [x] Made Drawer.Overlay background darker (rgba(0,0,0,0.48)) for all overlays and drawers
 
 # Executor's Feedback or Assistance Requests
 
@@ -118,6 +119,7 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - A loading state was added to MapView so markers are not rendered until posters are loaded, and a loading indicator is shown. This should address the issue of markers flashing and disappearing on initial load. Please review the behavior and let me know if the issue is resolved or if further investigation is needed.
 - The loading indicator overlay now uses the same background color as the MapView (#e0e0e0) for a seamless and consistent appearance. Please review visually to confirm the change meets your expectations.
 - The loading indicator overlay now has no background, making it fully transparent. Please review visually to confirm the change meets your expectations.
+- The Drawer.Overlay background is now darker (rgba(0,0,0,0.48)) for all overlays and drawers, making the modal effect more pronounced. Please review visually to confirm the change meets your expectations.
 
 # Current Status / Progress Tracking
 

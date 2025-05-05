@@ -292,7 +292,7 @@ export default function Home() {
           {/* Upcoming overlay as Drawer */}
           <Drawer.Root key="upcoming-drawer" open={overlay === 'upcoming'} onOpenChange={open => setOverlay(open ? 'upcoming' : null)} forceMount>
             <Drawer.Portal>
-              <Drawer.Overlay style={{ background: 'rgba(0,0,0,0.32)' }} />
+              <Drawer.Overlay style={{ background: 'rgba(0,0,0,0.48)', zIndex: 9998, height: '100vh', width: '100vw', position: 'fixed', top: 0, left: 0, right: 0 }} />
               <Drawer.Content 
                 description="Browse upcoming posters and events"
                 style={{ 
@@ -337,7 +337,7 @@ export default function Home() {
           {/* About overlay as Drawer */}
           <Drawer.Root key="about-drawer" open={overlay === 'about'} onOpenChange={open => setOverlay(open ? 'about' : null)} forceMount>
             <Drawer.Portal>
-              <Drawer.Overlay style={{ background: 'rgba(0,0,0,0.32)' }} />
+              <Drawer.Overlay style={{ background: 'rgba(0,0,0,0.48)', zIndex: 9998, height: '100vh', width: '100vw', position: 'fixed', top: 0, left: 0, right: 0 }} />
               <Drawer.Content 
                 description="About The Wall App"
                 style={{ 
