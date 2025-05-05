@@ -439,7 +439,6 @@ export default function AdminModeration() {
         case 'expired':
           query = query
             .eq('moderation_status', 'approved')
-            .eq('status', 'expired')
             .eq('hidden', false);
           break;
         case 'rejected':
@@ -518,9 +517,27 @@ export default function AdminModeration() {
     const loadPosters = async () => {
       try {
         // Fetch posters for current tab
-        const posters = await fetchPosters(activeTab);
+        let posters = await fetchPosters(activeTab);
+
+        // --- Frontend filtering for approved/expired tabs ---
+        const now = new Date();
+        if (activeTab === 'approved') {
+          posters = posters.filter(
+            poster =>
+              poster.status === 'active' &&
+              new Date(poster.display_until) >= now
+          );
+        } else if (activeTab === 'expired') {
+          posters = posters.filter(
+            poster =>
+              poster.status === 'expired' ||
+              new Date(poster.display_until) < now
+          );
+        }
+        // ---------------------------------------------------
+
         setFilteredPosters(posters);
-        
+
         // Always fetch pending count regardless of active tab
         if (activeTab !== 'pending') {
           const pendingPosters = await fetchPosters('pending');
@@ -528,7 +545,7 @@ export default function AdminModeration() {
         } else {
           setPendingCount(posters.length);
         }
-        
+
         setLoading(false);
       } catch (err) {
         setError(err.message);
