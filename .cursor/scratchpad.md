@@ -94,6 +94,7 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - [x] Loading indicator background now matches MapView background color (#e0e0e0) for visual consistency
 - [x] Loading indicator overlay now has no background (fully transparent)
 - [x] Made Drawer.Overlay background darker (rgba(0,0,0,0.48)) for all overlays and drawers
+- [x] Remove the three emoji icons at the bottom of the About page (AboutInfoPage.js)
 
 # Executor's Feedback or Assistance Requests
 
@@ -120,6 +121,7 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - The loading indicator overlay now uses the same background color as the MapView (#e0e0e0) for a seamless and consistent appearance. Please review visually to confirm the change meets your expectations.
 - The loading indicator overlay now has no background, making it fully transparent. Please review visually to confirm the change meets your expectations.
 - The Drawer.Overlay background is now darker (rgba(0,0,0,0.48)) for all overlays and drawers, making the modal effect more pronounced. Please review visually to confirm the change meets your expectations.
+- The three emoji icons (📱💬📍) at the bottom of the About page have been removed as requested. User has confirmed the change is complete. No further action needed for this task.
 
 # Current Status / Progress Tracking
 

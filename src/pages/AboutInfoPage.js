@@ -111,11 +111,6 @@ export default function AboutInfoPage() {
         <Button onClick={() => window.open('mailto:report@example.com')}>
           Make a Donation
         </Button>
-        <IconContainer>
-          <span>📱</span>
-          <span>💬</span>
-          <span>📍</span>
-        </IconContainer>
       </ContactSection>
     </Container>
   );
