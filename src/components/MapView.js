@@ -444,7 +444,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCoordinates, setSelectedCoordinates] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
-  const [imageSizes, setImageSizes] = useState({}); // { [posterId]: { width, height } }
+  const [imageSizes, setImageSizes] = useState({});
   const [locationFlyToRequest, setLocationFlyToRequest] = useState(false);
   const [tipsCollapsed, setTipsCollapsed] = useState(true);
   const [placeSuggestions, setPlaceSuggestions] = useState([]);
@@ -454,8 +454,10 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
   const MAX_RETRIES = 3;
-  const RETRY_DELAY = 2000; // 2 seconds
+  const RETRY_DELAY = 2000;
   const mapRef = useRef(null);
+  const fetchTimeoutRef = useRef(null);
+  const fetchIntervalRef = useRef(null);
   
   // Update filtered posters when events prop changes
   useEffect(() => {
@@ -588,10 +590,12 @@ export default function MapView({ events = [], setEvents, onNav }) {
           throw new Error('Invalid data format received from server');
         }
 
-        // Update both local and parent state
-        setEvents(posters);
-        setFilteredPosters(posters);
-        persistPosters(posters);
+        // Only update if we have new data
+        if (posters.length > 0) {
+          setEvents(posters);
+          setFilteredPosters(posters);
+          persistPosters(posters);
+        }
         setLoading(false);
         setRetryCount(0); // Reset retry count on success
       } catch (error) {
@@ -607,7 +611,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
         // Implement retry logic
         if (retryCount < MAX_RETRIES) {
           setRetryCount(prev => prev + 1);
-          setTimeout(fetchPosters, RETRY_DELAY);
+          fetchTimeoutRef.current = setTimeout(fetchPosters, RETRY_DELAY);
         } else {
           setLoading(false);
         }
@@ -621,10 +625,18 @@ export default function MapView({ events = [], setEvents, onNav }) {
       setLoading(false);
     }
 
-    // Set up periodic refresh
-    const interval = setInterval(fetchPosters, 30000);
+    // Set up periodic refresh with a more reliable interval
+    fetchIntervalRef.current = setInterval(fetchPosters, 30000);
     
-    return () => clearInterval(interval);
+    return () => {
+      // Clean up timeouts and intervals
+      if (fetchTimeoutRef.current) {
+        clearTimeout(fetchTimeoutRef.current);
+      }
+      if (fetchIntervalRef.current) {
+        clearInterval(fetchIntervalRef.current);
+      }
+    };
   }, [setEvents, retryCount]);
 
   // Add network connectivity handling
@@ -811,27 +823,36 @@ export default function MapView({ events = [], setEvents, onNav }) {
 
   const handleEventSubmit = async (posterData) => {
     try {
-      // No need to parse coordinates or show toast here
-      // PosterCreationModal handles all of that
       const data = await posterData;
       
-      // Refresh posters list
-      try {
-        const response = await fetch('/api/posters');
-        const updatedPosters = await response.json();
-        
-        if (Array.isArray(updatedPosters)) {
-          setEvents(updatedPosters);
-          setFilteredPosters(updatedPosters);
+      // Refresh posters list with retry logic
+      let retries = 0;
+      const maxRetries = 3;
+      
+      const refreshPosters = async () => {
+        try {
+          const response = await fetch('/api/posters');
+          if (!response.ok) throw new Error('Failed to fetch updated posters');
+          
+          const updatedPosters = await response.json();
+          if (Array.isArray(updatedPosters)) {
+            setEvents(updatedPosters);
+            setFilteredPosters(updatedPosters);
+            persistPosters(updatedPosters);
+          }
+        } catch (error) {
+          console.error('Error refreshing posters:', error);
+          if (retries < maxRetries) {
+            retries++;
+            setTimeout(refreshPosters, 1000 * retries);
+          }
         }
-      } catch (error) {
-        console.error('Error fetching updated posters:', error);
-      }
-
+      };
+      
+      await refreshPosters();
       return data;
     } catch (error) {
       console.error('Error handling poster submission:', error);
-      // Don't show toast here, let PosterCreationModal handle errors
     }
   };
 
