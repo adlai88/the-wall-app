@@ -18,9 +18,9 @@ const SuggestionsContainer = styled.div`
   /* On mobile, adjust width for 'list' context to match search input */
   @media (max-width: 768px) {
     ${({ context }) => context === 'list' && `
-      left: 0;
-      right: 0;
-      width: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
     `}
     ${({ context }) => context === 'map' && `
       left: 8px;

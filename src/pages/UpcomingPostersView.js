@@ -742,29 +742,29 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
         <CategoryScrollWrapper>
           {isMobile && showLeftBlur && <LeftBlur />}
           <CategoryScrollContainer ref={categoryScrollRef}>
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                style={{
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              style={{
                   background: selectedCategory === cat ? '#222' : '#f5f5f5',
-                  color: selectedCategory === cat ? 'white' : '#222',
-                  border: 'none',
-                  borderRadius: 5,
-                  padding: '4px 10px',
-                  fontWeight: 500,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                  transition: 'background 0.15s',
+                color: selectedCategory === cat ? 'white' : '#222',
+                border: 'none',
+                borderRadius: 5,
+                padding: '4px 10px',
+                fontWeight: 500,
+                fontSize: 13,
+                cursor: 'pointer',
+                transition: 'background 0.15s',
                   outline: selectedCategory === cat ? '2px solid #222' : 'none',
                   boxShadow: selectedCategory === cat ? '0 2px 8px rgba(34,34,34,0.08)' : 'none',
-                  fontFamily: 'inherit',
+                fontFamily: 'inherit',
                   whiteSpace: 'nowrap',
-                }}
-              >
-                {cat.charAt(0).toUpperCase() + cat.slice(1)}
-              </button>
-            ))}
+              }}
+            >
+              {cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </button>
+          ))}
           </CategoryScrollContainer>
           {isMobile && showRightBlur && <RightBlur />}
         </CategoryScrollWrapper>

@@ -456,7 +456,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   // Update filtered posters when events prop changes
   useEffect(() => {
     if (events && events.length > 0) {
-      setFilteredPosters(events);
+    setFilteredPosters(events);
       setLoading(false);
     }
   }, [events]);
@@ -976,7 +976,20 @@ export default function MapView({ events = [], setEvents, onNav }) {
         )}
         
         {loading ? (
-          <div style={{ position: 'absolute', top: 80, left: 0, right: 0, textAlign: 'center', zIndex: 2002, color: '#888', fontSize: 18, padding: 24 }}>
+          <div style={{ 
+            position: 'absolute', 
+            top: 0,
+            left: 0, 
+            right: 0, 
+            bottom: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 2002, 
+            color: '#888', 
+            fontSize: 16, 
+            padding: 24 
+          }}>
             Loading posters...
           </div>
         ) : null}
