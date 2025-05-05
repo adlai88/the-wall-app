@@ -60,6 +60,21 @@ Currently, the list view displays posters from all cities, which can be overwhel
 
 # Project Status Board
 
+- [x] Set up Next.js project with TypeScript
+- [x] Configure Tailwind CSS
+- [x] Set up ESLint and Prettier
+- [x] Create basic project structure
+- [x] Set up PWA configuration
+- [ ] Implement authentication system
+- [ ] Create user profile management
+- [ ] Implement wall creation and management
+- [ ] Add event posting functionality
+- [ ] Implement real-time updates
+- [ ] Add search and filtering
+- [ ] Implement notifications
+- [ ] Add analytics
+- [ ] Set up testing framework
+- [ ] Deploy to production
 - [x] Add debug log for formData.display_until before submission in PosterCreationModal.js
 - [x] Add defensive code to ensure date is always in YYYY-MM-DD format before sending to backend
 - [ ] User to test on mobile and report if error persists
