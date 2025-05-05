@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, useRef } from 'react'
 import Image from 'next/image'
-import styled from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 import { useRouter } from 'next/router'
 import BottomNav from '../components/BottomNav'
 import PosterView from '../components/PosterView'
@@ -343,6 +343,8 @@ const CategoryScrollContainer = styled.div`
   position: relative;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  padding-left: 20px;
+  padding-right: 20px;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -350,6 +352,8 @@ const CategoryScrollContainer = styled.div`
     flex-wrap: wrap;
     overflow-x: visible;
     white-space: normal;
+    padding-left: 0;
+    padding-right: 0;
   }
 `;
 
@@ -357,7 +361,7 @@ const BlurOverlay = styled.div`
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 18px;
+  width: 16px;
   pointer-events: none;
   z-index: 1;
 `;
@@ -370,6 +374,13 @@ const LeftBlur = styled(BlurOverlay)`
 const RightBlur = styled(BlurOverlay)`
   right: 0;
   background: linear-gradient(to left, #fff 70%, rgba(255,255,255,0));
+`;
+
+const NoDrawerOutline = createGlobalStyle`
+  [role="dialog"], [role="dialog"] *:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
 `;
 
 function useIsMobile() {
@@ -648,6 +659,7 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
 
   return (
     <>
+      <NoDrawerOutline />
       <Container style={{ background: '#fff' }}>
         <div style={{ position: 'relative', width: '100%', maxWidth: 600, margin: '0 auto' }}>
           <SearchBar>

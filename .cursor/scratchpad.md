@@ -84,6 +84,7 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - [x] List view search results box now matches search input width on mobile (does not affect map view)
 - [x] Category buttons in list view are now horizontally scrollable on mobile with edge blur (UI/UX improvement)
 - [x] Category scroll blur overlays now only appear on mobile and only when needed (not on desktop, not when at scroll edge)
+- [x] Fixed category scroll cropping by adding horizontal padding and adjusting blur overlay width; removed blue focus border from drawer (UI polish)
 
 # Executor's Feedback or Assistance Requests
 
@@ -100,6 +101,7 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - The search results box in the list view now matches the search input width on mobile, while the map view search results box remains unchanged. Please review visually to confirm the fix meets your expectations.
 - The category buttons in the list view are now horizontally scrollable on mobile, with a blur effect on the left and right edges for visual polish. Please review on your device to confirm the new behavior and appearance meet your expectations.
 - The left/right blur overlays for the category scroll now only appear on mobile and only when there is overflow in that direction. This resolves the visual issue on desktop and improves mobile UX. Please review on your device to confirm the fix meets your expectations.
+- Category scroll now has horizontal padding so the first and last buttons are not cropped by the blur overlays. Blur overlay width was also slightly reduced. A global style was added to remove the blue focus border from the drawer and its children. Please review on your device to confirm both issues are resolved.
 
 # Current Status / Progress Tracking
 
