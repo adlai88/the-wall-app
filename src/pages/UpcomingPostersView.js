@@ -568,7 +568,17 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
           }
         } catch (err) {
           toast.dismiss();
-          toast.error('Error searching for place');
+          console.error('Geocoding error:', err);
+          // More specific error messages based on error type
+          if (err.message?.includes('timeout')) {
+            toast.error('Search timed out. Please try again.');
+          } else if (err.message?.includes('network')) {
+            toast.error('Network error. Please check your connection.');
+          } else if (err.message?.includes('quota')) {
+            toast.error('Search limit reached. Please try again later.');
+          } else {
+            toast.error(`Error searching for place: ${err.message || 'Unknown error'}`);
+          }
         }
       }
     }
