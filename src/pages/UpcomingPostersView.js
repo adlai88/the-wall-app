@@ -848,13 +848,6 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                       ) : (
                         'No posters found near you'
                       )}
-                      <BrowseButton onClick={() => {
-                        setSearchQuery('');
-                        setPlaceSuggestions(null);
-                        document.querySelector('input[type="text"]')?.focus();
-                      }}>
-                        Browse other locations
-                      </BrowseButton>
                     </NoResultsContainer>
                   </TableCell>
                 </TableRow>
