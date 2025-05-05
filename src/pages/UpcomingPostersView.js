@@ -801,7 +801,7 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                   </TableCell>
                 </TableRow>
               ) : filteredPosters.length > 0 ? (
-                filteredPosters.map(poster => (
+                filteredPosters.map((poster, idx) => (
                   <TableRow key={poster.id} style={{ cursor: 'pointer' }} onClick={() => handlePosterClick(poster)}>
                     <TableCell>
                       <Thumb>
@@ -811,6 +811,7 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                           width={48}
                           height={48}
                           style={{ objectFit: 'cover', width: 48, height: 48 }}
+                          priority={idx < 3}
                         />
                       </Thumb>
                     </TableCell>
