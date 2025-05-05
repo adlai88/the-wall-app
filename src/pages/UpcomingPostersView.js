@@ -164,10 +164,9 @@ const TableCell = styled.td`
 const Thumb = styled.div`
   width: 48px;
   height: 48px;
-  border-radius: 6px;
   overflow: hidden;
   background: #f5f5f5;
-  border: 1px solid #ddd;
+  border: 1px solid #222;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -731,7 +730,7 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               style={{
-                background: selectedCategory === cat ? '#ff5722' : '#f5f5f5',
+                background: selectedCategory === cat ? '#222' : '#f5f5f5',
                 color: selectedCategory === cat ? 'white' : '#222',
                 border: 'none',
                 borderRadius: 5,
@@ -740,8 +739,8 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                 fontSize: 13,
                 cursor: 'pointer',
                 transition: 'background 0.15s',
-                outline: selectedCategory === cat ? '2px solid #ff5722' : 'none',
-                boxShadow: selectedCategory === cat ? '0 2px 8px rgba(255,87,34,0.08)' : 'none',
+                outline: selectedCategory === cat ? '2px solid #222' : 'none',
+                boxShadow: selectedCategory === cat ? '0 2px 8px rgba(34,34,34,0.08)' : 'none',
                 fontFamily: 'inherit',
                 whiteSpace: 'nowrap',
               }}
@@ -782,7 +781,7 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                           alt={poster.title || 'Untitled Poster'}
                           width={48}
                           height={48}
-                          style={{ borderRadius: 6, objectFit: 'cover', width: 48, height: 48 }}
+                          style={{ objectFit: 'cover', width: 48, height: 48 }}
                         />
                       </Thumb>
                     </TableCell>

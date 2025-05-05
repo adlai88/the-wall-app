@@ -85,6 +85,10 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - [x] Category buttons in list view are now horizontally scrollable on mobile with edge blur (UI/UX improvement)
 - [x] Category scroll blur overlays now only appear on mobile and only when needed (not on desktop, not when at scroll edge)
 - [x] Fixed category scroll cropping by adding horizontal padding and adjusting blur overlay width; removed blue focus border from drawer (UI polish)
+- [x] Removed rounded corners from thumbnails in the list view (UI tweak)
+- [x] Removed border radius from images inside thumbnails in the list view (fully square images)
+- [x] Changed thumbnail border to black/dark to match poster markers on map view
+- [x] Highlighted category button is now black with white text (instead of orange)
 
 # Executor's Feedback or Assistance Requests
 
@@ -102,6 +106,10 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - The category buttons in the list view are now horizontally scrollable on mobile, with a blur effect on the left and right edges for visual polish. Please review on your device to confirm the new behavior and appearance meet your expectations.
 - The left/right blur overlays for the category scroll now only appear on mobile and only when there is overflow in that direction. This resolves the visual issue on desktop and improves mobile UX. Please review on your device to confirm the fix meets your expectations.
 - Category scroll now has horizontal padding so the first and last buttons are not cropped by the blur overlays. Blur overlay width was also slightly reduced. A global style was added to remove the blue focus border from the drawer and its children. Please review on your device to confirm both issues are resolved.
+- Thumbnails in the list view no longer have rounded corners. Please review visually to confirm the change meets your expectations.
+- The border radius has been removed from the images inside the thumbnails in the list view, so they are now fully square. Please review visually to confirm the change meets your expectations.
+- The thumbnail border is now black/dark (#222) to match the poster markers on the map view. Please review visually to confirm the change meets your expectations.
+- The highlighted (selected) category button is now black with white text, instead of orange. Please review visually to confirm the change meets your expectations.
 
 # Current Status / Progress Tracking
 
