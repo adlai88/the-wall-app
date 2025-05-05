@@ -412,6 +412,12 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.asin(Math.sqrt(a));
 }
 
+// Add a wrapper for the scrollable row and blurs
+const CategoryScrollWrapper = styled.div`
+  position: relative;
+  margin: 32px 0 6px 0;
+`;
+
 export default function UpcomingPostersView({ posters = [], selectedCategory, setSelectedCategory, hideHeaders = false, hideTableBorder = false }) {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
@@ -723,33 +729,35 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
           </LocationBanner>
         )}
 
-        <CategoryScrollContainer ref={categoryScrollRef}>
+        <CategoryScrollWrapper>
           {isMobile && showLeftBlur && <LeftBlur />}
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              style={{
-                background: selectedCategory === cat ? '#222' : '#f5f5f5',
-                color: selectedCategory === cat ? 'white' : '#222',
-                border: 'none',
-                borderRadius: 5,
-                padding: '4px 10px',
-                fontWeight: 500,
-                fontSize: 13,
-                cursor: 'pointer',
-                transition: 'background 0.15s',
-                outline: selectedCategory === cat ? '2px solid #222' : 'none',
-                boxShadow: selectedCategory === cat ? '0 2px 8px rgba(34,34,34,0.08)' : 'none',
-                fontFamily: 'inherit',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {cat.charAt(0).toUpperCase() + cat.slice(1)}
-            </button>
-          ))}
+          <CategoryScrollContainer ref={categoryScrollRef}>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                style={{
+                  background: selectedCategory === cat ? '#222' : '#f5f5f5',
+                  color: selectedCategory === cat ? 'white' : '#222',
+                  border: 'none',
+                  borderRadius: 5,
+                  padding: '4px 10px',
+                  fontWeight: 500,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  transition: 'background 0.15s',
+                  outline: selectedCategory === cat ? '2px solid #222' : 'none',
+                  boxShadow: selectedCategory === cat ? '0 2px 8px rgba(34,34,34,0.08)' : 'none',
+                  fontFamily: 'inherit',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </button>
+            ))}
+          </CategoryScrollContainer>
           {isMobile && showRightBlur && <RightBlur />}
-        </CategoryScrollContainer>
+        </CategoryScrollWrapper>
 
         <TableWrapper hideTableBorder={hideTableBorder}>
           <StyledTable>

@@ -89,6 +89,7 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - [x] Removed border radius from images inside thumbnails in the list view (fully square images)
 - [x] Changed thumbnail border to black/dark to match poster markers on map view
 - [x] Highlighted category button is now black with white text (instead of orange)
+- [x] Fixed category scroll blur overlays so they stay at the edge of the container and do not move with the badges
 
 # Executor's Feedback or Assistance Requests
 
@@ -110,6 +111,7 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - The border radius has been removed from the images inside the thumbnails in the list view, so they are now fully square. Please review visually to confirm the change meets your expectations.
 - The thumbnail border is now black/dark (#222) to match the poster markers on the map view. Please review visually to confirm the change meets your expectations.
 - The highlighted (selected) category button is now black with white text, instead of orange. Please review visually to confirm the change meets your expectations.
+- The blur overlays for the category scroll are now fixed at the left/right edge of the container and do not move with the badges when scrolling. Please review on your device to confirm the fix meets your expectations.
 
 # Current Status / Progress Tracking
 
