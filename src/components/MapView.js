@@ -454,6 +454,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   // Simplified loading state
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
+  const [localPosters, setLocalPosters] = useState([]); // New state for local poster management
   const mapRef = useRef(null);
 
   // Simplified fetch function
@@ -467,12 +468,18 @@ export default function MapView({ events = [], setEvents, onNav }) {
       const posters = await response.json();
       
       if (Array.isArray(posters)) {
+        // Update parent state
         setEvents(posters);
-        setFilteredPosters(posters);
+        // Update local state
+        setLocalPosters(posters);
+      } else {
+        throw new Error('Invalid data format received');
       }
     } catch (error) {
       console.error('Error fetching posters:', error);
       setFetchError(error.message);
+      // Keep existing posters on error
+      setLocalPosters(prev => prev);
     } finally {
       setIsLoading(false);
     }
@@ -483,12 +490,12 @@ export default function MapView({ events = [], setEvents, onNav }) {
     fetchPosters();
   }, [setEvents]);
 
-  // Update filtered posters when events prop changes
+  // Update local posters when events prop changes
   useEffect(() => {
-    if (events && events.length > 0) {
-      setFilteredPosters(events);
-    } else if (events && events.length === 0) {
-      setFilteredPosters([]);
+    console.log('Events prop changed:', events);
+    if (events && Array.isArray(events)) {
+      console.log('Updating local posters with:', events.length, 'items');
+      setLocalPosters(events);
     }
   }, [events]);
   
@@ -1069,7 +1076,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
             </Marker>
           )}
           
-          {!isLoading && filteredPosters.map((poster) => {
+          {!isLoading && localPosters.map((poster) => {
             const position = parseCoordinates(poster.coordinates);
             if (!position) return null;
             
