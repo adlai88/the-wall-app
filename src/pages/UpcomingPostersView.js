@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import BottomNav from '../components/BottomNav'
 import PosterView from '../components/PosterView'
-import { FiCalendar } from 'react-icons/fi'
+import { FiCalendar, FiMapPin, FiClock } from 'react-icons/fi'
 import ReactDOM from 'react-dom'
 
 const Container = styled.div`
@@ -214,6 +214,16 @@ const MoreButton = styled.button`
   }
 `;
 
+const MetaRow = styled.span`
+  display: flex;
+  align-items: flex-start;
+  font-size: 13px;
+  color: #888;
+  gap: 6px;
+  line-height: 1.4;
+  margin-bottom: 2px;
+`;
+
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -340,14 +350,14 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                       <div style={{ color: '#888', fontSize: 13, display: 'flex', flexDirection: 'column', gap: 2 }}>
                         {poster.category === 'event' && poster.event_start_date ? (
                           <>
-                            <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                              <FiCalendar style={{ marginRight: 4, fontSize: 15 }} />
+                            <MetaRow aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>
+                              <FiCalendar style={{ marginRight: 6, fontSize: 14, color: '#888', flexShrink: 0, marginTop: 2 }} />
                               {formatEventDate(poster.event_start_date, poster.event_end_date)}
-                            </span>
+                            </MetaRow>
                           </>
                         ) : null}
-                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <span role="img" aria-label="Location" style={{ marginRight: 4, fontSize: 15 }}>📍</span>
+                        <MetaRow>
+                          <FiMapPin style={{ marginRight: 6, fontSize: 14, color: '#888', flexShrink: 0, marginTop: 2 }} />
                           {poster.location && poster.location.trim() ? (
                             poster.location
                           ) : poster.coordinates ? (
@@ -363,8 +373,11 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                           ) : (
                             'Location not specified'
                           )}
-                        </span>
-                        <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>Displayed until {formatDate(poster.display_until)}</span>
+                        </MetaRow>
+                        <MetaRow aria-label={`Displayed until ${formatDate(poster.display_until)}`}>
+                          <FiClock style={{ marginRight: 6, fontSize: 14, color: '#888', flexShrink: 0, marginTop: 2 }} />
+                          Displayed until {formatDate(poster.display_until)}
+                        </MetaRow>
                       </div>
                     </TableCell>
                     <TableCell>
