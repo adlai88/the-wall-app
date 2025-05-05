@@ -436,7 +436,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [weatherError, setWeatherError] = useState(null);
   const [selectedPoster, setSelectedPoster] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredPosters, setFilteredPosters] = useState([]);
+  const [filteredPosters, setFilteredPosters] = useState(events);
   const [isPlacingPin, setIsPlacingPin] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [searchedLocation, setSearchedLocation] = useState(null);
@@ -452,14 +452,15 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const mapRef = useRef(null);
-  const initialLoadRef = useRef(true);
   
   // Update filtered posters when events prop changes
   useEffect(() => {
-    if (events && Array.isArray(events)) {
+    if (events && events.length > 0) {
       setFilteredPosters(events);
       setLoading(false);
-      initialLoadRef.current = false;
+    } else if (events && events.length === 0) {
+      setFilteredPosters([]);
+      setLoading(false);
     }
   }, [events]);
   
@@ -554,12 +555,14 @@ export default function MapView({ events = [], setEvents, onNav }) {
       }
     };
 
-    // Only start periodic fetching after initial load
-    if (!initialLoadRef.current) {
-      const interval = setInterval(fetchPosters, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [setEvents, initialLoadRef.current]);
+    // Fetch immediately
+    fetchPosters();
+
+    // Then fetch every 30 seconds
+    const interval = setInterval(fetchPosters, 30000);
+    
+    return () => clearInterval(interval);
+  }, [setEvents]);
   
   // Test weather API on mount
   useEffect(() => {
