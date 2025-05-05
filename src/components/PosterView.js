@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import Sheet from './Sheet';
-import { FiCalendar } from 'react-icons/fi';
+import { FiCalendar, FiClock, FiMapPin, FiLink } from 'react-icons/fi';
 
 const Overlay = styled.div`
   position: fixed;
@@ -102,7 +102,7 @@ const DetailsSection = styled.div`
   background: white;
   padding: 32px;
   flex: 1 1 auto;
-  
+  text-align: left;
   @media (max-width: 768px) {
     padding: 24px;
     padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 120px); /* Increased from 80px to 120px */
@@ -119,21 +119,36 @@ const PosterTitle = styled.h1`
   color: #333;
 `;
 
-const PosterDate = styled.div`
-  font-size: 15px;
-  color: #666;
-  margin-bottom: 24px;
+const MetaRow = styled.div`
   display: flex;
   align-items: center;
+  font-size: 15px;
+  color: #888;
+  font-family: inherit;
+  margin-bottom: 8px;
   gap: 8px;
 `;
 
 const PosterLocation = styled.div`
   font-size: 15px;
-  color: #666;
-  margin-bottom: 32px;
+  color: #888;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
+  font-family: inherit;
+  text-align: left;
+  gap: 8px;
+  padding-left: 0;
+`;
+
+const LinkRow = styled.div`
+  font-size: 15px;
+  color: #888;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  margin: 0 0 8px 0;
   gap: 8px;
 `;
 
@@ -141,8 +156,10 @@ const PosterDescription = styled.p`
   font-size: 15px;
   line-height: 1.6;
   color: #444;
+  font-family: inherit;
   margin: 0;
   margin-bottom: 1em;
+  text-align: left;
 `;
 
 const DesktopSidebarWrapper = styled.div`
@@ -156,6 +173,10 @@ const DesktopSidebarWrapper = styled.div`
   overflow-y: auto;
   box-shadow: -2px 0 12px rgba(0,0,0,0.08);
   z-index: 9101;
+`;
+
+const MetaSection = styled.div`
+  margin-bottom: 42px;
 `;
 
 function useIsMobile() {
@@ -255,22 +276,24 @@ export default function PosterView({ poster, onClose }) {
           <DesktopSidebarWrapper onClick={e => e.stopPropagation()}>
             <CloseButton onClick={onClose} aria-label="Close">×</CloseButton>
             <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
-            <div style={{ color: '#888', fontSize: 15, marginBottom: 12 }}>
-              {poster.category === 'event' && poster.event_start_date ? (
-                <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <FiCalendar style={{ marginRight: 4, fontSize: 15 }} />
-                  {formatEventDate(poster.event_start_date, poster.event_end_date)}
-                </span>
-              ) : (
-                <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>🗓️ Displayed until {formatDate(poster.display_until)}</span>
-              )}
-            </div>
-            <PosterLocation>
-              <span>📍</span>
-              {poster.location && poster.location.trim() ? (
-                poster.location
-              ) : poster.coordinates ? (
-                (() => {
+            {/* Meta info section */}
+            <MetaSection>
+              <MetaRow>
+                {poster.category === 'event' && poster.event_start_date ? (
+                  <>
+                    <FiCalendar style={{ fontSize: 16, color: '#888', verticalAlign: 'middle' }} />
+                    {formatEventDate(poster.event_start_date, poster.event_end_date)}
+                  </>
+                ) : (
+                  <>
+                    <FiClock style={{ fontSize: 16, color: '#888', verticalAlign: 'middle' }} />
+                    Displayed until {formatDate(poster.display_until)}
+                  </>
+                )}
+              </MetaRow>
+              <PosterLocation>
+                <FiMapPin style={{ fontSize: 16, color: '#888', verticalAlign: 'middle', flexShrink: 0 }} />
+                <span style={{ paddingLeft: 0 }}>{poster.location && poster.location.trim() ? poster.location : poster.coordinates ? (() => {
                   let lat = '', lon = '';
                   const match = poster.coordinates.match(/(-?\d+\.?\d*)[\,\s]+(-?\d+\.?\d*)/);
                   if (match) {
@@ -278,25 +301,23 @@ export default function PosterView({ poster, onClose }) {
                     lon = match[2];
                   }
                   return lat && lon ? `Latitude: ${lat}, Longitude: ${lon}` : 'Location not specified';
-                })()
-              ) : (
-                'Location not specified'
+                })() : 'Location not specified'}</span>
+              </PosterLocation>
+              {poster.link && (
+                <LinkRow>
+                  <FiLink style={{ fontSize: 16, color: '#888', verticalAlign: 'middle' }} />
+                  <a
+                    href={poster.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#888', textDecoration: 'underline', fontWeight: 500, fontFamily: 'inherit', fontSize: 15 }}
+                    title={poster.link}
+                  >
+                    Link
+                  </a>
+                </LinkRow>
               )}
-            </PosterLocation>
-            {poster.link && (
-              <div style={{ fontSize: 15, margin: '0 0 16px 0', display: 'flex', alignItems: 'center' }}>
-                <span role="img" aria-label="Link" style={{ marginRight: 6 }}>🔗</span>
-                <a
-                  href={poster.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#007aff', textDecoration: 'underline', fontWeight: 500 }}
-                  title={poster.link}
-                >
-                  Link
-                </a>
-              </div>
-            )}
+            </MetaSection>
             {poster.description && (
               Array.isArray(poster.description)
                 ? poster.description.map((para, idx) => (
@@ -333,48 +354,48 @@ export default function PosterView({ poster, onClose }) {
             />
           </MobileImage>
           <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
-            <div style={{ color: '#888', fontSize: 15, marginBottom: 12 }}>
+          {/* Meta info section */}
+          <MetaSection>
+            <MetaRow>
               {poster.category === 'event' && poster.event_start_date ? (
-                <span aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <FiCalendar style={{ marginRight: 4, fontSize: 15 }} />
+                <>
+                  <FiCalendar style={{ fontSize: 16, color: '#888', verticalAlign: 'middle' }} />
                   {formatEventDate(poster.event_start_date, poster.event_end_date)}
-                </span>
+                </>
               ) : (
-                <span aria-label={`Displayed until ${formatDate(poster.display_until)}`}>🗓️ Displayed until {formatDate(poster.display_until)}</span>
+                <>
+                  <FiClock style={{ fontSize: 16, color: '#888', verticalAlign: 'middle' }} />
+                  Displayed until {formatDate(poster.display_until)}
+                </>
               )}
-            </div>
-          <PosterLocation>
-            <span>📍</span>
-              {poster.location && poster.location.trim() ? (
-                poster.location
-              ) : poster.coordinates ? (
-                (() => {
-                  let lat = '', lon = '';
-                  const match = poster.coordinates.match(/(-?\d+\.?\d*)[\,\s]+(-?\d+\.?\d*)/);
-                  if (match) {
-                    lat = match[1];
-                    lon = match[2];
-                  }
-                  return lat && lon ? `Latitude: ${lat}, Longitude: ${lon}` : 'Location not specified';
-                })()
-              ) : (
-                'Location not specified'
-              )}
-          </PosterLocation>
+            </MetaRow>
+            <PosterLocation>
+              <FiMapPin style={{ fontSize: 16, color: '#888', verticalAlign: 'middle', flexShrink: 0 }} />
+              <span style={{ paddingLeft: 0 }}>{poster.location && poster.location.trim() ? poster.location : poster.coordinates ? (() => {
+                let lat = '', lon = '';
+                const match = poster.coordinates.match(/(-?\d+\.?\d*)[\,\s]+(-?\d+\.?\d*)/);
+                if (match) {
+                  lat = match[1];
+                  lon = match[2];
+                }
+                return lat && lon ? `Latitude: ${lat}, Longitude: ${lon}` : 'Location not specified';
+              })() : 'Location not specified'}</span>
+            </PosterLocation>
             {poster.link && (
-              <div style={{ fontSize: 15, margin: '0 0 16px 0', display: 'flex', alignItems: 'center' }}>
-                <span role="img" aria-label="Link" style={{ marginRight: 6 }}>🔗</span>
+              <LinkRow>
+                <FiLink style={{ fontSize: 16, color: '#888', verticalAlign: 'middle' }} />
                 <a
                   href={poster.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#007aff', textDecoration: 'underline', fontWeight: 500 }}
+                  style={{ color: '#888', textDecoration: 'underline', fontWeight: 500, fontFamily: 'inherit', fontSize: 15 }}
                   title={poster.link}
                 >
                   Link
                 </a>
-              </div>
+              </LinkRow>
             )}
+          </MetaSection>
           {poster.description && (
               Array.isArray(poster.description)
                 ? poster.description.map((para, idx) => (
