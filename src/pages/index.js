@@ -345,7 +345,7 @@ export default function Home() {
                   zIndex: 9999,
                   position: 'fixed',
                   width: '100%',
-                  height: '98vh',
+                  height: '96vh',
                   bottom: 0,
                   left: 0,
                   right: 0,

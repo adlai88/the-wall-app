@@ -11,7 +11,7 @@ const Container = styled.div`
 const Logo = styled.div`
   width: 80px;
   height: 80px;
-  margin: 0 auto 32px;
+  margin: 40px auto 32px;
   position: relative;
   border-radius: 16px;
   overflow: hidden;
@@ -89,8 +89,11 @@ export default function AboutInfoPage() {
 
       <Section>
         <SectionTitle>How It Works</SectionTitle>
-        <SectionContent>
-          Browse the map to discover posters pinned to locations. Tap on pins to view details. Add your own poster by uploading an image and pinning it to a location.
+        <SectionContent as="ul" style={{ paddingLeft: 20, margin: 0 }}>
+          <li>Browse the map to discover posters pinned to locations.</li>
+          <li>Tap on pins to view details.</li>
+          <li>Add your own poster by uploading an image and pinning it to a location.</li>
+          <li>Posters can be displayed on the map for a maximum of 30 days before disappearing.</li>
         </SectionContent>
       </Section>
 
