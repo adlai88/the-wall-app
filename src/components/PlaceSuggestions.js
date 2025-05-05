@@ -16,9 +16,9 @@ const SuggestionsContainer = styled.div`
   font-family: 'Courier New', monospace;
 
   @media (max-width: 768px) {
-    left: 0;
-    right: 0;
-    width: 100%;
+    left: 8px;
+    right: 8px;
+    width: auto;
   }
 
   /* Custom scrollbar styling */
