@@ -93,16 +93,8 @@ export default function AboutInfoPage() {
           <li>Browse the map to discover posters pinned to locations.</li>
           <li>Tap on posters to view details.</li>
           <li>Add your own poster by uploading an image and pinning it to a location.</li>
+          <li>Posters are visible to all users after moderation.</li>
           <li>Posters are displayed on the map for a maximum of 30 days before disappearing.</li>
-        </SectionContent>
-      </Section>
-
-      <Section>
-        <SectionTitle>For Event Organizers</SectionTitle>
-        <SectionContent>
-          <li>Promote your events by adding them to the map.</li>
-          <li>Simply upload your event poster, set the location and time, and submit.</li>
-          <li>Your event will be visible to all users after moderation.</li>
         </SectionContent>
       </Section>
 
