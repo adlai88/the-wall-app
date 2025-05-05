@@ -29,8 +29,6 @@ const SheetContent = styled.div`
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
   
   @media (max-width: 600px) {
     width: 100vw;
