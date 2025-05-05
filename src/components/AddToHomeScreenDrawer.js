@@ -97,7 +97,7 @@ export default function AddToHomeScreenDrawer({ open, onClose }) {
             <AppIcon>
               <Image src="/wallllll_logo.png" alt="App Icon" width={72} height={72} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
             </AppIcon>
-            <Title>Add to Home Screen</Title>
+            <Title>Wallllll</Title>
             <Description>To install the app, add the website to your home screen.</Description>
             <Steps>
               <Step>
