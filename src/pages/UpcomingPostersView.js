@@ -114,6 +114,10 @@ const NoPosters = styled.div`
   margin: 20px;
   border: 1px solid #222;
   font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
 `
 
 const TableWrapper = styled.div`
