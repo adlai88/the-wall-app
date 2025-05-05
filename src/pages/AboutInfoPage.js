@@ -84,7 +84,7 @@ export default function AboutInfoPage() {
         />
       </Logo>
       <Description>
-        Wallllll is a map app that allows users to find happenings around their city without registration or social interactions.
+        Wallllll is a global culture map for people to discover happenings around their city (and the world) without registration or social interactions.
       </Description>
 
       <Section>
