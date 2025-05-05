@@ -342,8 +342,8 @@ const CategoryScrollContainer = styled.div`
   position: relative;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 12px;
+  padding-right: 12px;
   &::-webkit-scrollbar {
     display: none;
   }
