@@ -95,6 +95,8 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - [x] Loading indicator overlay now has no background (fully transparent)
 - [x] Made Drawer.Overlay background darker (rgba(0,0,0,0.48)) for all overlays and drawers
 - [x] Remove the three emoji icons at the bottom of the About page (AboutInfoPage.js)
+- [ ] Test UX on desktop and mobile
+- [ ] Updated About and List/Upcoming drawers to use height: 'calc(100vh - env(safe-area-inset-top, 0px))' and top: 'env(safe-area-inset-top, 0px)' for better compatibility with iOS Safari. Please test on your device (both in browser and as PWA) and confirm if the drawer height now appears correct and does not overlap the status bar.
 
 # Executor's Feedback or Assistance Requests
 
