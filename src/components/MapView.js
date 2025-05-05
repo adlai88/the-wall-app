@@ -444,23 +444,68 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCoordinates, setSelectedCoordinates] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
-  const [imageSizes, setImageSizes] = useState({}); // { [posterId]: { width, height } }
+  const [imageSizes, setImageSizes] = useState({});
   const [locationFlyToRequest, setLocationFlyToRequest] = useState(false);
   const [tipsCollapsed, setTipsCollapsed] = useState(true);
   const [placeSuggestions, setPlaceSuggestions] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
-  const mapRef = useRef(null);
   
+  // New state variables for improved loading management
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
+  const mapRef = useRef(null);
+
+  // Consolidated fetch function
+  const fetchPosters = async (isInitial = false) => {
+    if (isInitial) {
+      setIsInitialLoading(true);
+    } else {
+      setIsRefreshing(true);
+    }
+    
+    try {
+      const response = await fetch('/api/posters');
+      if (!response.ok) throw new Error('Failed to fetch posters');
+      const posters = await response.json();
+      
+      if (Array.isArray(posters)) {
+        setEvents(posters);
+        setFilteredPosters(posters);
+        setFetchError(null);
+      }
+    } catch (error) {
+      console.error('Error fetching posters:', error);
+      setFetchError(error.message);
+    } finally {
+      if (isInitial) {
+        setIsInitialLoading(false);
+      } else {
+        setIsRefreshing(false);
+      }
+    }
+  };
+
+  // Initial fetch and periodic updates
+  useEffect(() => {
+    // Initial fetch
+    fetchPosters(true);
+
+    // Set up periodic updates
+    const interval = setInterval(() => {
+      fetchPosters(false);
+    }, 30000);
+    
+    return () => clearInterval(interval);
+  }, [setEvents]);
+
   // Update filtered posters when events prop changes
   useEffect(() => {
     if (events && events.length > 0) {
       setFilteredPosters(events);
-      setLoading(false);
     } else if (events && events.length === 0) {
       setFilteredPosters([]);
-      setLoading(false);
     }
   }, [events]);
   
@@ -540,29 +585,6 @@ export default function MapView({ events = [], setEvents, onNav }) {
       setIsSearching(false);
     }
   }, [debouncedSearchQuery, events]);
-  
-  // Fetch posters periodically
-  useEffect(() => {
-    const fetchPosters = async () => {
-      try {
-        const response = await fetch('/api/posters');
-        const posters = await response.json();
-        if (Array.isArray(posters)) {
-          setEvents(posters); // Update parent state
-        }
-      } catch (error) {
-        console.error('Error fetching posters:', error);
-      }
-    };
-
-    // Fetch immediately
-    fetchPosters();
-
-    // Then fetch every 30 seconds
-    const interval = setInterval(fetchPosters, 30000);
-    
-    return () => clearInterval(interval);
-  }, [setEvents]);
   
   // Test weather API on mount
   useEffect(() => {
@@ -975,7 +997,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
           </>
         )}
         
-        {loading ? (
+        {(isInitialLoading || isRefreshing) && (
           <div style={{ 
             position: 'absolute', 
             top: 0,
@@ -988,11 +1010,44 @@ export default function MapView({ events = [], setEvents, onNav }) {
             zIndex: 2002, 
             color: '#888', 
             fontSize: 16, 
-            padding: 24 
+            padding: 24,
+            backgroundColor: isInitialLoading ? '#e0e0e0' : 'transparent'
           }}>
-            Loading posters...
+            {isInitialLoading ? 'Loading posters...' : 'Updating posters...'}
           </div>
-        ) : null}
+        )}
+
+        {fetchError && (
+          <div style={{ 
+            position: 'absolute', 
+            top: 10,
+            left: 10, 
+            right: 10,
+            padding: 12,
+            backgroundColor: 'white',
+            border: '1px solid #ff4444',
+            color: '#ff4444',
+            zIndex: 2002,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <span>Error loading posters</span>
+            <button 
+              onClick={() => fetchPosters(true)}
+              style={{
+                background: 'none',
+                border: '1px solid #ff4444',
+                color: '#ff4444',
+                padding: '4px 8px',
+                cursor: 'pointer'
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         <MapContainer 
           center={position} 
           zoom={12} 
@@ -1031,7 +1086,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
             </Marker>
           )}
           
-          {!loading && filteredPosters.map((poster) => {
+          {!isInitialLoading && !isRefreshing && filteredPosters.map((poster) => {
             const position = parseCoordinates(poster.coordinates);
             if (!position) return null;
             

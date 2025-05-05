@@ -143,3 +143,122 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - By default, users see only posters within a set radius of their current location
 - Users can browse other locations if desired or if no local posters are found
 - The experience is seamless, non-intrusive, and works even if geolocation is denied
+
+# Poster Loading Issue Analysis and Solution Plan
+
+## Background and Motivation
+Users are experiencing an inconsistent issue where posters in the MapView component:
+1. Initially load and display correctly
+2. Suddenly disappear/flash
+3. Reappear after 1-2 minutes
+This behavior is inconsistent and affects the user experience negatively.
+
+## Key Challenges and Analysis
+1. **Race Condition**: The current implementation has multiple data fetching mechanisms that might be interfering with each other:
+   - Initial fetch on component mount
+   - Periodic fetch every 30 seconds
+   - State updates from parent component
+
+2. **State Management Issues**:
+   - Multiple state variables controlling poster display (`events`, `filteredPosters`, `loading`)
+   - Potential state conflicts between parent and child components
+   - Loading state might be cleared too early
+
+3. **Loading State Handling**:
+   - Current loading state might not properly account for all data fetching scenarios
+   - No error state handling for failed fetches
+   - No loading state for periodic updates
+
+## Detailed Solution Plan
+
+1. **Consolidate Data Fetching**
+   ```javascript
+   // Proposed new fetch mechanism
+   const [isInitialLoading, setIsInitialLoading] = useState(true);
+   const [isRefreshing, setIsRefreshing] = useState(false);
+   const [error, setError] = useState(null);
+   
+   const fetchPosters = async (isInitial = false) => {
+     if (isInitial) {
+       setIsInitialLoading(true);
+     } else {
+       setIsRefreshing(true);
+     }
+     
+     try {
+       const response = await fetch('/api/posters');
+       if (!response.ok) throw new Error('Failed to fetch posters');
+       const posters = await response.json();
+       
+       if (Array.isArray(posters)) {
+         setEvents(posters);
+         setError(null);
+       }
+     } catch (error) {
+       console.error('Error fetching posters:', error);
+       setError(error.message);
+     } finally {
+       if (isInitial) {
+         setIsInitialLoading(false);
+       } else {
+         setIsRefreshing(false);
+       }
+     }
+   };
+   ```
+
+2. **Improve State Management**
+   - Add proper loading states for initial and periodic fetches
+   - Implement error state handling
+   - Add retry mechanism for failed fetches
+   - Ensure loading state persists until data is fully processed
+
+3. **Add Error Recovery**
+   - Implement retry logic for failed fetches
+   - Add error boundaries
+   - Show user-friendly error messages
+
+4. **Optimize Performance**
+   - Add request debouncing
+   - Implement proper cleanup
+   - Add request cancellation for unmounted components
+
+## Implementation Steps
+
+1. **Update State Management**
+   - [ ] Add new loading states (`isInitialLoading`, `isRefreshing`)
+   - [ ] Add error state
+   - [ ] Update loading indicator to show different states
+
+2. **Improve Fetch Logic**
+   - [ ] Implement consolidated fetch function
+   - [ ] Add proper error handling
+   - [ ] Add retry mechanism
+   - [ ] Implement request cancellation
+
+3. **Update UI Components**
+   - [ ] Add loading indicators for different states
+   - [ ] Add error message display
+   - [ ] Add retry button for failed fetches
+
+4. **Testing**
+   - [ ] Test initial load
+   - [ ] Test periodic updates
+   - [ ] Test error scenarios
+   - [ ] Test retry mechanism
+
+## Project Status Board
+- [ ] Task 1: Update State Management
+- [ ] Task 2: Improve Fetch Logic
+- [ ] Task 3: Update UI Components
+- [ ] Task 4: Testing
+
+## Executor's Feedback or Assistance Requests
+Ready to begin implementation. Would like to start with updating the state management and fetch logic.
+
+## Lessons
+- Loading states should account for all data fetching scenarios
+- Multiple fetch mechanisms can lead to race conditions
+- State management needs careful consideration in React components
+- Always implement proper error handling and recovery mechanisms
+- Use separate loading states for initial load and updates
