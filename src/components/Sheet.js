@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components';
 const SheetBackdrop = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.18);
+  background: ${props => props.context === 'list' ? 'transparent' : 'rgba(0,0,0,0.18)'};
   z-index: ${props => props.baseIndex || 2000};
   opacity: ${props => (props.open ? 1 : 0)};
   pointer-events: ${props => (props.open ? 'auto' : 'none')};
@@ -33,6 +33,8 @@ const SheetContent = styled.div`
   @media (max-width: 600px) {
     width: 100vw;
     min-width: 0;
+    border-top-left-radius: ${props => props.context === 'list' ? '16px' : '0'};
+    border-top-right-radius: ${props => props.context === 'list' ? '16px' : '0'};
   }
 `;
 
@@ -56,7 +58,7 @@ const SheetClose = styled.button`
   }
 `;
 
-export default function Sheet({ open, onClose, children, baseIndex }) {
+export default function Sheet({ open, onClose, children, baseIndex, context }) {
   const contentRef = useRef();
 
   // Close on ESC
@@ -91,7 +93,9 @@ export default function Sheet({ open, onClose, children, baseIndex }) {
 
   return (
     <>
-      <SheetBackdrop open={open} onClick={onClose} baseIndex={baseIndex} />
+      {context !== 'list' && (
+        <SheetBackdrop open={open} onClick={onClose} baseIndex={baseIndex} context={context} />
+      )}
       <SheetContent
         open={open}
         tabIndex={-1}
@@ -100,6 +104,7 @@ export default function Sheet({ open, onClose, children, baseIndex }) {
         role="dialog"
         onClick={e => e.stopPropagation()}
         baseIndex={baseIndex}
+        context={context}
       >
         <SheetClose onClick={onClose} aria-label="Close">×</SheetClose>
         {children}

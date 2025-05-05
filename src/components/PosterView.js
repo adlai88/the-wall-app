@@ -107,8 +107,8 @@ const DetailsSection = styled.div`
   @media (max-width: 768px) {
     padding: 24px;
     padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 120px); /* Increased from 80px to 120px */
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
+    border-top-left-radius: ${props => props.context === 'list' ? '16px' : '0'};
+    border-top-right-radius: ${props => props.context === 'list' ? '16px' : '0'};
     -webkit-overflow-scrolling: touch;
   }
 `;
@@ -191,7 +191,7 @@ function useIsMobile() {
   return isMobile;
 }
 
-export default function PosterView({ poster, onClose }) {
+export default function PosterView({ poster, onClose, context = 'map' }) {
   const isMobile = useIsMobile();
   if (!poster) return null;
 
@@ -258,6 +258,89 @@ export default function PosterView({ poster, onClose }) {
     }
   };
 
+  // Only render Overlay for desktop or for mobile if not context 'list'
+  if (isMobile && context === 'list') {
+    // Only render the Sheet (no Overlay)
+    return (
+      <Sheet open={true} onClose={onClose} baseIndex={9100} context={context}>
+        <DetailsSection context={context}>
+          <MobileImage>
+            <Image
+              src={poster.poster_image}
+              alt={poster.title || 'Event Poster'}
+              width={800}
+              height={1200}
+              style={{ 
+                width: '100%', 
+                height: 'auto', 
+                maxHeight: '60vh', 
+                objectFit: 'contain'
+              }}
+              priority
+            />
+          </MobileImage>
+          <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
+          {/* Meta info section */}
+          <MetaSection>
+            <MetaRow>
+              {poster.category === 'event' && poster.event_start_date ? (
+                <>
+                  <FiCalendar style={{ fontSize: 16, color: '#888', verticalAlign: 'middle' }} />
+                  {formatEventDate(poster.event_start_date, poster.event_end_date)}
+                </>
+              ) : (
+                <>
+                  <FiClock style={{ fontSize: 16, color: '#888', verticalAlign: 'middle' }} />
+                  Displayed until {formatDate(poster.display_until)}
+                </>
+              )}
+            </MetaRow>
+            <PosterLocation>
+              <FiMapPin style={{ fontSize: 16, color: '#888', verticalAlign: 'middle', flexShrink: 0 }} />
+              <span style={{ paddingLeft: 0 }}>{poster.location && poster.location.trim() ? poster.location : poster.coordinates ? (() => {
+                let lat = '', lon = '';
+                const match = poster.coordinates.match(/(-?\d+\.?\d*)[\,\s]+(-?\d+\.?\d*)/);
+                if (match) {
+                  lat = match[1];
+                  lon = match[2];
+                }
+                return lat && lon ? `Latitude: ${lat}, Longitude: ${lon}` : 'Location not specified';
+              })() : 'Location not specified'}</span>
+            </PosterLocation>
+            {poster.link && (
+              <LinkRow>
+                <FiLink style={{ fontSize: 16, color: '#888', verticalAlign: 'middle' }} />
+                <a
+                  href={poster.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#888', textDecoration: 'underline', fontWeight: 500, fontFamily: 'inherit', fontSize: 15 }}
+                  title={poster.link}
+                >
+                  Link
+                </a>
+              </LinkRow>
+            )}
+          </MetaSection>
+          {poster.description && (
+              Array.isArray(poster.description)
+                ? poster.description.map((para, idx) => (
+                    <PosterDescription key={idx}>{para}</PosterDescription>
+                  ))
+                : poster.description.split(/\n{2,}/).map((para, idx) => (
+                    <PosterDescription key={idx}>
+                      {para.split(/\n/).map((line, i, arr) =>
+                        i < arr.length - 1 ? [line, <br key={i} />] : line
+                      )}
+                    </PosterDescription>
+                  ))
+          )}
+        </DetailsSection>
+      </Sheet>
+    );
+  }
+
+  // Default: render Overlay (desktop, or mobile map context)
   return (
     <>
       {/* Desktop: overlay with image on left, details in sidebar */}
@@ -337,8 +420,8 @@ export default function PosterView({ poster, onClose }) {
       </Overlay>
       {/* Mobile: details sheet with image at top */}
       {isMobile && (
-      <Sheet open={true} onClose={onClose} baseIndex={9100}>
-        <DetailsSection>
+      <Sheet open={true} onClose={onClose} baseIndex={9100} context={context}>
+        <DetailsSection context={context}>
           <MobileImage>
             <Image
               src={poster.poster_image}

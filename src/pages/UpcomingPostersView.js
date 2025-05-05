@@ -866,10 +866,10 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
 
       {selectedPoster && (
         isMobile
-          ? <PosterView poster={selectedPoster} onClose={() => setSelectedPoster(null)} />
+          ? <PosterView poster={selectedPoster} onClose={() => setSelectedPoster(null)} context="list" />
           : (typeof window !== 'undefined' && document.getElementById('portal-root')
               ? ReactDOM.createPortal(
-                  <PosterView poster={selectedPoster} onClose={() => setSelectedPoster(null)} />, 
+                  <PosterView poster={selectedPoster} onClose={() => setSelectedPoster(null)} context="list" />, 
                   document.getElementById('portal-root')
                 )
               : null)
