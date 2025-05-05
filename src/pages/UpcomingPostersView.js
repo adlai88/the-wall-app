@@ -196,7 +196,7 @@ const TitleCell = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 180px;
-  margin-bottom: 12px; /* Add extra space under the title */
+  margin-bottom: 10px; /* Add extra space under the title */
 `;
 
 const ActionCell = styled.div`
