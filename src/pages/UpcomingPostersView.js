@@ -1,11 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import Image from 'next/image'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import BottomNav from '../components/BottomNav'
 import PosterView from '../components/PosterView'
-import { FiCalendar, FiMapPin, FiClock } from 'react-icons/fi'
+import { FiCalendar, FiMapPin, FiClock, FiSearch, FiX } from 'react-icons/fi'
 import ReactDOM from 'react-dom'
+import { UserLocationContext } from './_app'
+import PlaceSuggestions from '../components/PlaceSuggestions'
+import { toast } from 'sonner'
+import { geocodePlace } from '../utils/geocode'
 
 const Container = styled.div`
   width: 100%;
@@ -224,6 +228,111 @@ const MetaRow = styled.span`
   margin-bottom: 2px;
 `;
 
+const NoResultsContainer = styled.div`
+  text-align: center;
+  padding: 40px 0;
+  color: #888;
+  font-size: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const BrowseButton = styled.button`
+  margin-top: 18px;
+  padding: 10px 22px;
+  background: #eee;
+  color: #444;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  &:hover {
+    background: #ddd;
+  }
+`;
+
+const SearchBar = styled.div`
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 40px;
+  background-color: white;
+  border: 1px solid #222;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  z-index: 1000;
+  margin-bottom: 15px;
+`;
+
+const SearchIcon = styled.div`
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  color: #666;
+`;
+
+const SearchInput = styled.input`
+  border: none;
+  width: 100%;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: bold;
+  color: black;
+  background: transparent;
+  
+  &:focus {
+    outline: none;
+  }
+  
+  &::placeholder {
+    color: #999;
+    font-weight: normal;
+  }
+`;
+
+const LocationBanner = styled.div`
+  width: 100%;
+  background: none;
+  padding: 4px 0 0 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #888;
+  font-weight: 400;
+`;
+
+const LocationText = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
+const ResetButton = styled.button`
+  background: none;
+  border: none;
+  color: #ff5722;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0 8px;
+  margin-left: 8px;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -235,16 +344,57 @@ function useIsMobile() {
   return isMobile;
 }
 
+// Helper to parse coordinates from string "(lng,lat)" to [lng, lat]
+const parseCoordinates = (coordString) => {
+  const match = coordString.match(/^\((-?\d+\.?\d*),(-?\d+\.?\d*)\)$/);
+  if (!match) return null;
+  return [parseFloat(match[1]), parseFloat(match[2])];
+};
+
+// Haversine formula to calculate distance between two lat/lng points in km
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius of the earth in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    0.5 - Math.cos(dLat)/2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    (1 - Math.cos(dLon))/2;
+  return R * 2 * Math.asin(Math.sqrt(a));
+}
+
 export default function UpcomingPostersView({ posters = [], selectedCategory, setSelectedCategory, hideHeaders = false, hideTableBorder = false }) {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedPoster, setSelectedPoster] = useState(null)
   const isMobile = useIsMobile();
+  const { userLocation, error: geoError, loading: geoLoading } = useContext(UserLocationContext);
+  const [placeSuggestions, setPlaceSuggestions] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
 
   const categories = ['all', 'general', 'event', 'announcement', 'community', 'other']
 
-  // Filter and sort posters
-  const filteredPosters = posters
+  // Filter and sort posters by proximity if userLocation is available
+  let filteredPosters = posters;
+  const RADIUS_KM = 20; // Show posters within 20km
+  
+  // Use selected location if available, otherwise use user location
+  const filterLocation = selectedLocation || (userLocation ? { lat: userLocation.lat, lon: userLocation.lon } : null);
+  
+  if (filterLocation) {
+    filteredPosters = posters.filter(poster => {
+      const coords = parseCoordinates(poster.coordinates || '');
+      if (!coords) return false;
+      const [lat, lng] = coords;
+      const dist = getDistanceFromLatLonInKm(filterLocation.lat, filterLocation.lon, lat, lng);
+      return dist <= RADIUS_KM;
+    });
+  }
+
+  // Apply category and search filters
+  filteredPosters = filteredPosters
     .filter(poster => {
       const matchesCategory = selectedCategory === 'all' || poster.category === selectedCategory
       const matchesSearch = (poster.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -267,10 +417,127 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
         const dateB = new Date(b.display_until);
         return dateA - dateB;
       }
-    })
+    });
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Use debounced query for filtering and geocoding
+  useEffect(() => {
+    if (!debouncedSearchQuery.trim()) {
+      setPlaceSuggestions([]);
+      setIsSearching(false);
+      return;
+    }
+
+    const query = debouncedSearchQuery.toLowerCase().trim();
+    
+    // Improved geocoding logic
+    if (query.length >= 2) {
+      // Common location indicators
+      const likelyLocation = 
+        query.length > 3 || // Most city names are at least 4 chars
+        query.includes(' ') || // Multi-word locations
+        query.includes(',') || // Addresses often have commas
+        /^[A-Z]/.test(query); // Proper nouns often start with capital letters
+
+      if (likelyLocation) {
+        setIsSearching(true);
+        geocodePlace(query.trim()).then(results => {
+          if (results && results.length > 0) {
+            setPlaceSuggestions(results.map(place => ({
+              ...place,
+              address: place.display_name.split(', ').slice(1).join(', ')
+            })));
+          } else {
+            setPlaceSuggestions([]);
+          }
+          setIsSearching(false);
+        }).catch(err => {
+          console.error('Error searching for places:', err);
+          setPlaceSuggestions([]);
+          setIsSearching(false);
+        });
+      } else {
+        setPlaceSuggestions([]);
+        setIsSearching(false);
+      }
+    } else {
+      setPlaceSuggestions([]);
+      setIsSearching(false);
+    }
+  }, [debouncedSearchQuery]);
+
+  // Handle search input changes
+  const handleSearchChange = async (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+  };
+
+  // Handle Enter key in search input
+  const handleSearchKeyDown = async (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const query = searchQuery.toLowerCase().trim();
+      
+      // If we have place suggestions, use the first one
+      if (placeSuggestions && placeSuggestions.length > 0) {
+        handlePlaceSelect(placeSuggestions[0]);
+        return;
+      }
+      
+      // If no suggestions but query exists, try to search
+      if (query.length >= 2) {
+        toast.loading('Searching for place...');
+        try {
+          const results = await geocodePlace(query.trim());
+          toast.dismiss();
+          if (results && results.length > 0) {
+            setPlaceSuggestions(results.map(place => ({
+              ...place,
+              address: place.display_name.split(', ').slice(1).join(', ')
+            })));
+            // Automatically select the first result
+            handlePlaceSelect(results[0]);
+          } else {
+            toast.error(`No location found for "${query}"`);
+          }
+        } catch (err) {
+          toast.dismiss();
+          toast.error('Error searching for place');
+        }
+      }
+    }
+  };
+
+  // Handle place selection from suggestions
+  const handlePlaceSelect = (place) => {
+    setSearchQuery('');
+    setPlaceSuggestions(null);
+    setSelectedLocation({
+      lat: place.lat,
+      lon: place.lon,
+      name: place.display_name.split(',')[0]
+    });
+    toast.success(`Showing posters near ${place.display_name.split(',')[0]}`);
+  };
+
+  // Reset location to user's current location
+  const handleResetLocation = () => {
+    setSelectedLocation(null);
+    setSearchQuery('');
+    setPlaceSuggestions(null);
+    toast.success('Showing posters near you');
+  };
 
   const handlePosterClick = (poster) => {
-    setSelectedPoster(poster)
+    setSelectedPoster(poster);
   }
 
   const formatDate = (date) => {
@@ -319,6 +586,94 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
   return (
     <>
       <Container style={{ background: '#fff' }}>
+        <div style={{ position: 'relative', width: '100%', maxWidth: 600, margin: '0 auto' }}>
+          <SearchBar>
+            <SearchIcon>
+              <FiSearch size={16} />
+            </SearchIcon>
+            <SearchInput
+              type="text"
+              placeholder="Search posters and places..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyDown={handleSearchKeyDown}
+            />
+            {searchQuery && (
+              <button
+                style={{
+                  border: 'none',
+                  background: 'none',
+                  padding: '0 0 0 10px',
+                  cursor: 'pointer',
+                  color: '#999',
+                  fontSize: 16,
+                  lineHeight: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  transform: 'translateY(2px)'
+                }}
+                onClick={() => {
+                  setSearchQuery('');
+                  setPlaceSuggestions(null);
+                  setIsSearching(false);
+                }}
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            )}
+          </SearchBar>
+
+          <PlaceSuggestions 
+            suggestions={placeSuggestions} 
+            onSelect={handlePlaceSelect}
+            searchQuery={searchQuery}
+            isSearching={isSearching}
+            context="list"
+          />
+        </div>
+
+        {(selectedLocation || userLocation) && (
+          <LocationBanner>
+            <LocationText>
+              <FiMapPin size={16} />
+              {selectedLocation ? (
+                `Showing posters near ${selectedLocation.name}`
+              ) : (
+                'Showing posters near you'
+              )}
+            </LocationText>
+            <ResetButton onClick={handleResetLocation}>
+              Reset
+            </ResetButton>
+          </LocationBanner>
+        )}
+
+        <div style={{ display: 'flex', gap: 6, margin: '32px 0 6px 0', flexWrap: 'wrap' }}>
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              style={{
+                background: selectedCategory === cat ? '#ff5722' : '#f5f5f5',
+                color: selectedCategory === cat ? 'white' : '#222',
+                border: 'none',
+                borderRadius: 5,
+                padding: '4px 10px',
+                fontWeight: 500,
+                fontSize: 13,
+                cursor: 'pointer',
+                transition: 'background 0.15s',
+                outline: selectedCategory === cat ? '2px solid #ff5722' : 'none',
+                boxShadow: selectedCategory === cat ? '0 2px 8px rgba(255,87,34,0.08)' : 'none',
+                fontFamily: 'inherit',
+              }}
+            >
+              {cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </button>
+          ))}
+        </div>
+
         <TableWrapper hideTableBorder={hideTableBorder}>
           <StyledTable>
             {!hideHeaders && (
@@ -331,7 +686,15 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
               </TableHead>
             )}
             <tbody>
-              {filteredPosters.length > 0 ? (
+              {isSearching ? (
+                <TableRow>
+                  <TableCell colSpan={3}>
+                    <NoResultsContainer>
+                      Searching...
+                    </NoResultsContainer>
+                  </TableCell>
+                </TableRow>
+              ) : filteredPosters.length > 0 ? (
                 filteredPosters.map(poster => (
                   <TableRow key={poster.id} style={{ cursor: 'pointer' }} onClick={() => handlePosterClick(poster)}>
                     <TableCell>
@@ -393,8 +756,21 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={3} style={{ textAlign: 'center', color: '#888', padding: 40 }}>
-                    No posters found
+                  <TableCell colSpan={3}>
+                    <NoResultsContainer>
+                      {selectedLocation ? (
+                        `No posters found near ${selectedLocation.name}`
+                      ) : (
+                        'No posters found near you'
+                      )}
+                      <BrowseButton onClick={() => {
+                        setSearchQuery('');
+                        setPlaceSuggestions(null);
+                        document.querySelector('input[type="text"]')?.focus();
+                      }}>
+                        Browse other locations
+                      </BrowseButton>
+                    </NoResultsContainer>
                   </TableCell>
                 </TableRow>
               )}

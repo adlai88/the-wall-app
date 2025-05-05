@@ -165,46 +165,14 @@ const RightBlur = styled(BlurOverlay)`
 import UpcomingPostersView from './UpcomingPostersView';
 function UpcomingOverlayContent({ events, onClose }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const categories = ['all', 'general', 'event', 'announcement', 'community', 'other'];
-  const scrollRef = useRef();
-  const [showLeftBlur, setShowLeftBlur] = useState(false);
-  const [showRightBlur, setShowRightBlur] = useState(false);
+  // const categories = ['all', 'general', 'event', 'announcement', 'community', 'other'];
+  // const scrollRef = useRef();
+  // const [showLeftBlur, setShowLeftBlur] = useState(false);
+  // const [showRightBlur, setShowRightBlur] = useState(false);
 
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const checkBlur = () => {
-      setShowLeftBlur(el.scrollLeft > 0);
-      setShowRightBlur(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
-    };
-    checkBlur();
-    el.addEventListener('scroll', checkBlur);
-    window.addEventListener('resize', checkBlur);
-    return () => {
-      el.removeEventListener('scroll', checkBlur);
-      window.removeEventListener('resize', checkBlur);
-    };
-  }, []);
-
+  // Remove the category scroll UI, just render UpcomingPostersView:
   return (
     <div style={{ width: '100%' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', background: '#fff', borderBottom: '1px solid #eee', padding: 0, position: 'relative' }}>
-        <div style={{ position: 'relative', width: '100%' }}>
-          <CategoryScrollContainer ref={scrollRef}>
-          {categories.map(category => (
-            <CategoryButton
-              key={category}
-              active={selectedCategory === category}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category.charAt(0).toUpperCase() + category.slice(1)}
-            </CategoryButton>
-          ))}
-          </CategoryScrollContainer>
-          {showLeftBlur && <LeftBlur />}
-          {showRightBlur && <RightBlur />}
-        </div>
-      </div>
       <div style={{marginTop: 0, background: '#fff'}}>
         <UpcomingPostersView posters={events} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} hideHeaders hideTableBorder />
       </div>
@@ -332,7 +300,7 @@ export default function Home() {
                   zIndex: 9999,
                   position: 'fixed',
                   width: '100%',
-                  height: '98vh',
+                  height: '96vh',
                   bottom: 0,
                   left: 0,
                   right: 0,

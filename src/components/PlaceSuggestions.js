@@ -2,22 +2,23 @@ import styled from 'styled-components';
 
 const SuggestionsContainer = styled.div`
   position: absolute;
-  top: 120px; // Position below the weather box
-  left: 10px;
-  width: 300px;
+  top: ${({ context }) => (context === 'map' ? '60px' : '44px')};
+  left: ${({ context }) => (context === 'map' ? '10px' : '0')};
+  right: ${({ context }) => (context === 'map' ? 'auto' : '0')};
+  width: ${({ context }) => (context === 'map' ? '300px' : '100%')};
   background: white;
   border: 1px solid #222;
   border-radius: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-height: calc(100vh - 250px); // Ensure it doesn't extend too far
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  max-height: 320px;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 2001;
   font-family: 'Courier New', monospace;
 
   @media (max-width: 768px) {
-    left: 8px;
-    right: 8px;
-    width: auto;
+    left: 0;
+    right: 0;
+    width: 100%;
   }
 
   /* Custom scrollbar styling */
@@ -88,7 +89,7 @@ const PlaceAddress = styled.div`
 `;
 
 const NoResults = styled.div`
-  padding: 12px;
+  padding: 32px 12px;
   text-align: center;
   color: #666;
   font-size: 14px;
@@ -101,7 +102,7 @@ const LoadingText = styled(NoResults)`
   gap: 8px;
 `;
 
-export default function PlaceSuggestions({ suggestions, onSelect, searchQuery, isSearching }) {
+export default function PlaceSuggestions({ suggestions, onSelect, searchQuery, isSearching, context }) {
   // Don't show anything if:
   // 1. No search query
   // 2. Suggestions is null (not in search mode)
@@ -110,7 +111,7 @@ export default function PlaceSuggestions({ suggestions, onSelect, searchQuery, i
   
   if (isSearching) {
     return (
-      <SuggestionsContainer>
+      <SuggestionsContainer context={context}>
         <LoadingText>
           Searching...
         </LoadingText>
@@ -121,14 +122,14 @@ export default function PlaceSuggestions({ suggestions, onSelect, searchQuery, i
   // Only show "No results found" when actively searching
   if (searchQuery.trim() && suggestions.length === 0) {
     return (
-      <SuggestionsContainer>
+      <SuggestionsContainer context={context} $noResults>
         <NoResults>No places found</NoResults>
       </SuggestionsContainer>
     );
   }
 
   return (
-    <SuggestionsContainer>
+    <SuggestionsContainer context={context}>
       {suggestions.map((place, index) => (
         <SuggestionItem 
           key={index} 

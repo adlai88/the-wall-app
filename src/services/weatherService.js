@@ -24,7 +24,7 @@ async function fetchWithRetry(url, retries = MAX_RETRIES) {
   }
 }
 
-async function getUserLocation() {
+export async function getUserLocation() {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
       resolve(SHANGHAI_COORDS);

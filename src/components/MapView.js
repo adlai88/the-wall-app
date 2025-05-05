@@ -919,6 +919,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
           onSelect={handlePlaceSelect}
           searchQuery={searchQuery}
           isSearching={isSearching}
+          context="map"
         />
 
         {weatherData && !weatherError && (

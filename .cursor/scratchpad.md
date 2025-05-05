@@ -4,6 +4,8 @@ The goal is to make the app installable as a Progressive Web App (PWA), so users
 
 iOS users do not receive a native PWA install prompt. A custom bottom drawer/modal with instructions will help users add the app to their homescreen, improving install rates and user experience.
 
+Currently, the list view displays posters from all cities, which can be overwhelming and less relevant for users. The goal is to provide a better UX by helping users see posters from their own city or region, making the content more personalized and useful.
+
 # Key Challenges and Analysis
 - Ensuring the app meets PWA installability criteria (manifest, HTTPS, service worker, etc.)
 - Integrating with Next.js (which has some PWA plugins but also SSR caveats)
@@ -13,8 +15,13 @@ iOS users do not receive a native PWA install prompt. A custom bottom drawer/mod
 - Detecting if the app is already running in standalone mode (already installed)
 - Ensuring the drawer is not annoying (dismissible, remembers user choice)
 - Providing clear, branded instructions
+- **City Detection:** How to determine the user's city? (Geolocation, user input, or IP-based lookup)
+- **Poster Data:** Do posters have city/location metadata that can be reliably filtered?
+- **Fallbacks:** What if the user's city can't be determined, or there are no posters in their city?
+- **UI/UX:** How to present city selection or filtering in a way that's intuitive and non-intrusive?
+- **Performance:** Efficiently filtering and displaying posters by city, especially with a large dataset.
 
-# High-level Task Breakdown
+# High-level Task Breakdown (Updated for 'Posters Around You' Model)
 
 - [ ] **Add a Web App Manifest**
   - Success: `/manifest.json` is served, includes name, icons, theme color, etc., and is referenced in `<head>`.
@@ -36,6 +43,20 @@ iOS users do not receive a native PWA install prompt. A custom bottom drawer/mod
   - Success: User can close the drawer, and it won't reappear for a set period (e.g., 7 days).
 - [ ] Test on real iOS devices
   - Success: Drawer appears only when appropriate, is dismissible, and does not interfere with app use.
+- [ ] Analyze current poster data for city/location fields and consistency
+- [ ] Decide on city detection method (geolocation, user input, etc.)
+- [ ] Design UI for city selection/filtering (auto-detect, dropdown, search, etc.)
+- [ ] Implement city filter logic in the list view
+- [ ] Add fallback/empty state for when no posters are available in the user's city
+- [ ] Test UX on desktop and mobile
+- [ ] Gather feedback and iterate
+- [ ] Analyze poster data for coordinates/location fields and consistency
+- [ ] Integrate geolocation logic (reuse weather feature logic)
+- [ ] Filter posters by radius (e.g., 10–25km) around user's location
+- [ ] Show only posters within this radius in the list view
+- [ ] Add a header/banner: 'Posters Around You' with detected city/region and a 'Browse other locations' link
+- [ ] If no posters are found nearby, show a friendly empty state and offer to browse other locations (manual city/region selection)
+- [ ] Implement manual city/region selection as a fallback/override
 
 # Project Status Board
 
@@ -79,3 +100,8 @@ iOS users do not receive a native PWA install prompt. A custom bottom drawer/mod
 - For best image quality within Vercel Hobby limits, use maxSizeMB: 1.5, maxWidthOrHeight: 1920, and initialQuality: 0.92 for browser-image-compression.
 - Use the simplest PWA plugin for Next.js unless custom service worker logic is needed.
 - Test on both iOS and Android for install prompt differences.
+
+## Success Criteria (Updated)
+- By default, users see only posters within a set radius of their current location
+- Users can browse other locations if desired or if no local posters are found
+- The experience is seamless, non-intrusive, and works even if geolocation is denied
