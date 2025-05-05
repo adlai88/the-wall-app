@@ -100,7 +100,9 @@ export default function AboutInfoPage() {
       <Section>
         <SectionTitle>For Event Organizers</SectionTitle>
         <SectionContent>
-          Promote your events by adding them to the map. Simply upload your event poster, set the location and time, and submit for approval. Your event will be visible to all users after moderation.
+          <li>Promote your events by adding them to the map.</li>
+          <li>Simply upload your event poster, set the location and time, and submit.</li>
+          <li>Your event will be visible to all users after moderation.</li>
         </SectionContent>
       </Section>
 
