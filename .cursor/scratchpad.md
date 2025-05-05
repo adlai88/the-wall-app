@@ -102,6 +102,7 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - For best image quality within Vercel Hobby limits, use maxSizeMB: 1.5, maxWidthOrHeight: 1920, and initialQuality: 0.92 for browser-image-compression.
 - Use the simplest PWA plugin for Next.js unless custom service worker logic is needed.
 - Test on both iOS and Android for install prompt differences.
+- When aligning UI elements on mobile, match margin and padding values between related components (e.g., search input and dropdown) for a consistent look. User review is important for final confirmation.
 
 ## Success Criteria (Updated)
 - By default, users see only posters within a set radius of their current location
