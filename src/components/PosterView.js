@@ -181,7 +181,7 @@ const MetaSection = styled.div`
 `;
 
 function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(null);
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= 768);
     check();
@@ -193,7 +193,7 @@ function useIsMobile() {
 
 export default function PosterView({ poster, onClose, context = 'map' }) {
   const isMobile = useIsMobile();
-  if (!poster) return null;
+  if (!poster || isMobile === null) return null;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
