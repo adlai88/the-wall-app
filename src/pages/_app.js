@@ -60,7 +60,7 @@ function MyApp({ Component, pageProps }) {
       <Toaster position="bottom-center" richColors />
       <ThemeProvider theme={{}}>
         <UserLocationContext.Provider value={{ userLocation, error: locationError, loading: locationLoading }}>
-          <Component {...pageProps} events={events} setEvents={setEvents} />
+          <Component {...pageProps} />
         </UserLocationContext.Provider>
       </ThemeProvider>
       {/* Portal container for overlays */}

@@ -163,18 +163,35 @@ const RightBlur = styled(BlurOverlay)`
 
 // --- Upcoming Overlay ---
 import UpcomingPostersView from './UpcomingPostersView';
-function UpcomingOverlayContent({ events, onClose }) {
+function UpcomingOverlayContent({ onClose }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  // const categories = ['all', 'general', 'event', 'announcement', 'community', 'other'];
-  // const scrollRef = useRef();
-  // const [showLeftBlur, setShowLeftBlur] = useState(false);
-  // const [showRightBlur, setShowRightBlur] = useState(false);
+  const [posters, setPosters] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Remove the category scroll UI, just render UpcomingPostersView:
+  useEffect(() => {
+    const fetchPosters = async () => {
+      try {
+        const response = await fetch('/api/posters');
+        if (!response.ok) throw new Error('Failed to fetch posters');
+        const data = await response.json();
+        setPosters(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosters();
+  }, []);
+
+  if (loading) return <div style={{ padding: 24, textAlign: 'center' }}>Loading posters...</div>;
+  if (error) return <div style={{ padding: 24, color: 'red' }}>Error: {error}</div>;
+
   return (
     <div style={{ width: '100%' }}>
       <div style={{marginTop: 0, background: '#fff'}}>
-        <UpcomingPostersView posters={events} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} hideHeaders hideTableBorder />
+        <UpcomingPostersView posters={posters} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} hideHeaders hideTableBorder />
       </div>
     </div>
   );
@@ -328,7 +345,7 @@ export default function Home() {
                 </div>
 
                 <ScrollableContent>
-                  <UpcomingOverlayContent events={events} onClose={() => setOverlay(null)} />
+                  <UpcomingOverlayContent onClose={() => setOverlay(null)} />
                 </ScrollableContent>
               </Drawer.Content>
             </Drawer.Portal>

@@ -404,11 +404,11 @@ function useIsMobile() {
   return isMobile;
 }
 
-// Helper to parse coordinates from string "(lng,lat)" to [lng, lat]
+// Helper to parse coordinates from string "(lat,lng)" to [lat, lng]
 const parseCoordinates = (coordString) => {
-  const match = coordString.match(/^\((-?\d+\.?\d*),(-?\d+\.?\d*)\)$/);
+  const match = coordString.match(/^?\((-?\d+\.?\d*),(-?\d+\.?\d*)\)$/);
   if (!match) return null;
-  return [parseFloat(match[1]), parseFloat(match[2])];
+  return [parseFloat(match[1]), parseFloat(match[2])]; // [lat, lng]
 };
 
 // Haversine formula to calculate distance between two lat/lng points in km
@@ -445,19 +445,27 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
 
   const categories = ['all', 'general', 'event', 'announcement', 'community', 'other']
 
+  // Log user location and filter location for debugging
+  const filterLocation = selectedLocation || (userLocation ? { lat: userLocation.lat, lon: userLocation.lon } : null);
+  console.log('UserLocation:', userLocation, '| SelectedLocation:', selectedLocation, '| FilterLocation:', filterLocation);
+  
   // Filter and sort posters by proximity if userLocation is available
   let filteredPosters = posters;
   const RADIUS_KM = 20; // Show posters within 20km
   
-  // Use selected location if available, otherwise use user location
-  const filterLocation = selectedLocation || (userLocation ? { lat: userLocation.lat, lon: userLocation.lon } : null);
-  
   if (filterLocation) {
     filteredPosters = posters.filter(poster => {
-      const coords = parseCoordinates(poster.coordinates || '');
-      if (!coords) return false;
+      const rawCoords = poster.coordinates || '';
+      const coords = parseCoordinates(rawCoords);
+      console.log('RAW COORDS:', rawCoords, '| PARSED:', coords);
+      if (!coords) {
+        console.log('Skipping poster with invalid coordinates:', poster.coordinates);
+        return false;
+      }
+      // Swap assignment if needed based on debug output
       const [lat, lng] = coords;
-      const dist = getDistanceFromLatLonInKm(filterLocation.lat, filterLocation.lon, lat, lng);
+      const dist = getDistanceFromLatLonInKm(lat, lng, filterLocation.lat, filterLocation.lon);
+      console.log('Poster:', poster.title, '| Poster coords:', coords, '| User location:', filterLocation, '| Distance:', dist);
       return dist <= RADIUS_KM;
     });
   }
