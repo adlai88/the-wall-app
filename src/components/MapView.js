@@ -835,16 +835,14 @@ export default function MapView({ events = [], setEvents, onNav }) {
     if (e.key === 'Enter') {
       e.preventDefault();
       const query = searchQuery.toLowerCase().trim();
-      
       // If we have place suggestions, use the first one
       if (placeSuggestions && placeSuggestions.length > 0) {
         handlePlaceSelect(placeSuggestions[0]);
         return;
       }
-      
       // If no suggestions but query exists, try to search
       if (query.length >= 2) {
-        toast.loading('Searching for place...');
+        toast.loading('Searching for place...', { position: 'top-center' });
         try {
           const results = await geocodePlace(query.trim());
           toast.dismiss();
@@ -856,11 +854,11 @@ export default function MapView({ events = [], setEvents, onNav }) {
             // Automatically select the first result
             handlePlaceSelect(results[0]);
           } else {
-            toast.error(`No location found for "${query}"`);
+            toast.error(`No location found for "${query}"`, { position: 'top-center' });
           }
         } catch (err) {
           toast.dismiss();
-          toast.error('Error searching for place');
+          toast.error('Error searching for place', { position: 'top-center' });
         }
       }
     }
@@ -868,11 +866,11 @@ export default function MapView({ events = [], setEvents, onNav }) {
 
   // Handle place selection from suggestions
   const handlePlaceSelect = (place) => {
-    setSearchQuery(place.display_name);
+    setSearchQuery("");
     setPlaceSuggestions(null);
     flyToLocation(place.lat, place.lon, 12);
     setSearchedLocation([place.lat, place.lon]);
-    toast.success(`Moved to ${place.display_name.split(',')[0]}`);
+    toast.success(`Moved to ${place.display_name.split(',')[0]}`, { position: 'top-center' });
   };
 
   return (

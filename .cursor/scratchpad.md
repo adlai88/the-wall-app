@@ -79,6 +79,8 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - [x] Remove temporary trigger button and automate drawer for iOS Safari users (not in standalone, not recently dismissed)
 - [ ] Await user confirmation of correct behavior on device
 - [x] Add margin to search results (PlaceSuggestions) on mobile to match the search input field (8px left/right)
+- [x] Clear map search results after user selects a result and map flies to location (MapView UX improvement)
+- [x] Map view toasts (Sonner) now appear top middle; poster view toasts remain bottom middle (UX improvement)
 
 # Executor's Feedback or Assistance Requests
 
@@ -90,6 +92,8 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - Image compression settings have been optimized for best quality within Vercel Hobby limits (maxSizeMB: 1.5, maxWidthOrHeight: 1920, initialQuality: 0.92). Please review the new image quality and let me know if further adjustments are needed.
 - The Add to Home Screen drawer now appears automatically for iOS Safari users who are not in standalone mode and have not dismissed it in the last 7 days. The temporary button has been removed. Please test on your device and confirm if the behavior matches your expectations.
 - Margin for search results on mobile now matches the search input field (8px left/right) as requested. Please review visually on a mobile device or emulator to confirm the change meets your expectations before marking complete.
+- Map search results are now cleared after a user selects a result and the map flies to the location. This provides a cleaner and more intuitive user experience. Please review on your device and confirm if the behavior matches your expectations.
+- Map view toasts (Sonner) now appear top middle for all map search and place selection actions, as requested. Poster view toasts are unchanged and remain bottom middle. Please review on your device to confirm the new toast positions meet your expectations.
 
 # Current Status / Progress Tracking
 
