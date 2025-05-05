@@ -14,20 +14,33 @@ export default function MapPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let mounted = true;
+
     const fetchEvents = async () => {
       try {
         setLoading(true);
         const data = await getEvents();
-        setEvents(data);
+        if (mounted) {
+          setEvents(data || []);
+          setError(null);
+        }
       } catch (error) {
         console.error('Error fetching events:', error);
-        setError(error.message);
+        if (mounted) {
+          setError(error.message);
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchEvents();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   if (loading) return <LoadingView />;
