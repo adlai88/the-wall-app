@@ -13,7 +13,7 @@ const DrawerContent = styled.div`
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   box-shadow: 0 -2px 16px rgba(0,0,0,0.08);
-  padding: 24px 20px 32px 20px;
+  padding: 16px 20px 32px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -98,7 +98,7 @@ export default function AddToHomeScreenDrawer({ open, onClose }) {
               <Image src="/wallllll_logo.png" alt="App Icon" width={72} height={72} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
             </AppIcon>
             <Title>Wallllll</Title>
-            <Description>To install the app, add the website to your home screen.</Description>
+            <Description>For best performance, add the app to your home screen.</Description>
             <Steps>
               <Step>
                 <span style={{ fontWeight: 700, marginRight: 10 }}>1.</span>
