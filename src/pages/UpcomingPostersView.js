@@ -186,6 +186,7 @@ const TitleCell = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 180px;
+  margin-bottom: 6px;
 `;
 
 const ActionCell = styled.div`
@@ -791,8 +792,17 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                 </TableRow>
               ) : filteredPosters.length > 0 ? (
                 filteredPosters.map(poster => (
-                  <TableRow key={poster.id} style={{ cursor: 'pointer' }} onClick={() => handlePosterClick(poster)}>
-                    <TableCell>
+                  <TableRow
+                    key={poster.id}
+                    style={{
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 16
+                    }}
+                    onClick={() => handlePosterClick(poster)}
+                  >
+                    <TableCell style={{ flex: '0 0 auto', padding: '12px 8px' }}>
                       <Thumb>
                         <Image
                           src={poster.poster_image || '/default-poster.jpg'}
@@ -803,17 +813,26 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                         />
                       </Thumb>
                     </TableCell>
-                    <TableCell>
-                      <TitleCell>{poster.title || 'Untitled Poster'}</TitleCell>
-                      <div style={{ color: '#888', fontSize: 13, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        {poster.category === 'event' && poster.event_start_date ? (
-                          <>
-                            <MetaRow aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>
-                              <FiCalendar style={{ marginRight: 6, fontSize: 14, color: '#888', flexShrink: 0, marginTop: 2 }} />
-                              {formatEventDate(poster.event_start_date, poster.event_end_date)}
-                            </MetaRow>
-                          </>
-                        ) : null}
+                    <TableCell style={{ flex: 1, padding: '12px 8px' }}>
+                      <TitleCell style={{ marginBottom: 6 }}>
+                        {poster.title || 'Untitled Poster'}
+                      </TitleCell>
+                      <div
+                        style={{
+                          color: '#888',
+                          fontSize: 13,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 2,
+                          justifyContent: 'flex-start',
+                        }}
+                      >
+                        {poster.category === 'event' && poster.event_start_date && (
+                          <MetaRow aria-label={`Event date: ${formatEventDate(poster.event_start_date, poster.event_end_date)}`}>
+                            <FiCalendar style={{ marginRight: 6, fontSize: 14, color: '#888', flexShrink: 0, marginTop: 2 }} />
+                            {formatEventDate(poster.event_start_date, poster.event_end_date)}
+                          </MetaRow>
+                        )}
                         <MetaRow>
                           <FiMapPin style={{ marginRight: 6, fontSize: 14, color: '#888', flexShrink: 0, marginTop: 2 }} />
                           {poster.location && poster.location.trim() ? (
@@ -838,26 +857,13 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                         </MetaRow>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <ActionCell>
-                        {poster.poster_url && (
-                          <ExternalLink href={poster.poster_url} target="_blank" rel="noopener noreferrer" title="Open external link">
-                            ↗
-                          </ExternalLink>
-                        )}
-                      </ActionCell>
-                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
                   <TableCell colSpan={3}>
                     <NoResultsContainer>
-                      {selectedLocation ? (
-                        `No posters found near ${selectedLocation.name}`
-                      ) : (
-                        'No posters found near you'
-                      )}
+                      No posters found.
                     </NoResultsContainer>
                   </TableCell>
                 </TableRow>
@@ -866,17 +872,6 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
           </StyledTable>
         </TableWrapper>
       </Container>
-
-      {selectedPoster && (
-        isMobile
-          ? <PosterView poster={selectedPoster} onClose={() => setSelectedPoster(null)} context="list" />
-          : (typeof window !== 'undefined' && document.getElementById('portal-root')
-              ? ReactDOM.createPortal(
-                  <PosterView poster={selectedPoster} onClose={() => setSelectedPoster(null)} context="list" />, 
-                  document.getElementById('portal-root')
-                )
-              : null)
-      )}
     </>
   )
-} 
+}
