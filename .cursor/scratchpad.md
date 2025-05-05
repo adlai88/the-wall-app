@@ -97,6 +97,7 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - [x] Remove the three emoji icons at the bottom of the About page (AboutInfoPage.js)
 - [ ] Test UX on desktop and mobile
 - [x] Updated About and List/Upcoming drawers to use height: '96vh' for better compatibility on both Safari and PWA.
+- [x] Fixed mobile drawers to open from the bottom and only open up to 96vh on mobile Safari and PWA.
 
 # Executor's Feedback or Assistance Requests
 
