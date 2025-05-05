@@ -102,12 +102,12 @@ export default function AddToHomeScreenDrawer({ open, onClose }) {
             <Steps>
               <Step>
                 <span style={{ fontWeight: 700, marginRight: 10 }}>1.</span>
-                <span className="step-label">Tap the share icon</span>
+                <span className="step-label">Tap the Share Icon</span>
                 <span className="icon" style={{ marginLeft: 6 }}><FiShare size={22} color="#222" /></span>
               </Step>
               <Step>
                 <span style={{ fontWeight: 700, marginRight: 10 }}>2.</span>
-                <span className="step-label">Choose <span style={{ fontWeight: 500 }}>Add to home screen</span></span>
+                <span className="step-label">Choose <span style={{ fontWeight: 600 }}>Add to Home Screen</span></span>
                 <span className="icon" style={{ marginLeft: 6 }}><FiPlusSquare size={22} color="#222" /></span>
               </Step>
               <Step>
