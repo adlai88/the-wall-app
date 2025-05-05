@@ -870,6 +870,14 @@ export default function MapView({ onNav }) {
     toast.success(`Moved to ${place.display_name.split(',')[0]}`, { position: 'top-center' });
   };
 
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   return (
     <>
       <MapContainerStyled isPlacingPin={isPlacingPin}>
