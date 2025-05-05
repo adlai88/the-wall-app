@@ -451,19 +451,15 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [isSearching, setIsSearching] = useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   
-  // New state variables for improved loading management
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  // Simplified loading state
+  const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const mapRef = useRef(null);
 
-  // Consolidated fetch function
-  const fetchPosters = async (isInitial = false) => {
-    if (isInitial) {
-      setIsInitialLoading(true);
-    } else {
-      setIsRefreshing(true);
-    }
+  // Simplified fetch function
+  const fetchPosters = async () => {
+    setIsLoading(true);
+    setFetchError(null);
     
     try {
       const response = await fetch('/api/posters');
@@ -473,31 +469,18 @@ export default function MapView({ events = [], setEvents, onNav }) {
       if (Array.isArray(posters)) {
         setEvents(posters);
         setFilteredPosters(posters);
-        setFetchError(null);
       }
     } catch (error) {
       console.error('Error fetching posters:', error);
       setFetchError(error.message);
     } finally {
-      if (isInitial) {
-        setIsInitialLoading(false);
-      } else {
-        setIsRefreshing(false);
-      }
+      setIsLoading(false);
     }
   };
 
-  // Initial fetch and periodic updates
+  // Single initial fetch
   useEffect(() => {
-    // Initial fetch
-    fetchPosters(true);
-
-    // Set up periodic updates
-    const interval = setInterval(() => {
-      fetchPosters(false);
-    }, 30000);
-    
-    return () => clearInterval(interval);
+    fetchPosters();
   }, [setEvents]);
 
   // Update filtered posters when events prop changes
@@ -997,7 +980,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
           </>
         )}
         
-        {(isInitialLoading || isRefreshing) && (
+        {isLoading && (
           <div style={{ 
             position: 'absolute', 
             top: 0,
@@ -1011,9 +994,9 @@ export default function MapView({ events = [], setEvents, onNav }) {
             color: '#888', 
             fontSize: 16, 
             padding: 24,
-            backgroundColor: isInitialLoading ? '#e0e0e0' : 'transparent'
+            backgroundColor: '#e0e0e0'
           }}>
-            {isInitialLoading ? 'Loading posters...' : 'Updating posters...'}
+            Loading posters...
           </div>
         )}
 
@@ -1034,7 +1017,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
           }}>
             <span>Error loading posters</span>
             <button 
-              onClick={() => fetchPosters(true)}
+              onClick={fetchPosters}
               style={{
                 background: 'none',
                 border: '1px solid #ff4444',
@@ -1086,7 +1069,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
             </Marker>
           )}
           
-          {!isInitialLoading && !isRefreshing && filteredPosters.map((poster) => {
+          {!isLoading && filteredPosters.map((poster) => {
             const position = parseCoordinates(poster.coordinates);
             if (!position) return null;
             
