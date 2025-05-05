@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useRef } from 'react'
 import Image from 'next/image'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
@@ -333,6 +333,45 @@ const ResetButton = styled.button`
   }
 `;
 
+const CategoryScrollContainer = styled.div`
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  white-space: nowrap;
+  align-items: center;
+  margin: 32px 0 6px 0;
+  position: relative;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  @media (min-width: 769px) {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    white-space: normal;
+  }
+`;
+
+const BlurOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 18px;
+  pointer-events: none;
+  z-index: 1;
+`;
+
+const LeftBlur = styled(BlurOverlay)`
+  left: 0;
+  background: linear-gradient(to right, #fff 70%, rgba(255,255,255,0));
+`;
+
+const RightBlur = styled(BlurOverlay)`
+  right: 0;
+  background: linear-gradient(to left, #fff 70%, rgba(255,255,255,0));
+`;
+
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -373,6 +412,9 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
   const [isSearching, setIsSearching] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const categoryScrollRef = useRef(null);
+  const [showLeftBlur, setShowLeftBlur] = useState(false);
+  const [showRightBlur, setShowRightBlur] = useState(false);
 
   const categories = ['all', 'general', 'event', 'announcement', 'community', 'other']
 
@@ -583,6 +625,27 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
     })}`;
   };
 
+  useEffect(() => {
+    if (!isMobile) {
+      setShowLeftBlur(false);
+      setShowRightBlur(false);
+      return;
+    }
+    const el = categoryScrollRef.current;
+    if (!el) return;
+    const updateBlurs = () => {
+      setShowLeftBlur(el.scrollLeft > 2);
+      setShowRightBlur(el.scrollLeft + el.offsetWidth < el.scrollWidth - 2);
+    };
+    updateBlurs();
+    el.addEventListener('scroll', updateBlurs);
+    window.addEventListener('resize', updateBlurs);
+    return () => {
+      el.removeEventListener('scroll', updateBlurs);
+      window.removeEventListener('resize', updateBlurs);
+    };
+  }, [isMobile, categories.length]);
+
   return (
     <>
       <Container style={{ background: '#fff' }}>
@@ -649,7 +712,8 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
           </LocationBanner>
         )}
 
-        <div style={{ display: 'flex', gap: 6, margin: '32px 0 6px 0', flexWrap: 'wrap' }}>
+        <CategoryScrollContainer ref={categoryScrollRef}>
+          {isMobile && showLeftBlur && <LeftBlur />}
           {categories.map(cat => (
             <button
               key={cat}
@@ -667,12 +731,14 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                 outline: selectedCategory === cat ? '2px solid #ff5722' : 'none',
                 boxShadow: selectedCategory === cat ? '0 2px 8px rgba(255,87,34,0.08)' : 'none',
                 fontFamily: 'inherit',
+                whiteSpace: 'nowrap',
               }}
             >
               {cat.charAt(0).toUpperCase() + cat.slice(1)}
             </button>
           ))}
-        </div>
+          {isMobile && showRightBlur && <RightBlur />}
+        </CategoryScrollContainer>
 
         <TableWrapper hideTableBorder={hideTableBorder}>
           <StyledTable>

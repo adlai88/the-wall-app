@@ -15,10 +15,18 @@ const SuggestionsContainer = styled.div`
   z-index: 2001;
   font-family: 'Courier New', monospace;
 
+  /* On mobile, adjust width for 'list' context to match search input */
   @media (max-width: 768px) {
-    left: 8px;
-    right: 8px;
-    width: auto;
+    ${({ context }) => context === 'list' && `
+      left: 0;
+      right: 0;
+      width: 100%;
+    `}
+    ${({ context }) => context === 'map' && `
+      left: 8px;
+      right: 8px;
+      width: auto;
+    `}
   }
 
   /* Custom scrollbar styling */

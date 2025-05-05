@@ -81,6 +81,9 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - [x] Add margin to search results (PlaceSuggestions) on mobile to match the search input field (8px left/right)
 - [x] Clear map search results after user selects a result and map flies to location (MapView UX improvement)
 - [x] Map view toasts (Sonner) now appear top middle; poster view toasts remain bottom middle (UX improvement)
+- [x] List view search results box now matches search input width on mobile (does not affect map view)
+- [x] Category buttons in list view are now horizontally scrollable on mobile with edge blur (UI/UX improvement)
+- [x] Category scroll blur overlays now only appear on mobile and only when needed (not on desktop, not when at scroll edge)
 
 # Executor's Feedback or Assistance Requests
 
@@ -94,6 +97,9 @@ Currently, the list view displays posters from all cities, which can be overwhel
 - Margin for search results on mobile now matches the search input field (8px left/right) as requested. Please review visually on a mobile device or emulator to confirm the change meets your expectations before marking complete.
 - Map search results are now cleared after a user selects a result and the map flies to the location. This provides a cleaner and more intuitive user experience. Please review on your device and confirm if the behavior matches your expectations.
 - Map view toasts (Sonner) now appear top middle for all map search and place selection actions, as requested. Poster view toasts are unchanged and remain bottom middle. Please review on your device to confirm the new toast positions meet your expectations.
+- The search results box in the list view now matches the search input width on mobile, while the map view search results box remains unchanged. Please review visually to confirm the fix meets your expectations.
+- The category buttons in the list view are now horizontally scrollable on mobile, with a blur effect on the left and right edges for visual polish. Please review on your device to confirm the new behavior and appearance meet your expectations.
+- The left/right blur overlays for the category scroll now only appear on mobile and only when there is overflow in that direction. This resolves the visual issue on desktop and improves mobile UX. Please review on your device to confirm the fix meets your expectations.
 
 # Current Status / Progress Tracking
 
