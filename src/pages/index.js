@@ -185,7 +185,21 @@ function UpcomingOverlayContent({ onClose }) {
     fetchPosters();
   }, []);
 
-  if (loading) return <div style={{ padding: 24, textAlign: 'center' }}>Loading posters...</div>;
+  if (loading) return (
+    <div style={{ 
+      padding: 24, 
+      textAlign: 'center',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '200px',
+      color: '#666',
+      fontSize: '16px',
+      fontFamily: 'Inter, Helvetica Neue, Arial, sans-serif'
+    }}>
+      Loading posters...
+    </div>
+  );
   if (error) return <div style={{ padding: 24, color: 'red' }}>Error: {error}</div>;
 
   return (
