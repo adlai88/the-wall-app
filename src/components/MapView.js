@@ -979,7 +979,7 @@ export default function MapView({ onNav }) {
             color: '#888', 
             fontSize: 16, 
             padding: 24,
-            backgroundColor: '#e0e0e0'
+            backgroundColor: '#fff'
           }}>
             Loading posters...
           </div>
