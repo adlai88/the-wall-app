@@ -338,7 +338,7 @@ const CategoryScrollContainer = styled.div`
   overflow-x: auto;
   white-space: nowrap;
   align-items: center;
-  margin: 32px 0 6px 0;
+  margin: 12px 0 6px 0;
   position: relative;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;

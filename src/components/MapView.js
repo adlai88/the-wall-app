@@ -450,11 +450,15 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [placeSuggestions, setPlaceSuggestions] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
   const mapRef = useRef(null);
   
   // Update filtered posters when events prop changes
   useEffect(() => {
-    setFilteredPosters(events);
+    if (events && events.length > 0) {
+      setFilteredPosters(events);
+      setLoading(false);
+    }
   }, [events]);
   
   // Debounce search query
@@ -537,6 +541,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   // Fetch posters periodically
   useEffect(() => {
     const fetchPosters = async () => {
+      setLoading(true);
       try {
         const response = await fetch('/api/posters');
         const posters = await response.json();
@@ -545,6 +550,8 @@ export default function MapView({ events = [], setEvents, onNav }) {
         }
       } catch (error) {
         console.error('Error fetching posters:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -968,6 +975,11 @@ export default function MapView({ events = [], setEvents, onNav }) {
           </>
         )}
         
+        {loading ? (
+          <div style={{ position: 'absolute', top: 80, left: 0, right: 0, textAlign: 'center', zIndex: 2002, color: '#888', fontSize: 18, padding: 24 }}>
+            Loading posters...
+          </div>
+        ) : null}
         <MapContainer 
           center={position} 
           zoom={12} 
@@ -1006,7 +1018,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
             </Marker>
           )}
           
-          {filteredPosters.map((poster) => {
+          {!loading && filteredPosters.map((poster) => {
             const position = parseCoordinates(poster.coordinates);
             if (!position) return null;
             
