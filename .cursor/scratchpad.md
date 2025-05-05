@@ -147,118 +147,80 @@ Currently, the list view displays posters from all cities, which can be overwhel
 # Poster Loading Issue Analysis and Solution Plan
 
 ## Background and Motivation
-Users are experiencing an inconsistent issue where posters in the MapView component:
-1. Initially load and display correctly
-2. Suddenly disappear/flash
-3. Reappear after 1-2 minutes
-This behavior is inconsistent and affects the user experience negatively.
+The map page is experiencing intermittent issues with poster loading where posters briefly appear and then disappear, only to reappear after a delay. This is likely due to:
+1. Confusion between the old "events" table and new "posters" table
+2. Multiple data fetching mechanisms causing race conditions
+3. State management issues between the page and MapView component
 
 ## Key Challenges and Analysis
-1. **Race Condition**: The current implementation has multiple data fetching mechanisms that might be interfering with each other:
-   - Initial fetch on component mount
-   - Periodic fetch every 30 seconds
-   - State updates from parent component
+1. Data Source Confusion:
+   - `map.js` uses `getEvents()` from `../api`
+   - `MapView.js` has its own fetch logic for `/api/posters`
+   - This dual fetching could cause race conditions
 
-2. **State Management Issues**:
-   - Multiple state variables controlling poster display (`events`, `filteredPosters`, `loading`)
-   - Potential state conflicts between parent and child components
-   - Loading state might be cleared too early
+2. State Management Issues:
+   - `map.js` maintains `events` state
+   - `MapView.js` maintains `localPosters` state
+   - These states may get out of sync
 
-3. **Loading State Handling**:
-   - Current loading state might not properly account for all data fetching scenarios
-   - No error state handling for failed fetches
-   - No loading state for periodic updates
+3. Rendering Loop Risks:
+   - Previous attempts to fix caused rendering loops
+   - Need to carefully manage state updates and effects
 
 ## Detailed Solution Plan
 
-1. **Consolidate Data Fetching**
-   ```javascript
-   // Proposed new fetch mechanism
-   const [isInitialLoading, setIsInitialLoading] = useState(true);
-   const [isRefreshing, setIsRefreshing] = useState(false);
-   const [error, setError] = useState(null);
-   
-   const fetchPosters = async (isInitial = false) => {
-     if (isInitial) {
-       setIsInitialLoading(true);
-     } else {
-       setIsRefreshing(true);
-     }
-     
-     try {
-       const response = await fetch('/api/posters');
-       if (!response.ok) throw new Error('Failed to fetch posters');
-       const posters = await response.json();
-       
-       if (Array.isArray(posters)) {
-         setEvents(posters);
-         setError(null);
-       }
-     } catch (error) {
-       console.error('Error fetching posters:', error);
-       setError(error.message);
-     } finally {
-       if (isInitial) {
-         setIsInitialLoading(false);
-       } else {
-         setIsRefreshing(false);
-       }
-     }
-   };
-   ```
+1. **Clean up API references**
+   - [ ] Remove all references to `getEvents()` and events table
+   - [ ] Standardize on using `/api/posters` endpoint
+   - [ ] Update any remaining event-related variable names
 
-2. **Improve State Management**
-   - Add proper loading states for initial and periodic fetches
-   - Implement error state handling
-   - Add retry mechanism for failed fetches
-   - Ensure loading state persists until data is fully processed
+2. **Simplify data flow**
+   - [ ] Move all data fetching to `map.js`
+   - [ ] Pass posters data down to `MapView` as props
+   - [ ] Remove duplicate fetching in `MapView`
 
-3. **Add Error Recovery**
-   - Implement retry logic for failed fetches
-   - Add error boundaries
-   - Show user-friendly error messages
+3. **Optimize state management**
+   - [ ] Remove `localPosters` state from `MapView`
+   - [ ] Use `events` prop directly in `MapView`
+   - [ ] Add proper loading states and error handling
 
-4. **Optimize Performance**
-   - Add request debouncing
-   - Implement proper cleanup
-   - Add request cancellation for unmounted components
+4. **Add debugging**
+   - [ ] Add console logs for data fetching
+   - [ ] Add console logs for state updates
+   - [ ] Add error boundary for better error handling
 
 ## Implementation Steps
 
-1. **Update State Management**
-   - [ ] Add new loading states (`isInitialLoading`, `isRefreshing`)
-   - [ ] Add error state
-   - [ ] Update loading indicator to show different states
+1. **Clean up API references**
+   - [ ] Remove all references to `getEvents()` and events table
+   - [ ] Standardize on using `/api/posters` endpoint
+   - [ ] Update any remaining event-related variable names
 
-2. **Improve Fetch Logic**
-   - [ ] Implement consolidated fetch function
-   - [ ] Add proper error handling
-   - [ ] Add retry mechanism
-   - [ ] Implement request cancellation
+2. **Simplify data flow**
+   - [ ] Move all data fetching to `map.js`
+   - [ ] Pass posters data down to `MapView` as props
+   - [ ] Remove duplicate fetching in `MapView`
 
-3. **Update UI Components**
-   - [ ] Add loading indicators for different states
-   - [ ] Add error message display
-   - [ ] Add retry button for failed fetches
+3. **Optimize state management**
+   - [ ] Remove `localPosters` state from `MapView`
+   - [ ] Use `events` prop directly in `MapView`
+   - [ ] Add proper loading states and error handling
 
-4. **Testing**
-   - [ ] Test initial load
-   - [ ] Test periodic updates
-   - [ ] Test error scenarios
-   - [ ] Test retry mechanism
+4. **Add debugging**
+   - [ ] Add console logs for data fetching
+   - [ ] Add console logs for state updates
+   - [ ] Add error boundary for better error handling
 
 ## Project Status Board
-- [ ] Task 1: Update State Management
-- [ ] Task 2: Improve Fetch Logic
-- [ ] Task 3: Update UI Components
-- [ ] Task 4: Testing
+- [ ] Task 1: Clean up API references
+- [ ] Task 2: Simplify data flow
+- [ ] Task 3: Optimize state management
+- [ ] Task 4: Add debugging
 
 ## Executor's Feedback or Assistance Requests
-Ready to begin implementation. Would like to start with updating the state management and fetch logic.
+None yet - awaiting user confirmation of plan
 
 ## Lessons
-- Loading states should account for all data fetching scenarios
-- Multiple fetch mechanisms can lead to race conditions
-- State management needs careful consideration in React components
-- Always implement proper error handling and recovery mechanisms
-- Use separate loading states for initial load and updates
+- Multiple data fetching sources can cause race conditions
+- State management should be centralized when possible
+- Need to be careful with effect dependencies to avoid rendering loops

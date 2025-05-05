@@ -429,14 +429,14 @@ function LocationFlyToHandler({ flyToRequest, setFlyToRequest, setUserLocation, 
   return null;
 }
 
-export default function MapView({ events = [], setEvents, onNav }) {
+export default function MapView({ onNav }) {
   const router = useRouter();
   const [position, setPosition] = useState([31.2304, 121.4737]);
   const [weatherData, setWeatherData] = useState(null);
   const [weatherError, setWeatherError] = useState(null);
   const [selectedPoster, setSelectedPoster] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredPosters, setFilteredPosters] = useState(events);
+  const [filteredPosters, setFilteredPosters] = useState([]);
   const [isPlacingPin, setIsPlacingPin] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [searchedLocation, setSearchedLocation] = useState(null);
@@ -454,100 +454,78 @@ export default function MapView({ events = [], setEvents, onNav }) {
   // Simplified loading state
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
-  const [localPosters, setLocalPosters] = useState([]); // New state for local poster management
+  const [posters, setPosters] = useState([]); // Single source of truth for posters
   const mapRef = useRef(null);
 
   // Simplified fetch function
   const fetchPosters = async () => {
+    console.log('🔄 Starting poster fetch...');
     setIsLoading(true);
     setFetchError(null);
     
     try {
       const response = await fetch('/api/posters');
       if (!response.ok) throw new Error('Failed to fetch posters');
-      const posters = await response.json();
+      const data = await response.json();
       
-      if (Array.isArray(posters)) {
-        // Update parent state
-        setEvents(posters);
-        // Update local state
-        setLocalPosters(posters);
+      if (Array.isArray(data)) {
+        console.log(`✅ Successfully fetched ${data.length} posters`);
+        setPosters(data);
+        setFilteredPosters(data);
       } else {
+        console.error('❌ Invalid data format received:', data);
         throw new Error('Invalid data format received');
       }
     } catch (error) {
-      console.error('Error fetching posters:', error);
+      console.error('❌ Error fetching posters:', error);
       setFetchError(error.message);
-      // Keep existing posters on error
-      setLocalPosters(prev => prev);
     } finally {
       setIsLoading(false);
+      console.log('🏁 Fetch operation completed');
     }
   };
 
   // Single initial fetch
   useEffect(() => {
+    console.log('🎯 MapView mounted, initiating poster fetch');
     fetchPosters();
-  }, [setEvents]);
+  }, []);
 
-  // Update local posters when events prop changes
-  useEffect(() => {
-    console.log('Events prop changed:', events);
-    if (events && Array.isArray(events)) {
-      console.log('Updating local posters with:', events.length, 'items');
-      setLocalPosters(events);
-    }
-  }, [events]);
-  
-  // Debounce search query
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchQuery(searchQuery);
-    }, 300); // 300ms delay
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  // Use debounced query for filtering and geocoding
+  // Update filtered posters when search query changes
   useEffect(() => {
     if (!debouncedSearchQuery.trim()) {
-      setFilteredPosters(events);
+      console.log('🔄 Resetting filtered posters to full list');
+      setFilteredPosters(posters);
       setPlaceSuggestions([]);
       setIsSearching(false);
       return;
     }
 
     const query = debouncedSearchQuery.toLowerCase().trim();
+    console.log(`🔍 Filtering posters for query: "${query}"`);
     
-    // Optimize filtering by creating a single toLowerCase() version of the query
-    const filtered = events.filter(poster => {
+    const filtered = posters.filter(poster => {
       const title = (poster.title || '').toLowerCase();
       const location = (poster.location || '').toLowerCase();
       const description = (poster.description || '').toLowerCase();
       const category = poster.category.toLowerCase();
       
-      // Check exact matches first
-      if (title === query || location === query || category === query) {
-        return true;
-      }
-      
-      // Then check includes
       return title.includes(query) ||
              location.includes(query) ||
              description.includes(query) ||
              category.includes(query);
     });
     
+    console.log(`✅ Found ${filtered.length} matching posters`);
     setFilteredPosters(filtered);
     
-    // Improved geocoding logic
+    // Geocoding logic remains the same
     if (query.length >= 2) {
-      // Common location indicators
       const likelyLocation = 
-        query.length > 3 || // Most city names are at least 4 chars
-        query.includes(' ') || // Multi-word locations
-        query.includes(',') || // Addresses often have commas
-        /^[A-Z]/.test(query); // Proper nouns often start with capital letters
+        query.length > 3 ||
+        query.includes(' ') ||
+        query.includes(',') ||
+        /^[A-Z]/.test(query);
 
       if (likelyLocation) {
         setIsSearching(true);
@@ -574,7 +552,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
       setPlaceSuggestions([]);
       setIsSearching(false);
     }
-  }, [debouncedSearchQuery, events]);
+  }, [debouncedSearchQuery, posters]);
   
   // Test weather API on mount
   useEffect(() => {
@@ -614,7 +592,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
   useEffect(() => {
     const newSizes = {};
     let changed = false;
-    events.forEach((poster) => {
+    posters.forEach((poster) => {
       if (poster.poster_image && !imageSizes[poster.id]) {
         const img = new window.Image();
         img.onload = function () {
@@ -634,7 +612,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
       }
     });
     // eslint-disable-next-line
-  }, [events]);
+  }, [posters]);
 
   // Helper function to get color based on category
   const getCategoryColor = (category) => {
@@ -765,7 +743,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
         const updatedPosters = await response.json();
         
         if (Array.isArray(updatedPosters)) {
-          setEvents(updatedPosters);
+          setPosters(updatedPosters);
           setFilteredPosters(updatedPosters);
         }
       } catch (error) {
@@ -1076,7 +1054,7 @@ export default function MapView({ events = [], setEvents, onNav }) {
             </Marker>
           )}
           
-          {!isLoading && localPosters.map((poster) => {
+          {!isLoading && filteredPosters.map((poster) => {
             const position = parseCoordinates(poster.coordinates);
             if (!position) return null;
             
