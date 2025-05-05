@@ -11,52 +11,19 @@ export const config = {
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
-      console.log('Fetching posters from Supabase...');
-      
-      // First, get all posters without date filter to check if we have any data
-      const { data: allPosters, error: countError } = await supabase
-        .from('posters')
-        .select('*')
-        .eq('moderation_status', 'approved')
-        .eq('hidden', false)
-        .eq('status', 'active');
-      
-      if (countError) {
-        console.error('Error fetching all posters:', countError);
-        throw countError;
-      }
-      
-      console.log(`Found ${allPosters?.length || 0} total approved posters`);
-
-      // Now get the filtered posters
       const { data, error } = await supabase
         .from('posters')
         .select('*')
         .eq('moderation_status', 'approved')
         .eq('hidden', false)
         .eq('status', 'active')
-        .gt('display_until', new Date().toISOString());
+        .gt('display_until', new Date().toISOString()) // Only show posters that are still meant to be displayed
       
-      if (error) {
-        console.error('Error fetching filtered posters:', error);
-        throw error;
-      }
-
-      console.log(`Found ${data?.length || 0} active posters after date filter`);
-      
-      // Log some debug info about the date filter
-      if (data?.length === 0 && allPosters?.length > 0) {
-        console.log('Date filter removed all posters. Current time:', new Date().toISOString());
-        console.log('Sample poster display_until dates:', 
-          allPosters.slice(0, 3).map(p => p.display_until)
-        );
-      }
-      
-      return res.status(200).json(data || []);
+      if (error) throw error;
+      return res.status(200).json(data);
     } catch (error) {
-      console.error('Error in /api/posters:', error);
-      // Return empty array instead of error to prevent client-side crashes
-      return res.status(200).json([]);
+      console.error('Error fetching posters:', error);
+      return res.status(500).json({ error: 'Error fetching posters' });
     }
   }
 
