@@ -451,6 +451,10 @@ export default function MapView({ events = [], setEvents, onNav }) {
   const [isSearching, setIsSearching] = useState(false);
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000; // 2 seconds
   const mapRef = useRef(null);
   
   // Update filtered posters when events prop changes
@@ -541,37 +545,101 @@ export default function MapView({ events = [], setEvents, onNav }) {
     }
   }, [debouncedSearchQuery, events]);
   
-  // Fetch posters periodically
+  // Add this new function to handle data persistence
+  const persistPosters = (posters) => {
+    try {
+      localStorage.setItem('cachedPosters', JSON.stringify(posters));
+    } catch (err) {
+      console.error('Error persisting posters:', err);
+    }
+  };
+
+  // Add this new function to load cached data
+  const loadCachedPosters = () => {
+    try {
+      const cached = localStorage.getItem('cachedPosters');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setEvents(parsed);
+          setFilteredPosters(parsed);
+          return true;
+        }
+      }
+    } catch (err) {
+      console.error('Error loading cached posters:', err);
+    }
+    return false;
+  };
+
+  // Replace the existing useEffect for fetching posters with this improved version
   useEffect(() => {
     const fetchPosters = async () => {
       try {
+        setError(null);
         const response = await fetch('/api/posters');
-        const posters = await response.json();
-        if (Array.isArray(posters)) {
-          setEvents(posters); // Update parent state
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const posters = await response.json();
+        
+        // Validate the data structure
+        if (!Array.isArray(posters)) {
+          throw new Error('Invalid data format received from server');
+        }
+
+        // Update both local and parent state
+        setEvents(posters);
+        setFilteredPosters(posters);
+        persistPosters(posters);
+        setLoading(false);
+        setRetryCount(0); // Reset retry count on success
       } catch (error) {
         console.error('Error fetching posters:', error);
+        setError(error.message);
+        
+        // If we have cached data, use it as fallback
+        if (loadCachedPosters()) {
+          setLoading(false);
+          return;
+        }
+
+        // Implement retry logic
+        if (retryCount < MAX_RETRIES) {
+          setRetryCount(prev => prev + 1);
+          setTimeout(fetchPosters, RETRY_DELAY);
+        } else {
+          setLoading(false);
+        }
       }
     };
 
-    // Fetch immediately
-    fetchPosters();
+    // Try to load cached data first
+    if (!loadCachedPosters()) {
+      fetchPosters();
+    } else {
+      setLoading(false);
+    }
 
-    // Then fetch every 30 seconds
+    // Set up periodic refresh
     const interval = setInterval(fetchPosters, 30000);
     
     return () => clearInterval(interval);
-  }, [setEvents]);
-  
-  // Test weather API on mount
+  }, [setEvents, retryCount]);
+
+  // Add network connectivity handling
   useEffect(() => {
-    console.log('MapView mounted, testing weather API...');
-    testWeatherAPI().catch(error => {
-      console.error('Error in testWeatherAPI:', error);
-    });
-  }, []);
-  
+    const handleOnline = () => {
+      if (error) {
+        setRetryCount(0); // Reset retry count when back online
+        fetchPosters();
+      }
+    };
+
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
+  }, [error]);
+
   // Fetch weather data
   useEffect(() => {
     const fetchWeather = async () => {
@@ -990,7 +1058,30 @@ export default function MapView({ events = [], setEvents, onNav }) {
             fontSize: 16, 
             padding: 24 
           }}>
-            Loading posters...
+            {error ? (
+              <div style={{ textAlign: 'center' }}>
+                <div>Error loading posters: {error}</div>
+                <button 
+                  onClick={() => {
+                    setRetryCount(0);
+                    fetchPosters();
+                  }}
+                  style={{
+                    marginTop: 10,
+                    padding: '8px 16px',
+                    background: '#ff5722',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: 4,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Retry
+                </button>
+              </div>
+            ) : (
+              'Loading posters...'
+            )}
           </div>
         ) : null}
         <MapContainer 
