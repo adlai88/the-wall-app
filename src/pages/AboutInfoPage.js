@@ -152,7 +152,7 @@ export default function AboutInfoPage() {
         <QRModalOverlay onClick={() => setShowQR(false)}>
           <QRModalContent onClick={e => e.stopPropagation()}>
             <QRImage src="/qr-donate.png" alt="Donate QR Code" />
-            <div style={{ color: '#333', fontSize: 16, marginBottom: 8, textAlign: 'center' }}>Scan to donate via WeChat/Alipay</div>
+            <div style={{ color: '#333', fontSize: 16, marginBottom: 8, textAlign: 'center' }}>Scan to donate via WeChat</div>
             <CloseQRButton onClick={() => setShowQR(false)}>Close</CloseQRButton>
           </QRModalContent>
         </QRModalOverlay>
