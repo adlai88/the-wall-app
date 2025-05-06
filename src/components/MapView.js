@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { geocodePlace } from '../utils/geocode';
 import { FiChevronDown, FiChevronUp, FiSearch } from 'react-icons/fi';
 import PlaceSuggestions from './PlaceSuggestions';
+import useDeviceOrientation from '../hooks/useDeviceOrientation';
 
 // Fix Leaflet default marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -429,6 +430,15 @@ function LocationFlyToHandler({ flyToRequest, setFlyToRequest, setUserLocation, 
   return null;
 }
 
+// Add this before the MapView component
+const ParallaxMarker = styled.div`
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+`;
+
 export default function MapView({ onNav }) {
   const router = useRouter();
   const [position, setPosition] = useState([31.2304, 121.4737]);
@@ -456,6 +466,7 @@ export default function MapView({ onNav }) {
   const [fetchError, setFetchError] = useState(null);
   const [posters, setPosters] = useState([]); // Single source of truth for posters
   const mapRef = useRef(null);
+  const { orientation, isSupported } = useDeviceOrientation();
 
   // Simplified fetch function
   const fetchPosters = async () => {
@@ -647,6 +658,15 @@ export default function MapView({ onNav }) {
     const imgSize = imageSizes[poster.id];
     if (poster.poster_image && imgSize) {
       const imgStyle = 'width: 100%; height: 100%; display: block; box-sizing: border-box; vertical-align: bottom; margin: 0; padding: 0; object-fit: fill;';
+      
+      // Calculate parallax transform based on device orientation
+      const transform = isSupported ? `
+        transform: 
+          rotateX(${orientation.beta * 0.5}deg) 
+          rotateY(${orientation.gamma * 0.5}deg)
+          translateZ(20px);
+      ` : '';
+
       return L.divIcon({
         className: 'custom-marker',
         html: `
@@ -663,6 +683,12 @@ export default function MapView({ onNav }) {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+            backface-visibility: hidden;
+            perspective: 1000px;
+            ${transform}
           ">
             <img 
               src="${poster.poster_image}" 
@@ -675,7 +701,15 @@ export default function MapView({ onNav }) {
         iconAnchor: [imgSize.width / 2, imgSize.height / 2],
       });
     }
-    // Fallback: brutalist square
+    
+    // Fallback: brutalist square with parallax
+    const transform = isSupported ? `
+      transform: 
+        rotateX(${orientation.beta * 0.5}deg) 
+        rotateY(${orientation.gamma * 0.5}deg)
+        translateZ(20px);
+    ` : '';
+
     return L.divIcon({
       className: 'custom-marker',
       html: `
@@ -694,6 +728,12 @@ export default function MapView({ onNav }) {
           font-size: ${baseSize * 0.3}px;
           text-transform: uppercase;
           letter-spacing: 1px;
+          transform-style: preserve-3d;
+          transition: transform 0.1s ease-out;
+          will-change: transform;
+          backface-visibility: hidden;
+          perspective: 1000px;
+          ${transform}
         ">
           ${poster.category.charAt(0).toUpperCase()}
         </div>
