@@ -90,11 +90,12 @@ export default function AboutInfoPage() {
       <Section>
         <SectionTitle>How It Works</SectionTitle>
         <SectionContent as="ul" style={{ paddingLeft: 20, margin: 0 }}>
-          <li>Browse the map to discover posters pinned to locations.</li>
+          <li>Browse the map to discover posters.</li>
           <li>Tap on posters to view details.</li>
           <li>Add your own poster by uploading an image and pinning it to a location.</li>
-          <li>Posters are visible to all users after moderation.</li>
+          <li>A poster could be for an event, an announcement, a photo, etc.</li>
           <li>Posters are displayed on the map for a maximum of 30 days before disappearing.</li>
+          <li>Posters are visible to all users after moderation.</li>
         </SectionContent>
       </Section>
 
