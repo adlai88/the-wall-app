@@ -447,7 +447,7 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
   const [showLeftBlur, setShowLeftBlur] = useState(false);
   const [showRightBlur, setShowRightBlur] = useState(false);
 
-  const categories = ['all', 'general', 'event', 'announcement', 'community', 'other']
+  const categories = ['all', 'general', 'event', 'announcement', 'community', 'other', 'elsewhere']
 
   // Log user location and filter location for debugging
   const filterLocation = selectedLocation || (userLocation ? { lat: userLocation.lat, lon: userLocation.lon } : null);
@@ -455,7 +455,7 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
   
   // Filter and sort posters by proximity if userLocation is available
   let filteredPosters = posters;
-  const RADIUS_KM = 20; // Show posters within 20km
+  const RADIUS_KM = 20;
   
   if (filterLocation) {
     filteredPosters = posters.filter(poster => {
@@ -470,6 +470,12 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
       const [lat, lng] = coords;
       const dist = getDistanceFromLatLonInKm(lat, lng, filterLocation.lat, filterLocation.lon);
       console.log('Poster:', poster.title, '| Poster coords:', coords, '| User location:', filterLocation, '| Distance:', dist);
+      
+      // If "elsewhere" category is selected, show posters outside the radius
+      if (selectedCategory === 'elsewhere') {
+        return dist > RADIUS_KM;
+      }
+      // For other categories, show posters within the radius
       return dist <= RADIUS_KM;
     });
   }
@@ -477,7 +483,8 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
   // Apply category and search filters
   filteredPosters = filteredPosters
     .filter(poster => {
-      const matchesCategory = selectedCategory === 'all' || poster.category === selectedCategory
+      const matchesCategory = selectedCategory === 'all' || 
+                            (selectedCategory === 'elsewhere' ? true : poster.category === selectedCategory);
       const matchesSearch = (poster.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (poster.description || '').toLowerCase().includes(searchQuery.toLowerCase())
       return matchesCategory && matchesSearch
@@ -750,7 +757,9 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
           <LocationBanner>
             <LocationText>
               <FiMapPin size={16} />
-              {selectedLocation ? (
+              {selectedCategory === 'elsewhere' ? (
+                'Showing posters from other locations'
+              ) : selectedLocation ? (
                 `Showing posters near ${selectedLocation.name}`
               ) : (
                 'Showing posters near you'
@@ -877,7 +886,9 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                 <TableRow>
                   <TableCell colSpan={3}>
                     <NoResultsContainer>
-                      {selectedLocation ? (
+                      {selectedCategory === 'elsewhere' ? (
+                        'No posters found in other locations'
+                      ) : selectedLocation ? (
                         `No posters found near ${selectedLocation.name}`
                       ) : (
                         'No posters found near you'

@@ -239,3 +239,46 @@ None yet - awaiting user confirmation of plan
 - Multiple data fetching sources can cause race conditions
 - State management should be centralized when possible
 - Need to be careful with effect dependencies to avoid rendering loops
+
+# Background and Motivation
+The current implementation filters posters based on a 20km radius from the user's location or a selected location. Users want to be able to see posters that are outside this radius in a separate "elsewhere" category.
+
+# Key Challenges and Analysis
+1. Current Implementation:
+   - Posters are filtered based on a 20km radius using the Haversine formula
+   - Filtering happens in the UpcomingPostersView component
+   - The location filtering is applied before category filtering
+   - The UI shows a location banner indicating the current filter
+
+2. Technical Considerations:
+   - Need to modify the filtering logic to handle "elsewhere" category
+   - Need to maintain the existing location-based filtering for other categories
+   - Need to update the UI to show appropriate messaging for "elsewhere" category
+   - Need to ensure the distance calculation is accurate and efficient
+
+# High-level Task Breakdown
+1. Modify the filtering logic in UpcomingPostersView.js
+   - Add "elsewhere" to the categories array
+   - Update the filtering logic to handle the "elsewhere" category
+   - Ensure proper sorting of posters in the "elsewhere" category
+
+2. Update the UI components
+   - Add appropriate messaging for the "elsewhere" category
+   - Update the location banner to reflect when showing "elsewhere" posters
+   - Ensure consistent styling with existing categories
+
+3. Testing and Validation
+   - Test the filtering logic with various location scenarios
+   - Verify the UI updates correctly
+   - Ensure performance is maintained
+
+# Project Status Board
+- [ ] Task 1: Modify filtering logic
+- [ ] Task 2: Update UI components
+- [ ] Task 3: Testing and validation
+
+# Executor's Feedback or Assistance Requests
+(To be filled during implementation)
+
+# Lessons
+(To be filled during implementation)
