@@ -71,7 +71,50 @@ const IconContainer = styled.div`
   color: #666;
 `;
 
+const QRModalOverlay = styled.div`
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.48);
+  border-radius: 16px 16px 0 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const QRModalContent = styled.div`
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 24px 24px 24px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 90vw;
+  max-height: 90vh;
+`;
+
+const QRImage = styled.img`
+  width: 240px;
+  height: 240px;
+  object-fit: contain;
+  margin-bottom: 16px;
+`;
+
+const CloseQRButton = styled.button`
+  margin-top: 12px;
+  padding: 8px 18px;
+  background: #eee;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+  &:hover { background: #f5f5f5; }
+`;
+
 export default function AboutInfoPage() {
+  const [showQR, setShowQR] = React.useState(false);
   return (
     <Container>
       <Logo>
@@ -100,13 +143,20 @@ export default function AboutInfoPage() {
       </Section>
 
       <ContactSection>
-        <Button onClick={() => window.open('mailto:feedback@example.com')}>
-          Send Feedback
-        </Button>
-        <Button onClick={() => window.open('mailto:report@example.com')}>
-          Make a Donation
+        <Button onClick={() => setShowQR(true)}>
+          Donate
         </Button>
       </ContactSection>
+
+      {showQR && (
+        <QRModalOverlay onClick={() => setShowQR(false)}>
+          <QRModalContent onClick={e => e.stopPropagation()}>
+            <QRImage src="/qr-donate.png" alt="Donate QR Code" />
+            <div style={{ color: '#333', fontSize: 16, marginBottom: 8, textAlign: 'center' }}>Scan to donate via WeChat/Alipay</div>
+            <CloseQRButton onClick={() => setShowQR(false)}>Close</CloseQRButton>
+          </QRModalContent>
+        </QRModalOverlay>
+      )}
     </Container>
   );
 }
