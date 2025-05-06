@@ -47,19 +47,22 @@ const ContactSection = styled.div`
 
 const Button = styled.button`
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   margin-bottom: 12px;
-  background: transparent;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 15px;
-  color: #333;
+  background: #000;
+  color: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 
   &:hover {
-    background: #f5f5f5;
+    background: #fff;
+    color: #000;
+    border-color: #000;
   }
 `;
 

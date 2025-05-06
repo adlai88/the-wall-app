@@ -172,7 +172,7 @@ const ButtonContainer = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 36px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 48px);
     padding: 15px;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
     z-index: 1001;
