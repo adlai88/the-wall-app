@@ -1,5 +1,5 @@
-import EventSubmissionFlow from '../components/EventSubmissionFlow';
+import AddPoster from '../components/AddPoster';
 
 export default function Submit() {
-  return <EventSubmissionFlow />;
+  return <AddPoster />;
 } 

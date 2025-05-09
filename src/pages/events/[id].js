@@ -1,9 +1,9 @@
 import { useRouter } from 'next/router';
-import EventDetailView from '../../components/EventDetailView';
+import PosterView from '../../components/PosterView';
 
 export default function EventDetail() {
   const router = useRouter();
   const { id } = router.query;
 
-  return <EventDetailView eventId={id} />;
+  return <PosterView eventId={id} />;
 } 
