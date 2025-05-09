@@ -34,6 +34,7 @@ const ImageSection = styled.div`
   background: #111;
   padding: 40px;
   box-sizing: border-box;
+  padding-top: 32px;
   @media (max-width: 768px) {
     display: none;
     padding: 0;
@@ -89,7 +90,7 @@ const ImageWrapper = styled.div`
   justify-content: center;
   img {
     max-width: 100%;
-    max-height: 100%;
+    max-height: calc(100vh - 120px);
     object-fit: contain;
     border-radius: 4px;
   }
@@ -347,13 +348,15 @@ export default function PosterView({ poster, onClose, context = 'map' }) {
       <Overlay onClick={handleOverlayClick}>
         <ImageSection onClick={e => e.stopPropagation()}>
           <ImageWrapper>
-            <Image
-              src={poster.poster_image}
-              alt={poster.title || 'Event Poster'}
-              fill
-              style={{ objectFit: 'contain' }}
-              priority
-            />
+            <div className="poster-image-container">
+              <img
+                src={poster.poster_image}
+                alt={poster.title || 'Poster'}
+                className="poster-image"
+                onClick={onClose}
+                style={{ cursor: 'pointer' }}
+              />
+            </div>
           </ImageWrapper>
         </ImageSection>
         {!isMobile && (
