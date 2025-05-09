@@ -1,5 +1,5 @@
-import PosterCreationModal from '../components/PosterCreationModal';
+import MapView from '../components/MapView';
 
 export default function Submit() {
-  return <PosterCreationModal />;
+  return <MapView />;
 } 
