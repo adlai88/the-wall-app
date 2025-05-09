@@ -39,20 +39,20 @@ const MasonryGrid = styled(Masonry)`
   display: flex;
   padding-left: 0px;
   padding-right: 16px;
-  padding-top: 16px;
-  padding-bottom: 128px;
+  padding-top: 4px;
+  padding-bottom: 96px;
   width: auto;
   flex: 1;
   overflow-y: auto;
   margin-top: 0;
-  margin-bottom: 128px;
+  margin-bottom: 96px;
   -webkit-overflow-scrolling: touch;
   
   @media (max-width: 768px) {
-    padding-left: 0px;
+    padding-left: 4px;
     padding-right: 12px;
-    padding-top: 12px;
-    padding-bottom: 64px;
+    padding-top: 0px;
+    padding-bottom: 32px;
     margin-top: 0;
   }
 
