@@ -176,8 +176,8 @@ const TableCell = styled.td`
 `;
 
 const Thumb = styled.div`
-  width: 48px;
-  height: 48px;
+  max-width: 64px;
+  max-height: 96px;
   overflow: hidden;
   background: #f5f5f5;
   border: 1px solid #222;
@@ -826,13 +826,11 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
                   <TableRow key={poster.id} style={{ cursor: 'pointer' }} onClick={() => handlePosterClick(poster)}>
                     <TableCell>
                       <Thumb>
-                        <Image
+                        <img
                           src={poster.poster_image || '/default-poster.jpg'}
                           alt={poster.title || 'Untitled Poster'}
-                          width={48}
-                          height={48}
-                          style={{ objectFit: 'cover', width: 48, height: 48 }}
-                          priority={idx < 3}
+                          style={{ width: '100%', height: 'auto', objectFit: 'contain', maxHeight: 96, display: 'block' }}
+                          loading={idx < 3 ? 'eager' : 'lazy'}
                         />
                       </Thumb>
                     </TableCell>

@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { geocodePlace } from '../utils/geocode';
 import { FiChevronDown, FiChevronUp, FiSearch } from 'react-icons/fi';
 import PlaceSuggestions from './PlaceSuggestions';
+import GridView from './GridView';
 
 // Fix Leaflet default marker icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -456,6 +457,7 @@ export default function MapView({ onNav }) {
   const [fetchError, setFetchError] = useState(null);
   const [posters, setPosters] = useState([]); // Single source of truth for posters
   const mapRef = useRef(null);
+  const [isGridView, setIsGridView] = useState(false);
 
   // Simplified fetch function
   const fetchPosters = async () => {
@@ -1112,6 +1114,12 @@ export default function MapView({ onNav }) {
         />
       )}
       
+      <GridView
+        open={isGridView}
+        onClose={() => setIsGridView(false)}
+        posters={filteredPosters}
+      />
+      
       <BottomNav 
         active="map" 
         onLocationClick={handleLocationClick}
@@ -1125,6 +1133,8 @@ export default function MapView({ onNav }) {
           }
         }}
         isPlacingPin={isPlacingPin}
+        isGridView={isGridView}
+        onToggleView={() => setIsGridView(!isGridView)}
       />
     </>
   );

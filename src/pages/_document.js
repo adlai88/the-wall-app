@@ -18,6 +18,7 @@ export default function Document() {
       <body>
         <Main />
         <NextScript />
+        <div id="portal-root" style={{ position: 'fixed', zIndex: 2147483647, pointerEvents: 'auto' }} />
       </body>
     </Html>
   );

@@ -63,8 +63,6 @@ function MyApp({ Component, pageProps }) {
           <Component {...pageProps} />
         </UserLocationContext.Provider>
       </ThemeProvider>
-      {/* Portal container for overlays */}
-      <div id="portal-root" style={{ position: 'fixed', zIndex: 99999, pointerEvents: 'none' }} />
     </>
   );
 }

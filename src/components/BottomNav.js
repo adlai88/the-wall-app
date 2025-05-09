@@ -1,14 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
-import { FiMap, FiNavigation, FiList, FiInfo } from 'react-icons/fi';
+import { FiMap, FiNavigation, FiList, FiInfo, FiGrid } from 'react-icons/fi';
 
 const NavContainer = styled.div`
   height: 90px;
   background-color: white;
   border-top: 1px solid #222;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   width: 100%;
   position: fixed;
@@ -18,6 +18,7 @@ const NavContainer = styled.div`
   /* Add padding for iOS safe area and extra comfort */
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
   padding-top: 16px;
+  gap: 0 16px;
 `;
 
 const NavItem = styled.div`
@@ -63,7 +64,6 @@ const AddPosterButton = styled.button`
   font-weight: bold;
   border: 1px solid #222;
   cursor: pointer;
-  margin: 0 10px;
   flex-shrink: 0;
   transition: background 0.15s, color 0.15s;
   &:hover {
@@ -72,17 +72,37 @@ const AddPosterButton = styled.button`
   }
 `;
 
-function BottomNav({ active, onLocationClick, isLocating, onNav, onAddPoster, isPlacingPin }) {
+function BottomNav({ active, onLocationClick, isLocating, onNav, onAddPoster, isPlacingPin, isGridView, onToggleView }) {
   const router = useRouter();
   return (
     <NavContainer>
       <NavItem 
-        $active={active === 'map'} 
-        onClick={() => onNav ? onNav('map') : router.push('/')}
+        $active={false} 
+        onClick={() => {
+          if (onToggleView) {
+            onToggleView();
+          } else if (onNav) {
+            onNav('map');
+          } else {
+            router.push('/');
+          }
+        }}
       >
-        <NavIcon $active={active === 'map'}><FiMap size={18} /></NavIcon>
-        <span>Map</span>
+        <NavIcon $active={false}>
+          <FiGrid size={18} />
+        </NavIcon>
+        <span>Grid</span>
       </NavItem>
+      <NavItem 
+        $active={active === 'upcoming'} 
+        onClick={() => onNav ? onNav('upcoming') : router.push('/upcoming')}
+      >
+        <NavIcon $active={active === 'upcoming'}><FiList size={18} /></NavIcon>
+        <span>List</span>
+      </NavItem>
+      <AddPosterButton onClick={onAddPoster} aria-label={isPlacingPin ? "Exit Add Poster" : "Add Poster"}>
+        {isPlacingPin ? '×' : '+'}
+      </AddPosterButton>
       <LocationButton
         $isLocating={isLocating}
         onClick={(e) => {
@@ -101,16 +121,6 @@ function BottomNav({ active, onLocationClick, isLocating, onNav, onAddPoster, is
         </NavIcon>
         <span>Location</span>
       </LocationButton>
-      <AddPosterButton onClick={onAddPoster} aria-label={isPlacingPin ? "Exit Add Poster" : "Add Poster"}>
-        {isPlacingPin ? '×' : '+'}
-      </AddPosterButton>
-      <NavItem 
-        $active={active === 'upcoming'} 
-        onClick={() => onNav ? onNav('upcoming') : router.push('/upcoming')}
-      >
-        <NavIcon $active={active === 'upcoming'}><FiList size={18} /></NavIcon>
-        <span>List</span>
-      </NavItem>
       <NavItem 
         $active={active === 'about'} 
         onClick={() => onNav ? onNav('about') : router.push('/about')}

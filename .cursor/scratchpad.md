@@ -282,3 +282,114 @@ The current implementation filters posters based on a 20km radius from the user'
 
 # Lessons
 (To be filled during implementation)
+
+# Grid View Feature Planning
+
+## Background and Motivation
+The user wants to add a grid view feature to display posters in a responsive waterfall grid layout, ordered by newest to latest, regardless of their geographical location. The grid view will appear as a full-height drawer over a non-interactive map background, providing a seamless transition between views while maintaining spatial context.
+
+## Key Challenges and Analysis
+1. **View Implementation**
+   - Use a full-height drawer (100vh) with transparent background
+   - Map remains visible but becomes non-interactive
+   - Keep existing bottom nav functionality, only modify map icon behavior
+   - Smooth transition between views
+
+2. **Grid Layout Implementation**
+   - Implement a brutalist Pinterest-style waterfall grid
+   - Maintain original poster aspect ratios
+   - Grid should be responsive and work well on both mobile and desktop
+   - No metadata displayed on grid items - just images
+   - Clicking grid items should open the same PosterView as map markers
+   - Grid items should flow naturally based on their aspect ratios
+   - Consider semi-transparent background to maintain map visibility
+
+3. **Data Management**
+   - Need to fetch and sort posters by date (newest to latest)
+   - Implement infinite scroll with initial load of 20 items
+   - Load 10 items per scroll batch
+   - Need to maintain existing poster data structure while adding sorting capability
+   - Need to support city-based filtering
+
+4. **UI/UX Considerations**
+   - Smooth transition between map and grid views
+   - Loading states for grid view
+   - Horizontally scrollable city filter tags at the top
+   - Simple city filter tags without counts initially
+   - Consistent poster interaction behavior with map view
+   - Maintain consistent poster preview/thumbnail sizes
+   - Brutalist, clean aesthetic similar to cosmos.so
+   - Map should be visible but clearly non-interactive
+
+5. **Performance Considerations**
+   - Grid view might need to load many images at once
+   - Need to implement proper image lazy loading
+   - Consider virtual scrolling for large datasets
+   - Optimize city filter performance
+   - Efficient handling of aspect ratio calculations
+   - Ensure smooth drawer transitions
+
+## High-level Task Breakdown
+1. **Drawer Implementation**
+   - [ ] Create full-height drawer component
+   - [ ] Implement transparent background
+   - [ ] Add map disable functionality
+   - [ ] Ensure smooth transitions
+
+2. **Grid View Component**
+   - [ ] Create new GridView component
+   - [ ] Implement brutalist Pinterest-style grid layout
+   - [ ] Add aspect ratio preservation logic
+   - [ ] Implement infinite scroll (20 initial, 10 per batch)
+   - [ ] Add loading states and error handling
+   - [ ] Add city filter tags at the top
+
+3. **Map Icon Modification**
+   - [ ] Modify map icon click behavior
+   - [ ] Keep existing bottom nav functionality
+   - [ ] Add toggle state for map/grid views
+
+4. **Data Integration**
+   - [ ] Modify poster fetching to support date-based sorting
+   - [ ] Implement infinite scroll data loading
+   - [ ] Add city-based filtering support
+   - [ ] Add proper data caching
+   - [ ] Implement scroll position management
+
+5. **UI/UX Implementation**
+   - [ ] Design and implement grid item layout (image only)
+   - [ ] Add smooth transitions between views
+   - [ ] Implement horizontally scrollable city filter tags
+   - [ ] Add loading states and animations
+   - [ ] Ensure consistent poster interaction with map view
+   - [ ] Implement brutalist styling
+   - [ ] Add visual indication of non-interactive map
+
+## Project Status Board
+- [ ] Initial planning and requirements gathering
+- [ ] Implement full-height drawer
+- [ ] Create basic grid view component
+- [ ] Modify map icon behavior
+- [ ] Add infinite scroll (20 initial, 10 per batch)
+- [ ] Implement city filter tags
+- [ ] Add data sorting and filtering
+- [ ] Implement UI/UX features
+- [ ] Add performance optimizations
+- [ ] Testing and refinement
+
+## Executor's Feedback or Assistance Requests
+Awaiting user feedback on the proposed plan and any specific preferences for:
+1. Specific styling for the brutalist grid layout
+2. Any performance concerns to prioritize
+3. Confirmation of infinite scroll batch sizes (20 initial, 10 per batch)
+4. Preferred drawer transition style
+
+## Lessons
+- Consider mobile-first approach for grid layout
+- Ensure smooth transitions between views
+- Prioritize performance for image-heavy grid view
+- Keep grid items simple (image only) for better performance
+- Reuse existing PosterView component for consistency
+- Maintain aspect ratios for visual consistency
+- Use brutalist design principles for clean, functional layout
+- Keep map visible but clearly non-interactive
