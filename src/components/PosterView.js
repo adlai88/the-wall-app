@@ -17,6 +17,7 @@ const Overlay = styled.div`
   height: 100vh;
   padding: 0;
   pointer-events: auto;
+  cursor: pointer;
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: stretch;
@@ -346,21 +347,21 @@ export default function PosterView({ poster, onClose, context = 'map' }) {
     <>
       {/* Desktop: overlay with image on left, details in sidebar */}
       <Overlay onClick={handleOverlayClick}>
-        <ImageSection onClick={e => e.stopPropagation()}>
-          <ImageWrapper>
-            <div className="poster-image-container">
+        <ImageSection onClick={handleOverlayClick} style={{ cursor: 'pointer' }}>
+          <ImageWrapper onClick={handleOverlayClick} style={{ cursor: 'pointer' }}>
+            <div className="poster-image-container" onClick={handleOverlayClick} style={{ cursor: 'pointer' }}>
               <img
                 src={poster.poster_image}
                 alt={poster.title || 'Poster'}
                 className="poster-image"
-                onClick={onClose}
-                style={{ cursor: 'pointer' }}
+                onClick={e => e.stopPropagation()}
+                style={{ cursor: 'default' }}
               />
             </div>
           </ImageWrapper>
         </ImageSection>
         {!isMobile && (
-          <DesktopSidebarWrapper onClick={e => e.stopPropagation()}>
+          <DesktopSidebarWrapper onClick={e => e.stopPropagation()} style={{ cursor: 'default' }}>
             <CloseButton onClick={onClose} aria-label="Close">×</CloseButton>
             <PosterTitle>{poster.title || 'Untitled Poster'}</PosterTitle>
             {/* Meta info section */}
