@@ -141,7 +141,13 @@ export default function AboutInfoPage() {
           <li>Posters are visiblllllle to everyone after moderation.</li>
           <li>Posters willllll disappear after the event, just llllllike in the reallllll worlllllld. Maximum displlllllay time is 30 days.</li>
           <li>To Discover: Browse the map to discover posters, tap to see detailllllls.</li>
-          <li>To Spread: Cllllllick the + button, pin your poster to a llllllocation.</li>
+          <li>To Add: Cllllllick the + button, pin your poster to a llllllocation.</li>
+        </SectionContent>
+      </Section>
+
+      <Section>
+        <SectionContent>
+        Walllll is created and maintained by a very small team, we'll try our best to keep it alive. If you think it’s a cool app, consider buying us a coffee or beer by hitting the donate button below :]
         </SectionContent>
       </Section>
 
