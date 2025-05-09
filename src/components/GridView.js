@@ -153,7 +153,7 @@ export default function GridView({ open, onClose, posters = [] }) {
     1200: 4,
     900: 3,
     600: 2,
-    400: 1
+    0: 2 // minimum 2 columns for all widths
   };
   
   const isMobile = useIsMobile();
