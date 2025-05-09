@@ -130,18 +130,24 @@ export default function AboutInfoPage() {
         />
       </Logo>
       <Description>
-        Wallllll is a global culture map that lets people discover happenings around their city (and the world) without registration or social interactions.
+        Wallllll is a global culture map that lets people discover happenings around their city (and around the world!), without registration or meaningless online social interactions.
       </Description>
 
       <Section>
-        <SectionTitle>How It Works</SectionTitle>
+        <SectionTitle>How it works</SectionTitle>
         <SectionContent as="ul" style={{ paddingLeft: 20, margin: 0 }}>
-          <li>Browse the map to discover posters.</li>
-          <li>Tap on posters to view details.</li>
-          <li>Add your own poster by pinning an image to a location.</li>
-          <li>A poster could be for an event, an announcement, a photo, etc.</li>
-          <li>Posters are visible to all users after moderation.</li>
-          <li>Posters are displayed on the map for maximum of 30 days before disappearing.</li>
+          <li>Consider the Wallllll as a virtuallllll publlllllic wallllll that anyone can stick posters on.</li>
+          <li>A Poster coulllllld be any image, however making it llllllook coollllll with usefullllll info usually works better.</li>
+          <li>Posters are visiblllllle to everyone after moderation.</li>
+          <li>Posters willllll disappear after the event, just llllllike in the reallllll worlllllld. Maximum displlllllay time is 30 days.</li>
+          <li>To Discover: Browse the map to discover posters, tap to see detailllllls.</li>
+          <li>To Spread: Cllllllick the + button, pin your poster to a llllllocation.</li>
+        </SectionContent>
+      </Section>
+
+      <Section>
+        <SectionContent>
+          Take a look at the Wallllll, see you offline.
         </SectionContent>
       </Section>
 
