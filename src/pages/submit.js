@@ -1,5 +1,5 @@
-import AddPoster from '../components/AddPoster';
+import PosterCreationModal from '../components/PosterCreationModal';
 
 export default function Submit() {
-  return <AddPoster />;
+  return <PosterCreationModal />;
 } 
