@@ -244,7 +244,7 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-export default function PosterCreationModal({ onClose, coordinates, onSubmit }) {
+export default function PosterCreationModal({ onClose = () => {}, coordinates = [], onSubmit = () => {} }) {
   const [formData, setFormData] = useState({
     title: '',
     location: '',
