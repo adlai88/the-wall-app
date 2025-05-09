@@ -77,7 +77,7 @@ const GridItem = styled.div`
   box-shadow: none;
   
   &:hover {
-    transform: scale(1.02);
+    transform: scale(0.98);
   }
   
   img {
