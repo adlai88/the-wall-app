@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import { Drawer } from 'vaul';
 import { FiX } from 'react-icons/fi';
@@ -111,6 +111,7 @@ const CityFilter = styled.button`
   background: ${props => props.active ? '#222' : 'white'};
   color: ${props => props.active ? 'white' : '#222'};
   border: 1px solid #222;
+  border-radius: 6px;
   font-size: 14px;
   white-space: nowrap;
   cursor: pointer;
@@ -125,6 +126,9 @@ export default function GridView({ open, onClose, posters = [] }) {
   const [selectedPoster, setSelectedPoster] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
   const [cities, setCities] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(20); // Infinite scroll: number of posters to show
+  const sentinelRef = useRef(null);
+  const loadingRef = useRef(false);
   
   // Extract unique cities from posters
   useEffect(() => {
@@ -145,6 +149,9 @@ export default function GridView({ open, onClose, posters = [] }) {
     }
     return (b.id || 0) - (a.id || 0);
   });
+
+  // Only show up to visibleCount posters
+  const postersToShow = filteredPosters.slice(0, visibleCount);
   
   // Masonry breakpoints
   const breakpointColumnsObj = {
@@ -164,6 +171,30 @@ export default function GridView({ open, onClose, posters = [] }) {
       setSelectedPoster(null);
     }
   }, [open]);
+
+  // Infinite scroll: load more when sentinel is visible
+  useEffect(() => {
+    if (!open) return;
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new window.IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && !loadingRef.current) {
+          loadingRef.current = true;
+          setTimeout(() => {
+            setVisibleCount(prev => {
+              const next = prev + 10;
+              loadingRef.current = false;
+              return next;
+            });
+          }, 100); // Small delay for smoothness
+        }
+      },
+      { root: null, rootMargin: '0px', threshold: 1.0 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [open, filteredPosters.length]);
 
   // Wrap onClose to also clear selectedPoster
   const handleClose = () => {
@@ -219,7 +250,7 @@ export default function GridView({ open, onClose, posters = [] }) {
               className="masonry-grid"
               columnClassName="masonry-grid_column"
             >
-              {filteredPosters.map(poster => (
+              {postersToShow.map(poster => (
                 <GridItem
                   key={poster.id}
                   onClick={() => setSelectedPoster(poster)}
@@ -231,12 +262,16 @@ export default function GridView({ open, onClose, posters = [] }) {
                   />
                 </GridItem>
               ))}
+              {/* Sentinel for infinite scroll */}
+              {visibleCount < filteredPosters.length && (
+                <div ref={sentinelRef} style={{ height: 1, width: '100%' }} />
+              )}
             </MasonryGrid>
 
             {/* PosterView overlay using portal or inline on mobile */}
             {selectedPoster && (
               isMobile
-                ? <PosterView poster={selectedPoster} onClose={() => setSelectedPoster(null)} context="grid" />
+                ? <PosterView poster={selectedPoster} onClose={() => setSelectedPoster(null)} context="list" />
                 : (typeof window !== 'undefined' && document.getElementById('portal-root')
                     ? ReactDOM.createPortal(
                         <PosterView poster={selectedPoster} onClose={() => setSelectedPoster(null)} context="grid" />, 

@@ -393,3 +393,29 @@ Awaiting user feedback on the proposed plan and any specific preferences for:
 - Maintain aspect ratios for visual consistency
 - Use brutalist design principles for clean, functional layout
 - Keep map visible but clearly non-interactive
+
+# Background and Motivation
+The grid view currently displays all posters at once, which can be overwhelming and may impact performance as the dataset grows. Infinite scroll will improve user experience by loading posters in batches as the user scrolls, making the interface feel faster and more modern.
+
+# Key Challenges and Analysis
+- Need to track the number of posters currently displayed and increase this as the user scrolls.
+- Must detect when the user is near the bottom of the grid to trigger loading more posters.
+- Should ensure smooth performance and avoid excessive re-renders.
+- No backend/API changes are needed for this version.
+
+# High-level Task Breakdown
+- [ ] Add state to GridView to control how many posters are displayed.
+- [ ] Implement a scroll event or intersection observer to detect when the user is near the bottom of the grid.
+- [ ] Load more posters in batches (e.g., 20 at a time) as the user scrolls.
+- [ ] Test on desktop and mobile for smoothness and performance.
+- [ ] Add a loading spinner or indicator if needed.
+- [ ] Success criteria: Posters load in batches as the user scrolls, with no major performance issues or UI glitches.
+
+# Project Status Board
+- [ ] Infinite scroll in grid view (frontend-only) - Not started
+
+# Executor's Feedback or Assistance Requests
+- None yet.
+
+# Lessons
+- None yet.
