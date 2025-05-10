@@ -52,7 +52,7 @@ const MasonryGrid = styled(Masonry)`
     padding-left: 0px;
     padding-right: 12px;
     padding-top: 0px;
-    padding-bottom: 16px;
+    padding-bottom: 0px;
     margin-top: 0;
   }
 
