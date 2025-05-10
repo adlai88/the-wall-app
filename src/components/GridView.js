@@ -40,19 +40,19 @@ const MasonryGrid = styled(Masonry)`
   padding-left: 0px;
   padding-right: 16px;
   padding-top: 0px;
-  padding-bottom: 96px;
+  padding-bottom: 0px;
   width: auto;
   flex: 1;
   overflow-y: auto;
   margin-top: 0;
-  margin-bottom: 96px;
+  margin-bottom: 76px;
   -webkit-overflow-scrolling: touch;
   
   @media (max-width: 768px) {
     padding-left: 0px;
     padding-right: 12px;
     padding-top: 0px;
-    padding-bottom: 32px;
+    padding-bottom: 16px;
     margin-top: 0;
   }
 
@@ -91,7 +91,7 @@ const GridItem = styled.div`
 const CityFilterContainer = styled.div`
   display: flex;
   gap: 8px;
-  padding: 0 0 16px 12px;
+  padding: 0 0 16px 16px;
   margin-bottom: 24px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
