@@ -1,15 +1,16 @@
 # The Wall App
 
-A map-based event discovery application that allows users to find events happening around their city without registration or social interactions.
+A map-based digital bulletin board where communities share ephemeral, image-based content - from event posters and announcements to photos and creative messages - all pinned to real-world locations.
 
 ## Features
 
 - 🗺️ Interactive map interface
-- 📍 Location-based event discovery
-- 🎨 Visual event posters
+- 📍 Location-based content discovery
+- 🎨 Visual posters and images
 - 🌤️ Real-time weather information
 - 📱 Mobile-first responsive design
-- 🔍 Smart search for both events and locations
+- 🔍 Smart search for content and locations
+- ⏰ Ephemeral content that expires (max 30 days)
 - ⚡ Fast and efficient with caching and rate limiting
 
 ## Tech Stack
