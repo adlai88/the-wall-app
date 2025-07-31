@@ -7,7 +7,6 @@ const supabase = createClient(
 
 export const getEvents = async () => {
   try {
-    console.log('Fetching approved events from Supabase...');
     const { data, error } = await supabase
       .from('events')
       .select('*')
@@ -19,7 +18,6 @@ export const getEvents = async () => {
       throw error;
     }
     
-    console.log('Events fetched successfully:', data);
     return data || [];
   } catch (error) {
     console.error('Error fetching events:', error);

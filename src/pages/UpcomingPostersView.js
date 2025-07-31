@@ -449,9 +449,7 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
 
   const categories = ['all', 'general', 'event', 'announcement', 'community', 'other', 'elsewhere']
 
-  // Log user location and filter location for debugging
   const filterLocation = selectedLocation || (userLocation ? { lat: userLocation.lat, lon: userLocation.lon } : null);
-  console.log('UserLocation:', userLocation, '| SelectedLocation:', selectedLocation, '| FilterLocation:', filterLocation);
   
   // Filter and sort posters by proximity if userLocation is available
   let filteredPosters = posters;
@@ -461,15 +459,11 @@ export default function UpcomingPostersView({ posters = [], selectedCategory, se
     filteredPosters = posters.filter(poster => {
       const rawCoords = poster.coordinates || '';
       const coords = parseCoordinates(rawCoords);
-      console.log('RAW COORDS:', rawCoords, '| PARSED:', coords);
       if (!coords) {
-        console.log('Skipping poster with invalid coordinates:', poster.coordinates);
         return false;
       }
-      // Swap assignment if needed based on debug output
       const [lat, lng] = coords;
       const dist = getDistanceFromLatLonInKm(lat, lng, filterLocation.lat, filterLocation.lon);
-      console.log('Poster:', poster.title, '| Poster coords:', coords, '| User location:', filterLocation, '| Distance:', dist);
       
       // If "elsewhere" category is selected, show posters outside the radius
       if (selectedCategory === 'elsewhere') {

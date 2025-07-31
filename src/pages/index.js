@@ -290,7 +290,6 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    console.log('Overlay state changed:', overlay);
   }, [overlay]);
 
   useEffect(() => {

@@ -8,10 +8,18 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "The Wall App - A social event discovery platform",
+  "keywords": ["map", "events", "culture", "discovery", "community"],
+  "author": "adlai88",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adlai88/the-wall-app.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adlai88/the-wall-app/issues"
+  },
+  "homepage": "https://github.com/adlai88/the-wall-app#readme",
+  "description": "Map-based culture discovery platform",
   "browserslist": {
     "production": [
       ">0.2%",

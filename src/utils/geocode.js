@@ -3,7 +3,7 @@ export async function geocodePlace(query) {
   const res = await fetch(url, {
     headers: {
       'Accept-Language': 'en',
-      'User-Agent': 'the-wall-app (your-email@example.com)'
+      'User-Agent': 'the-wall-app (https://github.com/adlai88/the-wall-app)'
     }
   });
   if (!res.ok) throw new Error('Geocoding failed');

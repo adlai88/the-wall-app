@@ -3,7 +3,7 @@ import { supabase } from '../../../lib/supabase'
 export default async function handler(req, res) {
   // Basic authentication check - in production, use proper auth
   const authHeader = req.headers.authorization
-  if (!authHeader || authHeader !== `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY}`) {
+  if (!authHeader || authHeader !== `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 

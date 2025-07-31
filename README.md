@@ -34,7 +34,7 @@ A map-based event discovery application that allows users to find events happeni
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/the-wall-app.git
+git clone https://github.com/adlai88/the-wall-app.git
 cd the-wall-app
 ```
 
@@ -43,10 +43,14 @@ cd the-wall-app
 npm install
 ```
 
-3. Create a `.env.local` file in the root directory:
-```env
-OPENWEATHERMAP_API_KEY=your_api_key_here
+3. Copy the example environment file and configure it:
+```bash
+cp .env.example .env.local
 ```
+
+Then edit `.env.local` and add your API keys:
+- Get your OpenWeatherMap API key from [https://openweathermap.org/api](https://openweathermap.org/api)
+- Set up a Supabase project at [https://supabase.com](https://supabase.com)
 
 4. Start the development server:
 ```bash
@@ -82,13 +86,9 @@ Required environment variables:
 Optional environment variables:
 - None at the moment
 
-## Testing
+## Screenshots
 
-```bash
-npm run test        # Run unit tests
-npm run test:e2e    # Run end-to-end tests
-npm run test:watch  # Run tests in watch mode
-```
+_Coming soon as our community grows!_
 
 ## Deployment
 
@@ -102,14 +102,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Create an issue for bug reports
 - Start a discussion for feature requests
-- Check out our [Code of Conduct](CODE_OF_CONDUCT.md)
 
 ## Acknowledgments
 
 - OpenStreetMap for map data
 - OpenWeatherMap for weather data
 - All our contributors and users
-
-## Project Status
-
-The Wall App is under active development. Check our [Projects](https://github.com/yourusername/the-wall-app/projects) page for current progress.

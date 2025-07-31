@@ -16,7 +16,6 @@ async function fetchWithRetry(url, retries = MAX_RETRIES) {
     return response.data;
   } catch (error) {
     if (retries > 0) {
-      console.log(`Retrying weather fetch... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
       await wait(RETRY_DELAY);
       return fetchWithRetry(url, retries - 1);
     }

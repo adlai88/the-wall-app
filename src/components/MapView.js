@@ -8,7 +8,6 @@ import PosterView from './PosterView';
 import PosterCreationModal from './PosterCreationModal';
 import { useRouter } from 'next/router';
 import { getWeather, getWeatherStyle } from '../services/weatherService';
-import { testWeatherAPI } from '../utils/testWeatherAPI';
 import { submitEvent, getEvents } from '../api';
 import { toast } from 'sonner';
 import { geocodePlace } from '../utils/geocode';
@@ -402,7 +401,6 @@ function LocationFlyToHandler({ flyToRequest, setFlyToRequest, setUserLocation, 
   const map = useMap();
   useEffect(() => {
     if (flyToRequest) {
-      console.log('LocationFlyToHandler triggered');
       if (!navigator.geolocation) {
         alert('Location services are not supported by your browser');
         setIsLocating(false);
@@ -461,7 +459,6 @@ export default function MapView({ onNav }) {
 
   // Simplified fetch function
   const fetchPosters = async () => {
-    console.log('🔄 Starting poster fetch...');
     setIsLoading(true);
     setFetchError(null);
     
@@ -471,7 +468,6 @@ export default function MapView({ onNav }) {
       const data = await response.json();
       
       if (Array.isArray(data)) {
-        console.log(`✅ Successfully fetched ${data.length} posters`);
         setPosters(data);
         setFilteredPosters(data);
       } else {
@@ -483,20 +479,17 @@ export default function MapView({ onNav }) {
       setFetchError(error.message);
     } finally {
       setIsLoading(false);
-      console.log('🏁 Fetch operation completed');
     }
   };
 
   // Single initial fetch
   useEffect(() => {
-    console.log('🎯 MapView mounted, initiating poster fetch');
     fetchPosters();
   }, []);
 
   // Update filtered posters when search query changes
   useEffect(() => {
     if (!debouncedSearchQuery.trim()) {
-      console.log('🔄 Resetting filtered posters to full list');
       setFilteredPosters(posters);
       setPlaceSuggestions([]);
       setIsSearching(false);
@@ -504,7 +497,6 @@ export default function MapView({ onNav }) {
     }
 
     const query = debouncedSearchQuery.toLowerCase().trim();
-    console.log(`🔍 Filtering posters for query: "${query}"`);
     
     const filtered = posters.filter(poster => {
       const title = (poster.title || '').toLowerCase();
@@ -518,7 +510,6 @@ export default function MapView({ onNav }) {
              category.includes(query);
     });
     
-    console.log(`✅ Found ${filtered.length} matching posters`);
     setFilteredPosters(filtered);
     
     // Geocoding logic remains the same
@@ -556,21 +547,12 @@ export default function MapView({ onNav }) {
     }
   }, [debouncedSearchQuery, posters]);
   
-  // Test weather API on mount
-  useEffect(() => {
-    console.log('MapView mounted, testing weather API...');
-    testWeatherAPI().catch(error => {
-      console.error('Error in testWeatherAPI:', error);
-    });
-  }, []);
   
   // Fetch weather data
   useEffect(() => {
     const fetchWeather = async () => {
-      console.log('Fetching weather data...');
       try {
         const data = await getWeather();
-        console.log('Weather data fetched:', data);
         if (data) {
           setWeatherData(data);
           setWeatherError(null);
@@ -707,7 +689,6 @@ export default function MapView({ onNav }) {
   
   // Handle marker click
   const handleMarkerClick = (poster) => {
-    console.log('Marker clicked for poster:', poster);
     setSelectedPoster(poster);
   };
   
@@ -802,7 +783,6 @@ export default function MapView({ onNav }) {
   };
 
   const handleLocationClick = useCallback(() => {
-    console.log('Location button clicked');
     setLocationFlyToRequest(true);
   }, []);
 

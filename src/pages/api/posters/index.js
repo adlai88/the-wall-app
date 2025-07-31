@@ -29,8 +29,6 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     try {
-      // Debug log: print the full payload
-      console.error('POST /api/posters payload:', JSON.stringify(req.body, null, 2));
       const posterData = req.body;
 
       // Validate required fields based on database schema
