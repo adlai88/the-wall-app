@@ -12,6 +12,7 @@ A map-based digital bulletin board where communities share ephemeral, image-base
 - 🔍 Smart search for content and locations
 - ⏰ Ephemeral content that expires (max 30 days)
 - ⚡ Fast and efficient with caching and rate limiting
+- 🛡️ Content moderation workflow (admin panel at `/admin`)
 
 ## Tech Stack
 
